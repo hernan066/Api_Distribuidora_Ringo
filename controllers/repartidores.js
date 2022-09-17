@@ -21,9 +21,14 @@ const repartidoresGet = async (req = request, res = response) => {
 const repartidoresPost = async (req, res = response) => {
   const { nombre, patente, password, rol } = req.body;
 
-  let patente1 = patente.toLowerCase();
+  
 
-  const repartidor = new Repartidor({ nombre, patente1, password, rol });
+  const repartidor = new Repartidor({ 
+    nombre, 
+    patente: patente.toLowerCase(), 
+    password, 
+    rol 
+  });
 
   // Encriptar la contraseña
   const salt = bcryptjs.genSaltSync();
@@ -31,6 +36,7 @@ const repartidoresPost = async (req, res = response) => {
 
   // Guardar en BD
   await repartidor.save();
+  
 
   res.json({
     repartidor,
