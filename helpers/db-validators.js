@@ -18,6 +18,14 @@ const emailExiste = async( correo = '' ) => {
         throw new Error(`El correo: ${ correo }, ya está registrado`);
     }
 }
+const telefonoExiste = async( telefono ) => {
+
+    // Verificar si el correo existe
+    const existeTelefono = await Usuario.findOne({ telefono });
+    if ( existeTelefono ) {
+        throw new Error(`El teléfono: ${ telefono }, ya está registrado`);
+    }
+}
 const patenteExiste = async( patente = '' ) => {
 
     // Verificar si el correo existe
@@ -89,6 +97,7 @@ module.exports = {
     existeProductoPorId,
     coleccionesPermitidas,
     existeRepartidorPorId,
-    patenteExiste
+    patenteExiste,
+    telefonoExiste
 }
 

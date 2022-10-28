@@ -49,5 +49,15 @@ const getAllordersByNumber = async (req, res) => {
     orders,
   });
 };
+const postNewOrder = async (req, res) => {
+  const newOrder = new Order(req.body);
 
-module.exports = { saveOrder, getAllorders, getAllordersByNumber };
+  try {
+    const savedOrder = await newOrder.save();
+    res.status(200).json(savedOrder);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+};
+
+module.exports = { saveOrder, getAllorders, getAllordersByNumber, postNewOrder };
