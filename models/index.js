@@ -1,5 +1,5 @@
 const Categoria = require('./categoria');
-const Producto = require('./producto');
+const Product = require('./product');
 const Role = require('./role');
 const Server = require('./server');
 const User = require('./user');
@@ -10,7 +10,7 @@ const Order = require('./order');
 
 module.exports = {
     Categoria,
-    Producto,
+    Product,
     Role,
     Server,
     User,
