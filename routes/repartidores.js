@@ -2,7 +2,7 @@ const { Router } = require("express");
 const { check } = require("express-validator");
 
 const {
-  validarCampos,
+  validateFields,
   validarJWT,
   esAdminRole,
   tieneRole,
@@ -32,7 +32,7 @@ router.put(
   [
     check("id", "No es un ID válido").isMongoId(),
     check("id").custom(existeRepartidorPorId),
-    validarCampos,
+    validateFields,
   ],
   repartidoresPut
 );
@@ -48,7 +48,7 @@ router.post(
     check("patente").custom(patenteExiste),
     // check('rol', 'No es un rol válido').isIn(['ADMIN_ROLE','USER_ROLE']),
     check("rol").custom(esRoleValido),
-    validarCampos,
+    validateFields,
   ],
   repartidoresPost
 );
@@ -61,7 +61,7 @@ router.post(
     tieneRole("ADMIN_ROLE", "VENTAR_ROLE", "OTRO_ROLE"),
     check("id", "No es un ID válido").isMongoId(),
     check("id").custom(existeRepartidorPorId),
-    validarCampos,
+    validateFields,
   ],
   repartidoresDelete
 );

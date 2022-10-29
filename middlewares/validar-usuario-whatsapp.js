@@ -1,22 +1,18 @@
-const { Usuario } = require('../models');
+const User = require("../models/user");
 
+const validarUsuarioWhatsapp = async (req, res, next) => {
+  const user = await User.findById(req.body.id);
+  const phone = user.telefono;
 
-const validarUsuarioWhatsapp = async ( req, res, next ) => {
+  if (!user || !phone) {
+    return res.status(401).json({
+      msg: `No se puede crear orden, porque no existe el usuario`,
+    });
+  }
 
-    const usuario = await Usuario.findById(req.body.id)
-    const telefono = usuario.telefono
-   
-    if( !usuario || !telefono ){
-        return res.status(401).json({
-            msg: `No se puede crear orden, porque no existe el usuario`
-        });
-    }
-
-    next();
-}
-
-
+  next();
+};
 
 module.exports = {
-    validarUsuarioWhatsapp
-}
+  validarUsuarioWhatsapp,
+};
