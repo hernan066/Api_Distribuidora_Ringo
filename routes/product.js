@@ -10,7 +10,7 @@ const {
     postProduct,
     putProduct,
     deleteProduct,
-} = require("../controllers/productos");
+} = require("../controllers/product");
 const { Router } = require("express");
 const router = Router();
 
