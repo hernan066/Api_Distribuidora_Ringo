@@ -1,54 +1,31 @@
 const { Router } = require('express');
-const { check } = require('express-validator');
+const { getCategories, getCategory, putCategory, deleteCategory, postCategory } = require('../controllers/categorias');
 
-const { validarJWT, validateFields, esAdminRole } = require('../middlewares');
 
-const { crearCategoria,
-        obtenerCategorias,
-        obtenerCategoria,
-        actualizarCategoria, 
-        borrarCategoria } = require('../controllers/categorias');
-const { existeCategoriaPorId } = require('../helpers/db-validators');
+
+
+const { getCategoryValidation, postCategoryValidation, deleteCategoryValidation, putCategoryValidation } = require('../validations/category-validator');
 
 const router = Router();
 
 /**
- * {{url}}/api/categorias
+ * {{url}}/api/categories
  */
 
-//  Obtener todas las categorias - publico
-router.get('/', obtenerCategorias );
+//  Obtener todas las categorías - publico
+router.get('/', getCategories );
 
-// Obtener una categoria por id - publico
-router.get('/:id',[
-    check('id', 'No es un id de Mongo válido').isMongoId(),
-    check('id').custom( existeCategoriaPorId ),
-    validateFields,
-], obtenerCategoria );
+// Obtener una categoría por id - publico
+router.get('/:id', getCategoryValidation , getCategory );
 
-// Crear categoria - privado - cualquier persona con un token válido
-router.post('/', [ 
-    validarJWT,
-    check('nombre','El nombre es obligatorio').not().isEmpty(),
-    validateFields
-], crearCategoria );
+// Crear categoría - privado - cualquier persona con un token válido
+router.post('/', postCategoryValidation , postCategory );
 
 // Actualizar - privado - cualquiera con token válido
-router.put('/:id',[
-    validarJWT,
-    check('nombre','El nombre es obligatorio').not().isEmpty(),
-    check('id').custom( existeCategoriaPorId ),
-    validateFields
-],actualizarCategoria );
+router.put('/:id',putCategoryValidation, putCategory );
 
-// Borrar una categoria - Admin
-router.delete('/:id',[
-    validarJWT,
-    esAdminRole,
-    check('id', 'No es un id de Mongo válido').isMongoId(),
-    check('id').custom( existeCategoriaPorId ),
-    validateFields,
-],borrarCategoria);
+// Borrar una categoría - Admin
+router.delete('/:id', deleteCategoryValidation ,deleteCategory);
 
 
 
