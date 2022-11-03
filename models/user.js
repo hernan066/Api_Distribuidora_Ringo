@@ -6,14 +6,18 @@ const UserSchema = Schema({
   email     : {type: String,unique: true,},
   phone     : {type: String,required: true,unique: true,},
   password  : {type: String,required: true,},
-  img       : {type: String},
+  avatar    : {type: String, default:"default_avatar.jpg"},
+  address   : {type: String},
+  province  : {type: String},
+  city      : {type: String},
+  zip       : {type: String},
   state     : {type: Boolean,default: true,},
   google    : {type: Boolean,default: false,},
   rol       : {
                 type: String,
                 required: true,
-                default: "USER_ROLE",
-                emun: ["ADMIN_ROLE", "USER_ROLE"],
+                default: "CLIENT_ROLE",
+                emun: ["ADMIN_ROLE", "CLIENT_ROLE"],
   },
   
 });
