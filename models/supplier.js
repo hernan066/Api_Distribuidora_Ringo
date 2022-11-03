@@ -1,10 +1,10 @@
 const { Schema, model } = require("mongoose");
 
 const SupplierSchema = Schema({
-    businessName      : {type: String,},
+    businessName      : {type: String,unique: true,},
     cuit              : {type: String,},
     email             : {type: String,unique: true,},
-    phone             : {type: String,required: true,unique: true,},
+    phone             : {type: String,},
     address           : {type: String},
     province          : {type: String},
     city              : {type: String},
@@ -20,4 +20,4 @@ SupplierSchema.methods.toJSON = function () {
   return supplier;
 };
 
-module.exports = model("Supplier", UserSchema);
+module.exports = model("Supplier", SupplierSchema);

@@ -6,6 +6,7 @@ const User = require('./user');
 const Repartidor = require('./repartidor');
 const Order = require('./order');
 const Brand = require('./brand');
+const Supplier = require('./supplier');
 
 
 
@@ -17,6 +18,7 @@ module.exports = {
     User,
     Order,
     Repartidor,
-    Brand
+    Brand,
+    Supplier
 }
 
