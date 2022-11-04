@@ -8,6 +8,7 @@ const Order = require('./order');
 const Brand = require('./brand');
 const Supplier = require('./supplier');
 const ProductLot = require('./productLot');
+const Ofert = require('./ofert');
 
 
 
@@ -21,6 +22,7 @@ module.exports = {
     Repartidor,
     Brand,
     Supplier,
-    ProductLot
+    ProductLot,
+    Ofert
 }
 

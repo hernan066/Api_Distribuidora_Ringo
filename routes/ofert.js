@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const {  getOfert, putOfert, deleteOfert, postOfert, getOferts } = require('../controllers/Ofert');
 
-const { getOfertValidation, postOfertValidation, deleteOfertValidation, putOfertValidation } = require('../validations/Ofert-validator');
+const { getOfertValidator, postOfertValidator, deleteOfertValidator, putOfertValidator } = require('../validations/Ofert-validator');
 
 const router = Router();
 
@@ -13,16 +13,16 @@ const router = Router();
 router.get('/', getOferts );
 
 // Obtener una marca por id - publico
-router.get('/:id', getOfertValidation , getOfert );
+router.get('/:id', getOfertValidator , getOfert );
 
 // Crear marca - privado - cualquier persona con un token válido
-router.post('/', postOfertValidation , postOfert );
+router.post('/', postOfertValidator , postOfert );
 
 // Actualizar - privado - cualquiera con token válido
-router.put('/:id',putOfertValidation, putOfert );
+router.put('/:id',putOfertValidator, putOfert );
 
 // Borrar una marca - Admin
-router.delete('/:id', deleteOfertValidation ,deleteOfert);
+router.delete('/:id', deleteOfertValidator ,deleteOfert);
 
 
 

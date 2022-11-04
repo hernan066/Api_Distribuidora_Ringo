@@ -21,6 +21,7 @@ class Server {
       repartidores: "/api/auth/repartidores",
       suppliers: "/api/suppliers",
       productLot: "/api/product_lot",
+      oferts: "/api/oferts",
     };
 
     // Conectar a base de datos
@@ -69,6 +70,7 @@ class Server {
     this.app.use(this.paths.repartidores, require("../routes/repartidores"));
     this.app.use(this.paths.suppliers, require("../routes/supplier"));
     this.app.use(this.paths.productLot, require("../routes/productLot"));
+    this.app.use(this.paths.oferts, require("../routes/ofert"));
   }
 
   listen() {
