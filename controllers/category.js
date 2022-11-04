@@ -34,13 +34,13 @@ const getCategory = async(req, res = response ) => {
 
 const postCategory = async(req, res = response ) => {
 
-    const name = req.body.name.toUpperCase();
+    const name = req.body.name
 
     const categoryDB = await Category.findOne({ name });
 
     if ( categoryDB ) {
         return res.status(400).json({
-            msg: `La categoria ${ categoryDB.name }, ya existe`
+            msg: `La categoría ${ categoryDB.name }, ya existe`
         });
     }
 
@@ -64,7 +64,7 @@ const putCategory = async( req, res = response ) => {
     const { id } = req.params;
     const { state, user, ...data } = req.body;
 
-    data.name  = data.name.toUpperCase();
+   
     data.user = req.user._id;
 
     const category = await Category.findByIdAndUpdate(id, data, { new: true });

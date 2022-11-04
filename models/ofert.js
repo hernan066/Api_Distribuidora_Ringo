@@ -15,7 +15,7 @@ const OfertSchema = Schema({
         quantity3   : { type: Number,  },
         quantity4   : { type: Number,  },
      }],
-});
+},{ timestamps: true });
 
 
 OfertSchema.methods.toJSON = function() {

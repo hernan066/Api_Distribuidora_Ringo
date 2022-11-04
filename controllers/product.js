@@ -48,8 +48,7 @@ const postProduct = async(req, res = response ) => {
     // Generar la data a guardar
     const data = {
         ...body,
-        name: body.name.toUpperCase(),
-        user: req.user._id
+       user: req.user._id
     }
 
     const product = new Product( data );
@@ -66,10 +65,7 @@ const putProduct = async( req, res = response ) => {
     const { id } = req.params;
     const { state, user, ...data } = req.body;
 
-    if( data.name ) {
-        data.name  = data.name.toUpperCase();
-    }
-
+    
     data.user = req.user._id;
 
     const product = await Product.findByIdAndUpdate(id, data, { new: true });

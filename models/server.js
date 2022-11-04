@@ -20,6 +20,7 @@ class Server {
       orders: "/api/orders",
       repartidores: "/api/auth/repartidores",
       suppliers: "/api/suppliers",
+      productLot: "/api/product_lot",
     };
 
     // Conectar a base de datos
@@ -67,6 +68,7 @@ class Server {
     this.app.use(this.paths.orders, require("../routes/orders"));
     this.app.use(this.paths.repartidores, require("../routes/repartidores"));
     this.app.use(this.paths.suppliers, require("../routes/supplier"));
+    this.app.use(this.paths.productLot, require("../routes/productLot"));
   }
 
   listen() {

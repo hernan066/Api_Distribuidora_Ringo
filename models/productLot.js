@@ -5,9 +5,8 @@ const ProductLotSchema = Schema({
     supplier  : {type: Schema.Types.ObjectId,ref: 'Supplier', required: true},
     quantity  : {type: Number,},
     cost      : {type: Number,},
-    date      : {type: Date,},
     state     : {type: Boolean,default: true,required: true},
-});
+},{ timestamps: true });
 
 
 ProductLotSchema.methods.toJSON = function() {
