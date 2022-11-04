@@ -26,7 +26,7 @@ const RepartidorSchema = Schema({
     type: Boolean,
     default: true,
   },
-});
+},{ timestamps: true });
 
 RepartidorSchema.methods.toJSON = function () {
   const { __v, password, _id, ...repartidor } = this.toObject();

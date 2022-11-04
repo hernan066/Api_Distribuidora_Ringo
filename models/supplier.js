@@ -12,11 +12,13 @@ const SupplierSchema = Schema({
     state             : {type: Boolean,default: true,},
  
   
-});
+},
+  { timestamps: true }
+
+);
 
 SupplierSchema.methods.toJSON = function () {
-  const { __v, password, _id, ...supplier } = this.toObject();
-  supplier.uid = _id;
+  const { __v, ...supplier } = this.toObject();
   return supplier;
 };
 

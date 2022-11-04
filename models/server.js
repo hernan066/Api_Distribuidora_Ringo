@@ -66,7 +66,7 @@ class Server {
     this.app.use(this.paths.uploads, require("../routes/uploads"));
     this.app.use(this.paths.orders, require("../routes/orders"));
     this.app.use(this.paths.repartidores, require("../routes/repartidores"));
-    this.app.use(this.paths.repartidores, require("../routes/supplier"));
+    this.app.use(this.paths.suppliers, require("../routes/supplier"));
   }
 
   listen() {

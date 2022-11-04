@@ -1,6 +1,7 @@
 const { validateFields, validarJWT, esAdminRole } = require("../middlewares");
-const { check } = require("express-validator");
+const { check, body } = require("express-validator");
 const { existSupplierById } = require("../helpers");
+const { Supplier } = require("../models");
 
 const getSupplierValidator = [
   check("id", "No es un id de Mongo válido").isMongoId(),
@@ -11,7 +12,15 @@ const postSupplierValidator = [
   validarJWT,
   check("businessName", "La Razón Social es obligatoria").not().isEmpty(),
   check("cuit", "El CUIT es obligatorio").not().isEmpty(),
-  check("email", "El email es obligatorio").not().isEmpty(),
+  body("email")
+    .notEmpty().withMessage("El email es obligatorio").bail()
+    .isEmail().withMessage("Debe ser un email válido").bail()
+    .custom(async(email) => {
+      const existEmail = await Supplier.findOne({ email });
+      if (existEmail) {
+        throw new Error(`El email: ${email}, ya está registrado`);
+      }
+    }),
   check("phone", "El telefono  es obligatorio").not().isEmpty(),
   check("address", "La dirección es obligatoria").not().isEmpty(),
   check("province", "La provincia es obligatoria").not().isEmpty(),
@@ -21,8 +30,17 @@ const postSupplierValidator = [
 ];
 const putSupplierValidator = [
   validarJWT,
-  // check('categoria','No es un id de Mongo').isMongoId(),
+  check('id','No es un id de Mongo').isMongoId(),
   check("id").custom(existSupplierById),
+  body("email")
+    .notEmpty().withMessage("El email es obligatorio").bail()
+    .isEmail().withMessage("Debe ser un email válido").bail()
+    .custom(async(email) => {
+      const existEmail = await Supplier.findOne({ email });
+      if (existEmail) {
+        throw new Error(`El email: ${email}, ya está registrado`);
+      }
+    }),
   validateFields,
 ];
 const deleteSupplierValidator = [

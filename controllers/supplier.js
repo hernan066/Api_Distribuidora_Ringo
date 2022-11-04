@@ -53,11 +53,11 @@ const postSupplier = async (req, res = response) => {
   try {
     const { state, ...body } = req.body;
 
-    const supplierDB = await Supplier.findOne({ name: body.name });
+    const supplierDB = await Supplier.findOne({ businessName: body.businessName });
 
     if (supplierDB) {
       return res.status(400).json({
-        msg: `El proveedor ${supplierDB}, ya existe`,
+        msg: `El proveedor ${supplierDB.businessName}, ya existe`,
       });
     }
 
@@ -70,6 +70,14 @@ const postSupplier = async (req, res = response) => {
 
     // Guardar DB
     await supplier.save();
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        supplier,
+      },
+    });
   } catch (error) {
     res.status(500).json({
       ok: false,
