@@ -10,6 +10,7 @@ const Supplier = require('./supplier');
 const ProductLot = require('./productLot');
 const Ofert = require('./ofert');
 const DeliveryZone = require('./deliveryZone');
+const DeliverySubZone = require('./deliverySubZone');
 
 
 
@@ -25,6 +26,7 @@ module.exports = {
     Supplier,
     ProductLot,
     Ofert,
-    DeliveryZone
+    DeliveryZone,
+    DeliverySubZone
 }
 

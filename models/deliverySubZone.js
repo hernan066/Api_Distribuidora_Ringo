@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const SubDeliveryZoneSchema = Schema({
+const DeliverySubZoneSchema = Schema({
     
     deliveryZone        : {type: Schema.Types.ObjectId,ref: 'DeliveryZone', required: true},
     name                : {type: String,},
@@ -22,10 +22,10 @@ const SubDeliveryZoneSchema = Schema({
 },{ timestamps: true });
 
 
-SubDeliveryZoneSchema.methods.toJSON = function() {
+DeliverySubZoneSchema.methods.toJSON = function() {
     const { __v, state, ...data  } = this.toObject();
     return data;
 }
 
 
-module.exports = model( 'SubDeliveryZone', SubDeliveryZoneSchema );
+module.exports = model( 'DeliverySubZone', DeliverySubZoneSchema );
