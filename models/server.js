@@ -22,6 +22,7 @@ class Server {
       suppliers: "/api/suppliers",
       productLot: "/api/product_lot",
       oferts: "/api/oferts",
+      deliveryZone: "/api/delivery_zone",
     };
 
     // Conectar a base de datos
@@ -71,6 +72,7 @@ class Server {
     this.app.use(this.paths.suppliers, require("../routes/supplier"));
     this.app.use(this.paths.productLot, require("../routes/productLot"));
     this.app.use(this.paths.oferts, require("../routes/ofert"));
+    this.app.use(this.paths.deliveryZone, require("../routes/deliveryZone"));
   }
 
   listen() {

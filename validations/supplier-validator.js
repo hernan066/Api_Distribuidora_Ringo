@@ -32,15 +32,6 @@ const putSupplierValidator = [
   validarJWT,
   check('id','No es un id de Mongo').isMongoId(),
   check("id").custom(existSupplierById),
-  body("email")
-    .notEmpty().withMessage("El email es obligatorio").bail()
-    .isEmail().withMessage("Debe ser un email válido").bail()
-    .custom(async(email) => {
-      const existEmail = await Supplier.findOne({ email });
-      if (existEmail) {
-        throw new Error(`El email: ${email}, ya está registrado`);
-      }
-    }),
   validateFields,
 ];
 const deleteSupplierValidator = [

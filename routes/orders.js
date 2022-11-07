@@ -7,8 +7,14 @@ const router = Router();
 
 // /api/orders?limit=20&init=10
 router.get("/", getAllorders);
+
+router.get("/:id",  getAllordersByNumber);
+
 router.post("/",[validarUsuarioWhatsapp, validateFields], postNewOrder);
 
-router.get("/:number",  getAllordersByNumber);
+router.put("/:id",[validarUsuarioWhatsapp, validateFields], postNewOrder);
+
+router.delete("/:id",[validarUsuarioWhatsapp, validateFields], postNewOrder);
+
 
 module.exports = router;

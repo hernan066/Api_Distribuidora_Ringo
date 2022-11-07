@@ -9,6 +9,7 @@ const Brand = require('./brand');
 const Supplier = require('./supplier');
 const ProductLot = require('./productLot');
 const Ofert = require('./ofert');
+const DeliveryZone = require('./deliveryZone');
 
 
 
@@ -23,6 +24,7 @@ module.exports = {
     Brand,
     Supplier,
     ProductLot,
-    Ofert
+    Ofert,
+    DeliveryZone
 }
 

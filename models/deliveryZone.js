@@ -4,6 +4,9 @@ const DeliveryZoneSchema = Schema({
     
     name                : {type: String,},
     cost                : {type: String,},
+    province            : {type: String,},
+    city                : {type: String,},
+    zip                 : {type: String,},
     limits: [{
                 north  : { type: String, required: true },
                 south  : { type: String, required: true },

@@ -1,5 +1,5 @@
 const Role = require("../models/role");
-const {  Repartidor, User, Product, Category, Brand, Supplier, ProductLot, Ofert } = require("../models");
+const {  Repartidor, User, Product, Category, Brand, Supplier, ProductLot, Ofert, DeliveryZone } = require("../models");
 
 
 const isValidRol = async (rol = "") => {
@@ -97,6 +97,13 @@ const existOfertById = async (id) => {
     throw new Error(`El id no existe ${id}`);
   }
 };
+const existDeliveryZoneById = async (id) => {
+  // Verificar si el correo existe
+  const exist = await DeliveryZone.findById(id);
+  if (!exist) {
+    throw new Error(`El id no existe ${id}`);
+  }
+};
 
 
 /**
@@ -125,5 +132,6 @@ module.exports = {
   existBrandById,
   existSupplierById,
   existProductLotById,
-  existOfertById
+  existOfertById,
+  existDeliveryZoneById
 };
