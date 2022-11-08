@@ -27,6 +27,7 @@ class Server {
       role: "/api/roles",
       client: "/api/clients",
       clientCategory: "/api/clients_categories",
+      clientType: "/api/clients_types",
     };
 
     // Conectar a base de datos
@@ -81,6 +82,7 @@ class Server {
     this.app.use(this.paths.role, require("../routes/role"));
     this.app.use(this.paths.client, require("../routes/client"));
     this.app.use(this.paths.clientCategory, require("../routes/clientCategory"));
+    this.app.use(this.paths.clientType, require("../routes/clientType"));
   }
 
   listen() {

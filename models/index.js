@@ -13,6 +13,7 @@ const DeliveryZone = require('./deliveryZone');
 const DeliverySubZone = require('./deliverySubZone');
 const Client = require('./client');
 const ClientCategory = require('./clientCategory');
+const ClientType = require('./clientType');
 
 
 
@@ -31,6 +32,7 @@ module.exports = {
     DeliveryZone,
     DeliverySubZone,
     Client,
-    ClientCategory
+    ClientCategory,
+    ClientType
 }
 

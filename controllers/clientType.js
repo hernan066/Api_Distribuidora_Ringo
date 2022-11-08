@@ -1,14 +1,14 @@
 const { response } = require("express");
-const { ClientCategory } = require("../models");
+const { ClientType } = require("../models");
 
-const getClientCategories = async (req, res = response) => {
+const getClientTypes = async (req, res = response) => {
   try {
     const { limit = 10, from = 0 } = req.query;
     const query = { state: true };
 
-    const [total, clientCategories] = await Promise.all([
-      ClientCategory.countDocuments(query),
-      ClientCategory.find(query).skip(Number(from)).limit(Number(limit)),
+    const [total, clientTypes] = await Promise.all([
+      ClientType.countDocuments(query),
+      ClientType.find(query).skip(Number(from)).limit(Number(limit)),
     ]);
 
     res.status(200).json({
@@ -16,7 +16,7 @@ const getClientCategories = async (req, res = response) => {
       status: 200,
       total,
       data: {
-        clientCategories,
+        clientTypes,
       },
     });
   } catch (error) {
@@ -28,16 +28,16 @@ const getClientCategories = async (req, res = response) => {
   }
 };
 
-const getClientCategory = async (req, res = response) => {
+const getClientType = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const clientCategory = await ClientCategory.findById(id);
+    const clientType = await ClientType.findById(id);
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        clientCategory,
+        clientType,
       },
     });
   } catch (error) {
@@ -49,15 +49,15 @@ const getClientCategory = async (req, res = response) => {
   }
 };
 
-const postClientCategory = async (req, res = response) => {
+const postClientType = async (req, res = response) => {
   try {
     const { state, ...body } = req.body;
 
-    const clientCategoryDB = await ClientCategory.findOne({ clientCategory: body.clientCategory });
+    const clientTypeDB = await ClientType.findOne({ clientType: body.clientType });
 
-    if (clientCategoryDB) {
+    if (clientTypeDB) {
       return res.status(400).json({
-        msg: `La categoría de cliente ${clientCategoryDB.clientCategory}, ya existe`,
+        msg: `El tipo de cliente ${clientTypeDB.clientType}, ya existe`,
       });
     }
 
@@ -66,16 +66,16 @@ const postClientCategory = async (req, res = response) => {
       ...body,
     };
 
-    const clientCategory = new ClientCategory(data);
+    const clientType = new ClientType(data);
 
     // Guardar DB
-    await clientCategory.save();
+    await clientType.save();
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        clientCategory,
+        clientType,
       },
     });
   } catch (error) {
@@ -87,12 +87,12 @@ const postClientCategory = async (req, res = response) => {
   }
 };
 
-const putClientCategory = async (req, res = response) => {
+const putClientType = async (req, res = response) => {
   try {
     const { id } = req.params;
     const { state, ...data } = req.body;
 
-    const clientCategory = await ClientCategory.findByIdAndUpdate(id, data, { new: true });
+    const clientType = await ClientType.findByIdAndUpdate(id, data, { new: true });
 
     
 
@@ -100,7 +100,7 @@ const putClientCategory = async (req, res = response) => {
       ok: true,
       status: 200,
       data: {
-        clientCategory,
+        clientType,
       },
     });
   } catch (error) {
@@ -112,10 +112,10 @@ const putClientCategory = async (req, res = response) => {
   }
 };
 
-const deleteClientCategory = async (req, res = response) => {
+const deleteClientType = async (req, res = response) => {
   try {
     const { id } = req.params;
-    await ClientCategory.findByIdAndUpdate(id, { state: false }, { new: true });
+    await ClientType.findByIdAndUpdate(id, { state: false }, { new: true });
 
     res.status(200).json({
       ok: true,
@@ -131,9 +131,9 @@ const deleteClientCategory = async (req, res = response) => {
 };
 
 module.exports = {
-  postClientCategory,
-  getClientCategories,
-  getClientCategory,
-  putClientCategory,
-  deleteClientCategory,
+  postClientType,
+  getClientTypes,
+  getClientType,
+  putClientType,
+  deleteClientType,
 };
