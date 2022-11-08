@@ -124,6 +124,13 @@ const existRoleById = async (id) => {
     throw new Error(`El id no existe ${id}`);
   }
 };
+const existClientById = async (id) => {
+  // Verificar si el correo existe
+  const exist = await Client.findById(id);
+  if (!exist) {
+    throw new Error(`El id no existe ${id}`);
+  }
+};
 
 
 
@@ -157,5 +164,6 @@ module.exports = {
   existDeliveryZoneById,
   existDeliverySubZoneById,
   existRoleById,
-  isRolbyId
+  isRolbyId,
+  existClientById
 };

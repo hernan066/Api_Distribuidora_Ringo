@@ -11,6 +11,7 @@ const ProductLot = require('./productLot');
 const Ofert = require('./ofert');
 const DeliveryZone = require('./deliveryZone');
 const DeliverySubZone = require('./deliverySubZone');
+const Client = require('./client');
 
 
 
@@ -27,6 +28,7 @@ module.exports = {
     ProductLot,
     Ofert,
     DeliveryZone,
-    DeliverySubZone
+    DeliverySubZone,
+    Client
 }
 
