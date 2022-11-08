@@ -66,16 +66,16 @@ const postClient = async (req, res = response) => {
       ...body,
     };
 
-    const Client = new Client(data);
+    const client = new Client(data);
 
     // Guardar DB
-    await Client.save();
+    await client.save();
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        Client,
+        client,
       },
     });
   } catch (error) {

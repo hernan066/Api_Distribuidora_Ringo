@@ -1,5 +1,5 @@
 const Role = require("../models/role");
-const {  Repartidor, User, Product, Category, Brand, Supplier, ProductLot, Ofert, DeliveryZone, DeliverySubZone, ClientCategory, ClientType } = require("../models");
+const {  Repartidor, User, Product, Category, Brand, Supplier, ProductLot, Ofert, DeliveryZone, DeliverySubZone, ClientCategory, ClientType, Client } = require("../models");
 
 
 const isValidRol = async (rol = "") => {

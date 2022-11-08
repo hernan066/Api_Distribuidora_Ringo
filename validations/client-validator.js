@@ -1,6 +1,6 @@
 const { validateFields, validarJWT, isAdminRole } = require("../middlewares");
 const { check} = require("express-validator");
-const { existClientById, existUserById } = require("../helpers");
+const { existClientById, existUserById, existClientCategoryById, existClientTypeById } = require("../helpers");
 
 
 const getClientValidator = [
@@ -11,14 +11,13 @@ const getClientValidator = [
 ];
 const postClientValidator = [
   validarJWT,
-  check("user", "No es un id de Mongo válido").isMongoId(),
-  check("user").custom(existUserById),
+  check("userId", "No es un id de Mongo válido").isMongoId(),
+  check("userId").custom(existUserById),
+  check("clientCategoryId", "No es un id de Mongo válido").isMongoId(),
+  check("clientCategoryId").custom(existClientCategoryById),
+  check("clientTypeId", "No es un id de Mongo válido").isMongoId(),
+  check("clientTypeId").custom(existClientTypeById),
   check("cuit", "El cuit es obligatorio").not().isEmpty(),
-  /* TODO  clientCategory  clientType*/
-  //check("clientCategory", "No es un id de Mongo válido").isMongoId(),
-  //("clientCategory").custom(existClientCategoryById),
-  //check("clientType", "No es un id de Mongo válido").isMongoId(),
-  //check("clientType").custom(existClientTypeById),
   validateFields,
 ];
 const putClientValidator = [
