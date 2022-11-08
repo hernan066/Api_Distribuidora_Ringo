@@ -1,6 +1,6 @@
 const { check } = require('express-validator');
 const { existBrandById } = require('../helpers');
-const { validateFields, validarJWT, esAdminRole } = require('../middlewares');
+const { validateFields, validarJWT, isAdminRole } = require('../middlewares');
 
 const getBrandValidation = [
     check('id', 'No es un id de Mongo válido').isMongoId(),
@@ -22,7 +22,7 @@ const putBrandValidation = [
 
 const deleteBrandValidation = [
     validarJWT,
-    esAdminRole,
+    isAdminRole,
     check('id', 'No es un id de Mongo válido').isMongoId(),
     check('id').custom( existBrandById ),
     validateFields,

@@ -24,6 +24,7 @@ class Server {
       oferts: "/api/oferts",
       deliveryZone: "/api/delivery_zone",
       deliverySubZone: "/api/delivery_sub_zone",
+      role: "/api/roles",
     };
 
     // Conectar a base de datos
@@ -75,6 +76,7 @@ class Server {
     this.app.use(this.paths.oferts, require("../routes/ofert"));
     this.app.use(this.paths.deliveryZone, require("../routes/deliveryZone"));
     this.app.use(this.paths.deliverySubZone, require("../routes/deliverySubZone"));
+    this.app.use(this.paths.role, require("../routes/role"));
   }
 
   listen() {

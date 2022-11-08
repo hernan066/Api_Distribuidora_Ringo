@@ -8,6 +8,12 @@ const isValidRol = async (rol = "") => {
     throw new Error(`El rol ${rol} no está registrado en la BD`);
   }
 };
+const isRolbyId = async (id) => {
+  const existeRol = await Role.findById( id );
+  if (!existeRol) {
+    throw new Error(`El rol no está registrado en la BD`);
+  }
+};
 
 const emailExist = async (email = "") => {
   // Verificar si el correo existe
@@ -111,6 +117,13 @@ const existDeliverySubZoneById = async (id) => {
     throw new Error(`El id no existe ${id}`);
   }
 };
+const existRoleById = async (id) => {
+  // Verificar si el correo existe
+  const exist = await Role.findById(id);
+  if (!exist) {
+    throw new Error(`El id no existe ${id}`);
+  }
+};
 
 
 
@@ -142,5 +155,7 @@ module.exports = {
   existProductLotById,
   existOfertById,
   existDeliveryZoneById,
-  existDeliverySubZoneById
+  existDeliverySubZoneById,
+  existRoleById,
+  isRolbyId
 };

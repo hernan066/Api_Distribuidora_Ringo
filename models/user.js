@@ -1,30 +1,29 @@
 const { Schema, model } = require("mongoose");
 
 const UserSchema = Schema({
-  name      : {type: String,},
-  lastName  : {type: String,},
-  email     : {type: String,unique: true,},
-  phone     : {type: String,required: true,unique: true,},
-  password  : {type: String,required: true,},
-  avatar    : {type: String, default:"default_avatar.jpg"},
-  address   : {type: String},
-  province  : {type: String},
-  city      : {type: String},
-  zip       : {type: String},
-  state     : {type: Boolean,default: true,},
-  google    : {type: Boolean,default: false,},
-  rol       : {
-                type: String,
-                required: true,
-                default: "CLIENT_ROLE",
-                emun: ["ADMIN_ROLE", "CLIENT_ROLE"],
-  },
+  name          : {type: String,},
+  lastName      : {type: String,},
+  email         : {type: String,unique: true,},
+  phone         : {type: String,required: true,unique: true,},
+  password      : {type: String,required: true,},
+  avatar        : {type: String, default:"default_avatar.jpg"},
+  google        : {type: Boolean,default: false,},
+  state         : {type: Boolean,default: true,},
+  role          : {type: Schema.Types.ObjectId,ref: 'Role', required: true},
+  userAddresses: [{
+    address     : { type: String },
+    flor        : { type: String },
+    department  : { type: String },
+    city        : { type: String },
+    province    : { type: String },
+    zip         : { type: Number },
+ }],
+ 
   
-});
+},{ timestamps: true });
 
 UserSchema.methods.toJSON = function () {
-  const { __v, password, _id, ...user } = this.toObject();
-  user.uid = _id;
+  const { __v, password, ...user } = this.toObject();
   return user;
 };
 

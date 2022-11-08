@@ -1,4 +1,4 @@
-const { validateFields, validarJWT, esAdminRole } = require("../middlewares");
+const { validateFields, validarJWT, isAdminRole } = require("../middlewares");
 const { check } = require("express-validator");
 const { existProductLotById } = require("../helpers");
 
@@ -25,7 +25,7 @@ const putProductLotValidator = [
 ];
 const deleteProductLotValidator = [
   validarJWT,
-  esAdminRole,
+  isAdminRole,
   check("id", "No es un id de Mongo válido").isMongoId(),
   check("id").custom(existProductLotById),
   validateFields,

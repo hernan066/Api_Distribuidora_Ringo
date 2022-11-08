@@ -4,7 +4,7 @@ const { check } = require("express-validator");
 const {
   validateFields,
   validarJWT,
-  esAdminRole,
+  isAdminRole,
   tieneRole,
 } = require("../middlewares");
 
@@ -57,7 +57,7 @@ router.post(
   "/:id",
   [
     validarJWT,
-    // esAdminRole,
+    // isAdminRole,
     tieneRole("ADMIN_ROLE", "VENTAR_ROLE", "OTRO_ROLE"),
     check("id", "No es un ID válido").isMongoId(),
     check("id").custom(existeRepartidorPorId),
