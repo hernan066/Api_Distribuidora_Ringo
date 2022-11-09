@@ -28,6 +28,7 @@ class Server {
       client: "/api/clients",
       clientCategory: "/api/clients_categories",
       clientType: "/api/clients_types",
+      distributor: "/api/distributors",
     };
 
     // Conectar a base de datos
@@ -83,6 +84,7 @@ class Server {
     this.app.use(this.paths.client, require("../routes/client"));
     this.app.use(this.paths.clientCategory, require("../routes/clientCategory"));
     this.app.use(this.paths.clientType, require("../routes/clientType"));
+    this.app.use(this.paths.distributor, require("../routes/distributor"));
   }
 
   listen() {
