@@ -31,6 +31,7 @@ class Server {
       distributor: "/api/distributors",
       deliveryTruck: "/api/delivery_trucks",
       employee: "/api/employees",
+      salary: "/api/salaries",
     };
 
     // Conectar a base de datos
@@ -89,6 +90,7 @@ class Server {
     this.app.use(this.paths.distributor, require("../routes/distributor"));
     this.app.use(this.paths.deliveryTruck, require("../routes/deliveryTruck"));
     this.app.use(this.paths.employee, require("../routes/employee"));
+    this.app.use(this.paths.salary, require("../routes/salary"));
   }
 
   listen() {

@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const SalarySchema = Schema({
-    employee            : {type: Schema.Types.ObjectId,ref: 'Employee', required: true},
+    employeeId            : {type: Schema.Types.ObjectId,ref: 'Employee', required: true},
     amount              : {type: Number,},
     typeOfCalculation   : {type: String,},
     typeOfContract      : {type: String,},
