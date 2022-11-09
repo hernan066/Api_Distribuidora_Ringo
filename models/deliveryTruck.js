@@ -1,9 +1,9 @@
 const { Schema, model } = require('mongoose');
 
 const DeliveryTruckSchema = Schema({
-    userId                : {type: Schema.Types.ObjectId,ref: 'User', required: true},
-    distributorId         : {type: Schema.Types.ObjectId,ref: 'Distributor',required: true},
-    deliveryZoneId        : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',required: true},
+    userId              : {type: Schema.Types.ObjectId,ref: 'User', required: true},
+    distributorId       : {type: Schema.Types.ObjectId,ref: 'Distributor',required: true},
+    deliveryZoneId      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',required: true},
     deliveryName        : {type: String,},
     deliveryLastname    : {type: String,},
     patent              : {type: String,},
