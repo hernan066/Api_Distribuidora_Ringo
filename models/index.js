@@ -15,6 +15,7 @@ const Client = require('./client');
 const ClientCategory = require('./clientCategory');
 const ClientType = require('./clientType');
 const Distributor = require('./distributor');
+const DeliveryTruck = require('./deliveryTruck');
 
 
 
@@ -35,6 +36,7 @@ module.exports = {
     Client,
     ClientCategory,
     ClientType,
-    Distributor
+    Distributor,
+    DeliveryTruck
 }
 
