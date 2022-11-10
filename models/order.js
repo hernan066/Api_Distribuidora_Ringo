@@ -2,12 +2,16 @@ const { Schema, model } = require('mongoose');
 
 const OrderSchema = new Schema(
 {
-      user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+      userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
       
       orderItems: [{
-      product : { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-      quantity: { type: Number, required: true },
-      price   : { type: Number, required: true },
+      productId     : { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+      name          : {type: String,required:true },
+      unit          : {type: String},
+      description   : {type: String},
+      img           : {type: String },
+      quantity      : { type: Number, required: true },
+      price         : { type: Number, required: true },
       
   }],
     
@@ -20,11 +24,12 @@ const OrderSchema = new Schema(
       department  : { type: String },
       city        : { type: String },
       province    : { type: String },
+      zip         : { type: Number },
      
   },
-    deliveryTruck     : {type: Schema.Types.ObjectId,ref: 'DeliveryTruck',},
-    employee          : {type: Schema.Types.ObjectId,ref: 'Employee',},
-    deliveryZone      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',},
+    deliveryTruckId     : {type: Schema.Types.ObjectId,ref: 'DeliveryTruck',},
+    employeeId          : {type: Schema.Types.ObjectId,ref: 'Employee',},
+    deliveryZoneId      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',},
     numberOfItems     : { type: Number, required: true },
     tax               : { type: Number},
     subTotal          : { type: Number, required: true },
