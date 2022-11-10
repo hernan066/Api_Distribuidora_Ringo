@@ -32,6 +32,7 @@ class Server {
       deliveryTruck: "/api/delivery_trucks",
       employee: "/api/employees",
       salary: "/api/salaries",
+      sale: "/api/sales",
     };
 
     // Conectar a base de datos
@@ -91,6 +92,7 @@ class Server {
     this.app.use(this.paths.deliveryTruck, require("../routes/deliveryTruck"));
     this.app.use(this.paths.employee, require("../routes/employee"));
     this.app.use(this.paths.salary, require("../routes/salary"));
+    this.app.use(this.paths.sale, require("../routes/sale"));
   }
 
   listen() {
