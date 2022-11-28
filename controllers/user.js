@@ -10,7 +10,10 @@ const getUsers = async (req = request, res = response) => {
 
     const [total, users] = await Promise.all([
       User.countDocuments(query),
-      User.find(query).skip(Number(from)).limit(Number(limit)),
+      User.find(query)
+        .skip(Number(from))
+        .limit(Number(limit))
+        .populate('role', 'role')
     ]);
     res.status(200).json({
       ok: true,
@@ -89,6 +92,34 @@ const postUser = async (req, res = response) => {
 const putUser = async (req, res = response) => {
   try {
     const { id } = req.params;
+    const { _id, password, google, ...resto } = req.body;
+
+    if (password) {
+      // Encriptar la contraseña
+      const salt = bcryptjs.genSaltSync();
+      resto.password = bcryptjs.hashSync(password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(id, resto);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        user,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+const patchUser = async (req, res = response) => {
+  try {
+    const { id } = req.params;
     const { _id, password, google, email, ...resto } = req.body;
 
     if (password) {
@@ -142,4 +173,5 @@ module.exports = {
   postUser,
   putUser,
   deleteUser,
+  patchUser
 };

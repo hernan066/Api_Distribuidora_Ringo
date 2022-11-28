@@ -4,7 +4,7 @@ const { getRoles, getRole, putRole, deleteRole, postRole } = require('../control
 
 
 
-const { getRoleValidation, postRoleValidation, deleteRoleValidation, putRoleValidation } = require('../validations/role-validator');
+const { getRoleValidation, postRoleValidation, deleteRoleValidation, putRoleValidation, getRolesValidation } = require('../validations/role-validator');
 
 const router = Router();
 
@@ -12,19 +12,19 @@ const router = Router();
  * {{url}}/api/roles
  */
 
-//  Obtener todas las roles - publico
-router.get('/', getRoles );
 
-// Obtener una rol por id - publico
+router.get('/',getRolesValidation, getRoles );
+
+
 router.get('/:id', getRoleValidation , getRole );
 
-// Crear rol - privado - cualquier persona con un token válido
+
 router.post('/', postRoleValidation , postRole );
 
-// Actualizar - privado - cualquiera con token válido
+
 router.put('/:id',putRoleValidation, putRole );
 
-// Borrar una rol - Admin
+
 router.delete('/:id', deleteRoleValidation ,deleteRole);
 
 

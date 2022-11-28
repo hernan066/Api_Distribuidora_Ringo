@@ -5,7 +5,12 @@ const { validarJWT, validateFields, tieneRole, isAdminRole } = require("../middl
 
 
 
-const getUserValidations = [
+const getUsersValidations = [
+    validarJWT,
+    validateFields,
+  ];
+
+  const getUserValidations = [
     validarJWT,
     check("id", "No es un ID válido").isMongoId(),
     check("id").custom(existUserById),
@@ -31,6 +36,14 @@ const postUserValidations = [
 
 const putUserValidations = [
     validarJWT,
+    isAdminRole,
+    check("id", "No es un ID válido").isMongoId(),
+    check("id").custom(existUserById),
+    validateFields,
+  ];
+
+  const patchUserValidations = [
+    validarJWT,
     check("id", "No es un ID válido").isMongoId(),
     check("id").custom(existUserById),
     validateFields,
@@ -48,5 +61,7 @@ module.exports = {
     getUserValidations,
     postUserValidations,
     putUserValidations,
-    deleteUserValidations
+    deleteUserValidations,
+    getUsersValidations,
+    patchUserValidations
 };

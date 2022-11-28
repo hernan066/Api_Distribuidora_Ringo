@@ -2,12 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 
+
 const { dbConnection } = require("../database/config");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
+   
 
     this.paths = {
       auth: "/api/auth",
@@ -33,6 +35,7 @@ class Server {
       employee: "/api/employees",
       salary: "/api/salaries",
       sale: "/api/sales",
+      imageKit: "/api/imageKit",
     };
 
     // Conectar a base de datos
@@ -67,6 +70,13 @@ class Server {
         createParentPath: true,
       })
     );
+    //ImageKit allow cors
+    this.app.use(function(req, res, next) {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Headers", 
+        "Origin, X-Requested-With, Content-Type, Accept");
+      next();
+    });
   }
 
   routes() {
@@ -93,6 +103,7 @@ class Server {
     this.app.use(this.paths.employee, require("../routes/employee"));
     this.app.use(this.paths.salary, require("../routes/salary"));
     this.app.use(this.paths.sale, require("../routes/sale"));
+    this.app.use(this.paths.imageKit, require("../routes/imageKit"));
   }
 
   listen() {

@@ -9,9 +9,9 @@ const getOferts = async (req, res = response) => {
     const [total, oferts] = await Promise.all([
       Ofert.countDocuments(query),
       Ofert.find(query)
-      .skip(Number(from))
-      .limit(Number(limit))
-      .populate('product', ['name', 'description', 'unit']),
+        .skip(Number(from))
+        .limit(Number(limit))
+        .populate("product", ["name", "description", "unit", "img"]),
     ]);
 
     res.status(200).json({
@@ -34,7 +34,12 @@ const getOferts = async (req, res = response) => {
 const getOfert = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const ofert = await Ofert.findById(id);
+    const ofert = await Ofert.findById(id).populate("product", [
+      "name",
+      "description",
+      "unit",
+      "img",
+    ]);
 
     res.status(200).json({
       ok: true,
@@ -56,17 +61,13 @@ const postOfert = async (req, res = response) => {
   try {
     const { state, ...body } = req.body;
 
-    
-
     // Generar la data a guardar
     const data = {
       ...body,
     };
 
-    
     const ofert = new Ofert(data);
-    
-    
+
     // Guardar DB
     await ofert.save();
 
