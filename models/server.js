@@ -1,15 +1,17 @@
 const express = require("express");
-const cors = require("cors");
 const fileUpload = require("express-fileupload");
-
-
 const { dbConnection } = require("../database/config");
+const { logger } = require("../middlewares/logsEvents");
+const credentials = require("../middlewares/credentials");
+const cors = require("cors");
+const corsOptions = require("../config/corsOptions");
+const cookieParser = require("cookie-parser");
+const errorHandler = require("../middlewares/logsErrors");
 
 class Server {
   constructor() {
     this.app = express();
     this.port = process.env.PORT;
-   
 
     this.paths = {
       auth: "/api/auth",
@@ -46,6 +48,9 @@ class Server {
 
     // Rutas de mi aplicación
     this.routes();
+
+    //Logs errors
+    this.errors();
   }
 
   async conectarDB() {
@@ -53,11 +58,20 @@ class Server {
   }
 
   middlewares() {
+    // Logs
+    this.app.use(logger);
+
+    // Credentials
+    this.app.use(credentials);
+
     // CORS
-    this.app.use(cors());
+    this.app.use(cors(corsOptions));
 
     // Lectura y parseo del body
     this.app.use(express.json());
+
+    // Lectura y parseo del body
+    this.app.use(cookieParser());
 
     // Directorio Público
     this.app.use(express.static("public"));
@@ -71,10 +85,12 @@ class Server {
       })
     );
     //ImageKit allow cors
-    this.app.use(function(req, res, next) {
-      res.header("Access-Control-Allow-Origin", "*");
-      res.header("Access-Control-Allow-Headers", 
-        "Origin, X-Requested-With, Content-Type, Accept");
+    this.app.use(function (req, res, next) {
+      //res.header("Access-Control-Allow-Origin", "*");
+      res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+      );
       next();
     });
   }
@@ -93,10 +109,16 @@ class Server {
     this.app.use(this.paths.productLot, require("../routes/productLot"));
     this.app.use(this.paths.oferts, require("../routes/ofert"));
     this.app.use(this.paths.deliveryZone, require("../routes/deliveryZone"));
-    this.app.use(this.paths.deliverySubZone, require("../routes/deliverySubZone"));
+    this.app.use(
+      this.paths.deliverySubZone,
+      require("../routes/deliverySubZone")
+    );
     this.app.use(this.paths.role, require("../routes/role"));
     this.app.use(this.paths.client, require("../routes/client"));
-    this.app.use(this.paths.clientCategory, require("../routes/clientCategory"));
+    this.app.use(
+      this.paths.clientCategory,
+      require("../routes/clientCategory")
+    );
     this.app.use(this.paths.clientType, require("../routes/clientType"));
     this.app.use(this.paths.distributor, require("../routes/distributor"));
     this.app.use(this.paths.deliveryTruck, require("../routes/deliveryTruck"));
@@ -104,6 +126,10 @@ class Server {
     this.app.use(this.paths.salary, require("../routes/salary"));
     this.app.use(this.paths.sale, require("../routes/sale"));
     this.app.use(this.paths.imageKit, require("../routes/imageKit"));
+  }
+
+  errors() {
+    this.app.use(errorHandler);
   }
 
   listen() {

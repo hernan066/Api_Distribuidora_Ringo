@@ -8,6 +8,7 @@ const UserSchema = Schema({
   password      : {type: String,required: true,},
   avatar        : {type: String, default:"https://ik.imagekit.io/mrprwema7/user_default_nUfUA9Fxa.png?ik-sdk-version=javascript-1.4.3&updatedAt=1668611498443"},
   google        : {type: Boolean,default: false,},
+  refreshToken  : [String],
   state         : {type: Boolean,default: true,},
   role          : {type: Schema.Types.ObjectId,ref: 'Role', required: true},
   userAddresses: [{

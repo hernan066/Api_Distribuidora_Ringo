@@ -4,7 +4,7 @@ const { existOfertById } = require("../helpers");
 
 
 const getOfertValidator = [
-  validarJWT,
+  
   check("id", "No es un id de Mongo válido").isMongoId(),
   check("id").custom(existOfertById),
   validateFields,

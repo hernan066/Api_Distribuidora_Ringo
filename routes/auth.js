@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { validateFields } = require('../middlewares/validar-campos');
-const { login, googleSignin, loginRepartidor, loginAdmin, getRevalidateToken } = require('../controllers/auth');
+const { login, googleSignin, loginRepartidor, loginAdmin, getRevalidateToken, login2, refresh, logout2 } = require('../controllers/auth');
 const { loginValidator } = require('../validations/auth/loginValidator');
 const { validarJWT } = require('../middlewares');
 
@@ -27,5 +27,9 @@ router.post('/google',[
 ], googleSignin );
 
 
+//nuevo sistema de login para el dashboard
+router.post('/login2',loginValidator,login2 );
+router.get('/refresh',refresh );
+router.get('/logout2',logout2 );
 
 module.exports = router;
