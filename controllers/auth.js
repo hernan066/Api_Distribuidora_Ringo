@@ -260,7 +260,7 @@ const login2 = async (req, res) => {
       {
         UserInfo: {
           id: foundUser._id,
-          role,
+          role: role.role,
         },
       },
       process.env.JWT_SECRET,
@@ -368,7 +368,7 @@ const refresh = async (req, res) => {
       {
         UserInfo: {
           id: decoded.id,
-          role,
+          role: role.role,
         },
       },
       process.env.JWT_SECRET,

@@ -1,7 +1,6 @@
 const { response } = require("express");
 const { Role } = require("../models");
 
-
 const isAdminRole = async (req, res = response, next) => {
   if (!req.user) {
     return res.status(500).json({
@@ -9,13 +8,13 @@ const isAdminRole = async (req, res = response, next) => {
     });
   }
 
-  const { role, name } = req.user;
+  const role = req.role;
 
-  const userRole = await Role.findById(role);
-
-  if (userRole.role !== process.env.ADMIN_ROLE) {
+  // const userRole = await Role.findById(role);
+  
+  if (role !== process.env.ADMIN_ROLE) {
     return res.status(401).json({
-      msg: `${name} no es administrador - No puede hacer esto`,
+      msg: `No es administrador - No puede hacer esto - ${role}`,
     });
   }
 

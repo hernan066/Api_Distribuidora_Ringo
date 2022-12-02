@@ -4,6 +4,7 @@ const { existSupplierById } = require("../helpers");
 const { Supplier } = require("../models");
 
 const getSupplierValidator = [
+  validarJWT,
   check("id", "No es un id de Mongo válido").isMongoId(),
   check("id").custom(existSupplierById),
   validateFields,
@@ -13,9 +14,13 @@ const postSupplierValidator = [
   check("businessName", "La Razón Social es obligatoria").not().isEmpty(),
   check("cuit", "El CUIT es obligatorio").not().isEmpty(),
   body("email")
-    .notEmpty().withMessage("El email es obligatorio").bail()
-    .isEmail().withMessage("Debe ser un email válido").bail()
-    .custom(async(email) => {
+    .notEmpty()
+    .withMessage("El email es obligatorio")
+    .bail()
+    .isEmail()
+    .withMessage("Debe ser un email válido")
+    .bail()
+    .custom(async (email) => {
       const existEmail = await Supplier.findOne({ email });
       if (existEmail) {
         throw new Error(`El email: ${email}, ya está registrado`);
@@ -30,7 +35,7 @@ const postSupplierValidator = [
 ];
 const putSupplierValidator = [
   validarJWT,
-  check('id','No es un id de Mongo').isMongoId(),
+  check("id", "No es un id de Mongo").isMongoId(),
   check("id").custom(existSupplierById),
   validateFields,
 ];

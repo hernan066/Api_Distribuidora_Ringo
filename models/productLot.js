@@ -5,6 +5,7 @@ const ProductLotSchema = Schema({
     supplier  : {type: Schema.Types.ObjectId,ref: 'Supplier', required: true},
     quantity  : {type: Number,},
     cost      : {type: Number,},
+    stock     : {type: Number,},
     state     : {type: Boolean,default: true,required: true},
 },{ timestamps: true });
 
