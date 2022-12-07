@@ -4,6 +4,14 @@ const jwt = require("jsonwebtoken");
 const validarJWT = async (req, res, next) => {
   const token = req.header("x-token");
 
+  if (!token) {
+    return res.status(401).json({
+      ok: false,
+      msg: "No hay token en la petición",
+      token,
+    });
+  }
+
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) return res.sendStatus(403); //invalid token
     req.user = decoded.UserInfo.id;

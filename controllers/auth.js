@@ -264,7 +264,7 @@ const login2 = async (req, res) => {
         },
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "15m" }
     );
     const newRefreshToken = jwt.sign(
       { id: foundUser._id },
@@ -323,6 +323,7 @@ const login2 = async (req, res) => {
 
 const refresh = async (req, res) => {
   const cookies = req.cookies;
+ 
 
   if (!cookies?.jwt) {
     return res.status(401).json({
@@ -372,7 +373,7 @@ const refresh = async (req, res) => {
         },
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1m" }
+      { expiresIn: "15m" }
     );
 
     const newRefreshToken = jwt.sign(

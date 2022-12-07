@@ -35,7 +35,12 @@ const getProductLots = async (req, res = response) => {
 const getProductLot = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const productLot = await ProductLot.findById(id);
+    const productLot = await ProductLot.findById(id).populate("product", [
+      "name",
+      "description",
+      "unit",
+      "img",
+    ]);
 
     res.status(200).json({
       ok: true,
