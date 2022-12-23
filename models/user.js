@@ -24,7 +24,7 @@ const UserSchema = Schema({
 },{ timestamps: true });
 
 UserSchema.methods.toJSON = function () {
-  const { __v, password, ...user } = this.toObject();
+  const { __v, password, refreshToken, ...user } = this.toObject();
   return user;
 };
 

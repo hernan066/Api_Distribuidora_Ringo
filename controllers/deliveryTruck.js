@@ -8,7 +8,13 @@ const getDeliveryTrucks = async (req, res = response) => {
 
     const [total, deliveryTrucks] = await Promise.all([
       DeliveryTruck.countDocuments(query),
-      DeliveryTruck.find(query).skip(Number(from)).limit(Number(limit)),
+      DeliveryTruck.find(query)
+      .populate("distributor")
+      .populate("user")
+      .populate("defaultZone")
+      .skip(Number(from))
+      .limit(Number(limit))
+      
     ]);
 
     res.status(200).json({

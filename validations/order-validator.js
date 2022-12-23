@@ -20,7 +20,7 @@ const postOrderValidator = [
   check('orderItems[0].price','El precio es obligatorio').not().isEmpty(),
   //shippingAddress
   check("shippingAddress.name", "El nombre  es obligatorio").not().isEmpty(),
-  check("shippingAddress.lastname", "El apellido  es obligatorio").not().isEmpty(),
+  check("shippingAddress.lastName", "El apellido  es obligatorio").not().isEmpty(),
   check("shippingAddress.phone", "El telefono  es obligatorio").not().isEmpty(),
   check("shippingAddress.address", "La dirección es obligatoria").not().isEmpty(),
   //other info

@@ -1,11 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const DeliveryTruckSchema = Schema({
-    userId              : {type: Schema.Types.ObjectId,ref: 'User', required: true},
-    distributorId       : {type: Schema.Types.ObjectId,ref: 'Distributor',required: true},
-    deliveryZoneId      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',required: true},
-    deliveryName        : {type: String,},
-    deliveryLastname    : {type: String,},
+    user                : {type: Schema.Types.ObjectId,ref: 'User', required: true},
+    distributor         : {type: Schema.Types.ObjectId,ref: 'Distributor',required: true},
+    defaultZone         : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',required: true},
+    truckId             : {type: String,},
     patent              : {type: String,},
     maximumLoad         : {type: Number,},
     coldChamber         : {type: Boolean,},

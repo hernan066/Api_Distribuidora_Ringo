@@ -10,7 +10,10 @@ const getOrders = async (req, res = response) => {
       Order.countDocuments(query),
       Order.find(query)
         .skip(Number(from))
-        .limit(Number(limit)),
+        .limit(Number(limit))
+        .populate("deliveryTruck")
+        .populate("employee")
+        .populate("deliveryZone"),
     ]);
 
     res.status(200).json({
@@ -33,7 +36,10 @@ const getOrders = async (req, res = response) => {
 const getOrder = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const order = await Order.findById(id);
+    const order = await Order.findById(id)
+      .populate("deliveryTruck")
+      .populate("employee")
+      .populate("deliveryZone");
 
     res.status(200).json({
       ok: true,

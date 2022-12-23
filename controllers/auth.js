@@ -311,7 +311,7 @@ const login2 = async (req, res) => {
     });
 
     // Se envía el id del usuario y el rol en el token
-    res.json({ accessToken });
+    res.json({ accessToken, id: foundUser._id });
   } else {
     return res.status(401).json({
       ok: false,
@@ -393,7 +393,7 @@ const refresh = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.json({ accessToken });
+    res.json({ accessToken, id: foundUser._id });
   });
 };
 

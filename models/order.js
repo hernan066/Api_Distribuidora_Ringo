@@ -17,7 +17,7 @@ const OrderSchema = new Schema(
     
     shippingAddress: {
       name        : { type: String, required: true },
-      lastname    : { type: String, required: true },
+      lastName    : { type: String, required: true },
       phone       : { type: String, required: true },
       address     : { type: String, required: true },
       flor        : { type: String },
@@ -27,15 +27,17 @@ const OrderSchema = new Schema(
       zip         : { type: Number },
      
   },
-    deliveryTruckId     : {type: Schema.Types.ObjectId,ref: 'DeliveryTruck',},
-    employeeId          : {type: Schema.Types.ObjectId,ref: 'Employee',},
-    deliveryZoneId      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',},
+    deliveryTruck     : {type: Schema.Types.ObjectId,ref: 'DeliveryTruck',},
+    employee          : {type: Schema.Types.ObjectId,ref: 'Employee',},
+    deliveryZone      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',},
     numberOfItems     : { type: Number, required: true },
     tax               : { type: Number},
     subTotal          : { type: Number, required: true },
     total             : { type: Number, required: true },
     
-    status            :{ type: String, default: 'pending' },
+    status            :{ type: String, default: 'Pendiente' },
+    
+    state              : {type: Boolean, default: true},
     
    
   },
