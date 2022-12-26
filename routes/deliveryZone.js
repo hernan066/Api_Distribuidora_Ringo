@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getDeliveryZones, getDeliveryZone, putDeliveryZone, deleteDeliveryZone, postDeliveryZone } = require('../controllers/DeliveryZone');
+const { getDeliveryZones, getDeliveryZone, putDeliveryZone, deleteDeliveryZone, postDeliveryZone } = require('../controllers/deliveryZone');
 const { getDeliveryZoneValidator, postDeliveryZoneValidator, putDeliveryZoneValidator, deleteDeliveryZoneValidator } = require('../validations/deliveryZone-validator');
 
 

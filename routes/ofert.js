@@ -1,7 +1,7 @@
 const { Router } = require('express');
-const {  getOfert, putOfert, deleteOfert, postOfert, getOferts } = require('../controllers/Ofert');
+const {  getOfert, putOfert, deleteOfert, postOfert, getOferts } = require('../controllers/ofert');
 
-const { getOfertValidator, postOfertValidator, deleteOfertValidator, putOfertValidator } = require('../validations/Ofert-validator');
+const { getOfertValidator, postOfertValidator, deleteOfertValidator, putOfertValidator } = require('../validations/ofert-validator');
 
 const router = Router();
 
