@@ -45,7 +45,7 @@ const postProduct = async (req, res = response) => {
   // Generar la data a guardar
   const data = {
     ...body,
-    user: req.user._id,
+    user: req.user,
   };
 
   const product = new Product(data);
@@ -60,7 +60,7 @@ const putProduct = async (req, res = response) => {
   const { id } = req.params;
   const { state, user, ...data } = req.body;
 
-  data.user = req.user._id;
+  data.user = req.user;
 
   const product = await Product.findByIdAndUpdate(id, data, { new: true });
 
