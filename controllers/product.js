@@ -30,17 +30,7 @@ const getProduct = async (req, res = response) => {
 };
 
 const postProduct = async (req, res = response) => {
-  const { state, user, ...body } = req.body;
-
- /*  const productDB = await Product.findOne({ name: body.name });
-
-  if (productDB) {
-    return res.status(400).json({
-      name: {
-        msg: `El producto ${productDB.name}, ya existe`,
-      },
-    });
-  } */
+  const { state, ...body } = req.body;
 
   // Generar la data a guardar
   const data = {
@@ -53,7 +43,7 @@ const postProduct = async (req, res = response) => {
   // Guardar DB
   await product.save();
 
-  res.status(201).json(product);
+  res.status(200).json(product);
 };
 
 const putProduct = async (req, res = response) => {
