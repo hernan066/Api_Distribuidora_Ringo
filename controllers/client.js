@@ -8,7 +8,12 @@ const getClients = async (req, res = response) => {
 
     const [total, clients] = await Promise.all([
       Client.countDocuments(query),
-      Client.find(query).skip(Number(from)).limit(Number(limit)),
+      Client.find(query)
+      .skip(Number(from))
+      .limit(Number(limit))
+      .populate("clientCategoryId")
+      .populate("userId")
+      .populate("clientTypeId"),
     ]);
 
     res.status(200).json({
@@ -31,7 +36,10 @@ const getClients = async (req, res = response) => {
 const getClient = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const client = await Client.findById(id);
+    const client = await Client.findById(id)
+    .populate("clientCategoryId")
+    .populate("userId")
+    .populate("clientTypeId");
 
     res.status(200).json({
       ok: true,
