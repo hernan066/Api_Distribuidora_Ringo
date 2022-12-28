@@ -16,7 +16,7 @@ const router = Router();
 
 router.get("/", getProducts);
 router.get("/:id", getProductValidator, getProduct);
-router.post("/", /* postProductValidator, */ postProduct);
+router.post("/", postProductValidator, postProduct);
 
 // Actualizar - privado - cualquiera con token válido
 router.put("/:id", putProductValidator, putProduct);

@@ -19,6 +19,7 @@ const DeliveryTruck = require('./deliveryTruck');
 const Employee = require('./employee');
 const Salary = require('./salary');
 const Sale = require('./sale');
+const ClientAddress = require('./clientAddress');
 
 
 
@@ -43,6 +44,7 @@ module.exports = {
     DeliveryTruck,
     Employee,
     Salary, 
-    Sale
+    Sale,
+    ClientAddress
 }
 

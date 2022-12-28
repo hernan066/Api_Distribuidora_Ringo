@@ -3,7 +3,7 @@ const { Client } = require("../models");
 
 const getClients = async (req, res = response) => {
   try {
-    const { limit = 10, from = 0 } = req.query;
+    const { limit = 1000, from = 0 } = req.query;
     const query = { state: true };
 
     const [total, clients] = await Promise.all([
@@ -11,9 +11,9 @@ const getClients = async (req, res = response) => {
       Client.find(query)
       .skip(Number(from))
       .limit(Number(limit))
-      .populate("clientCategoryId")
-      .populate("userId")
-      .populate("clientTypeId"),
+      .populate("clientCategory")
+      .populate("user")
+      .populate("clientType"),
     ]);
 
     res.status(200).json({

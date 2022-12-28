@@ -11,13 +11,14 @@ const getClientValidator = [
 ];
 const postClientValidator = [
   validarJWT,
-  check("userId", "No es un id de Mongo válido").isMongoId(),
-  check("userId").custom(existUserById),
-  check("clientCategoryId", "No es un id de Mongo válido").isMongoId(),
-  check("clientCategoryId").custom(existClientCategoryById),
-  check("clientTypeId", "No es un id de Mongo válido").isMongoId(),
-  check("clientTypeId").custom(existClientTypeById),
+  check("user", "No es un id de Mongo válido").isMongoId(),
+  check("user").custom(existUserById),
+  check("clientCategory", "No es un id de Mongo válido").isMongoId(),
+  check("clientCategory").custom(existClientCategoryById),
+  check("clientType", "No es un id de Mongo válido").isMongoId(),
+  check("clientType").custom(existClientTypeById),
   check("cuit", "El cuit es obligatorio").not().isEmpty(),
+  check("contactMeans", "Los medios de contacto son obligatorios").not().isEmpty(),
   validateFields,
 ];
 const putClientValidator = [

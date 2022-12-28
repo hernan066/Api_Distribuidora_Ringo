@@ -1,14 +1,18 @@
 const { response } = require("express");
-const { DeliverySubZone } = require("../models");
+const { ClientAddress } = require("../models");
 
-const getDeliverySubZones = async (req, res = response) => {
+const getClientAddresses = async (req, res = response) => {
   try {
     const { limit = 1000, from = 0 } = req.query;
     const query = { state: true };
 
-    const [total, deliverySubZones] = await Promise.all([
-      DeliverySubZone.countDocuments(query),
-      DeliverySubZone.find(query).skip(Number(from)).limit(Number(limit)),
+    const [total, clientAddress] = await Promise.all([
+      ClientAddress.countDocuments(query),
+      ClientAddress.find(query)
+        .skip(Number(from))
+        .limit(Number(limit))
+        .populate("client")
+        .populate("user", ["name", "lastName", "phone", "email"]),
     ]);
 
     res.status(200).json({
@@ -16,7 +20,7 @@ const getDeliverySubZones = async (req, res = response) => {
       status: 200,
       total,
       data: {
-        deliverySubZones,
+        clientAddress,
       },
     });
   } catch (error) {
@@ -28,16 +32,18 @@ const getDeliverySubZones = async (req, res = response) => {
   }
 };
 
-const getDeliverySubZone = async (req, res = response) => {
+const getClientAddress = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const deliverySubZone = await DeliverySubZone.findById(id);
+    const clientAddress = await ClientAddress.findById(id)
+      .populate("client")
+      .populate("user", ["name", "lastName", "phone", "email"]);
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        deliverySubZone,
+        clientAddress,
       },
     });
   } catch (error) {
@@ -49,33 +55,25 @@ const getDeliverySubZone = async (req, res = response) => {
   }
 };
 
-const postDeliverySubZone = async (req, res = response) => {
+const postClientAddress = async (req, res = response) => {
   try {
     const { state, ...body } = req.body;
-
-    const deliverySubZoneDB = await DeliverySubZone.findOne({ name: body.name });
-
-    if (deliverySubZoneDB) {
-      return res.status(400).json({
-        msg: `La zona ${deliverySubZoneDB.name}, ya existe`,
-      });
-    }
 
     // Generar la data a guardar
     const data = {
       ...body,
     };
 
-    const deliverySubZone = new DeliverySubZone(data);
+    const clientAddress = new ClientAddress(data);
 
     // Guardar DB
-    await deliverySubZone.save();
+    await clientAddress.save();
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        deliverySubZone,
+        clientAddress,
       },
     });
   } catch (error) {
@@ -87,20 +85,20 @@ const postDeliverySubZone = async (req, res = response) => {
   }
 };
 
-const putDeliverySubZone = async (req, res = response) => {
+const putClientAddress = async (req, res = response) => {
   try {
     const { id } = req.params;
     const { state, ...data } = req.body;
 
-    const deliverySubZone = await DeliverySubZone.findByIdAndUpdate(id, data, { new: true });
-
-    
+    const clientAddress = await ClientAddress.findByIdAndUpdate(id, data, {
+      new: true,
+    });
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        deliverySubZone,
+        clientAddress,
       },
     });
   } catch (error) {
@@ -112,10 +110,10 @@ const putDeliverySubZone = async (req, res = response) => {
   }
 };
 
-const deleteDeliverySubZone = async (req, res = response) => {
+const deleteClientAddress = async (req, res = response) => {
   try {
     const { id } = req.params;
-    await DeliverySubZone.findByIdAndUpdate(id, { state: false }, { new: true });
+    await ClientAddress.findByIdAndUpdate(id, { state: false }, { new: true });
 
     res.status(200).json({
       ok: true,
@@ -131,9 +129,9 @@ const deleteDeliverySubZone = async (req, res = response) => {
 };
 
 module.exports = {
-  postDeliverySubZone,
-  getDeliverySubZones,
-  getDeliverySubZone,
-  putDeliverySubZone,
-  deleteDeliverySubZone,
+  postClientAddress,
+  getClientAddresses,
+  getClientAddress,
+  putClientAddress,
+  deleteClientAddress,
 };

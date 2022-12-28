@@ -32,6 +32,7 @@ class Server {
       client: "/api/clients",
       clientCategory: "/api/clients_categories",
       clientType: "/api/clients_types",
+      clientAddress: "/api/clients_addresses",
       distributor: "/api/distributors",
       deliveryTruck: "/api/delivery_trucks",
       employee: "/api/employees",
@@ -126,6 +127,7 @@ class Server {
     this.app.use(this.paths.salary, require("../routes/salary"));
     this.app.use(this.paths.sale, require("../routes/sale"));
     this.app.use(this.paths.imageKit, require("../routes/imageKit"));
+    this.app.use(this.paths.clientAddress, require("../routes/clientAddress"));
   }
 
   errors() {

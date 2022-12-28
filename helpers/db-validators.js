@@ -1,6 +1,26 @@
 const Role = require("../models/role");
-const {  Repartidor, User, Product, Category, Brand, Supplier, ProductLot, Ofert, DeliveryZone, DeliverySubZone, ClientCategory, ClientType, Client, Distributor, DeliveryTruck, Employee, Salary, Order, Sale } = require("../models");
-
+const {
+  Repartidor,
+  User,
+  Product,
+  Category,
+  Brand,
+  Supplier,
+  ProductLot,
+  Ofert,
+  DeliveryZone,
+  DeliverySubZone,
+  ClientCategory,
+  ClientType,
+  Client,
+  Distributor,
+  DeliveryTruck,
+  Employee,
+  Salary,
+  Order,
+  Sale,
+  ClientAddress,
+} = require("../models");
 
 const isValidRol = async (rol = "") => {
   const existeRol = await Role.findOne({ rol });
@@ -9,7 +29,7 @@ const isValidRol = async (rol = "") => {
   }
 };
 const isRolbyId = async (id) => {
-  const existeRol = await Role.findById( id );
+  const existeRol = await Role.findById(id);
   if (!existeRol) {
     throw new Error(`El rol no está registrado en la BD`);
   }
@@ -167,7 +187,6 @@ const existEmployeeById = async (id) => {
   }
 };
 
-
 const existEmployeeByDocket = async (docket = "") => {
   // Verificar si el correo existe
   const exist = await Employee.findOne({ docket });
@@ -197,8 +216,13 @@ const existSaleById = async (id) => {
     throw new Error(`El id no existe ${id}`);
   }
 };
-
-
+const existClientAddressById = async (id) => {
+  // Verificar si el correo existe
+  const exist = await ClientAddress.findById(id);
+  if (!exist) {
+    throw new Error(`El id no existe ${id}`);
+  }
+};
 
 /**
  * Validar colecciones permitidas
@@ -240,6 +264,6 @@ module.exports = {
   existEmployeeByDocket,
   existSalaryById,
   existOrderById,
-  existSaleById
-  
+  existSaleById,
+  existClientAddressById,
 };
