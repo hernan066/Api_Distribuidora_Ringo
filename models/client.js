@@ -8,7 +8,9 @@ const ClientSchema = Schema({
     contactMeans        : {type: String,},
     campaignName        : { type: String },
     state               : {type: Boolean,default: true,required: true},
-});
+},
+{ timestamps: true }
+);
 
 
 ClientSchema.methods.toJSON = function() {
