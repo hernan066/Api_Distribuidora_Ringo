@@ -9,11 +9,11 @@ const getClients = async (req, res = response) => {
     const [total, clients] = await Promise.all([
       Client.countDocuments(query),
       Client.find(query)
-      .skip(Number(from))
-      .limit(Number(limit))
-      .populate("clientCategory")
-      .populate("user")
-      .populate("clientType"),
+        .skip(Number(from))
+        .limit(Number(limit))
+        .populate("clientCategory", ["clientCategory"])
+        .populate("user", ["name", "lastName", "phone", "email"])
+        .populate("clientType", ["clientType"]),
     ]);
 
     res.status(200).json({
@@ -37,9 +37,9 @@ const getClient = async (req, res = response) => {
   try {
     const { id } = req.params;
     const client = await Client.findById(id)
-    .populate("clientCategoryId")
-    .populate("userId")
-    .populate("clientTypeId");
+      .populate("clientCategory", ["clientCategory"])
+      .populate("user", ["name", "lastName", "phone", "email"])
+      .populate("clientType", ["clientType"]);
 
     res.status(200).json({
       ok: true,
@@ -101,8 +101,6 @@ const putClient = async (req, res = response) => {
     const { state, ...data } = req.body;
 
     const client = await Client.findByIdAndUpdate(id, data, { new: true });
-
-    
 
     res.status(200).json({
       ok: true,
