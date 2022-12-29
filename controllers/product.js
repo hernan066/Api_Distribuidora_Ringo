@@ -2,7 +2,7 @@ const { response } = require("express");
 const { Product } = require("../models");
 
 const getProducts = async (req, res = response) => {
-  const { limit = 50, from = 0 } = req.query;
+  const { limit = 1000, from = 0 } = req.query;
   const query = { state: true };
 
   const [total, products] = await Promise.all([
