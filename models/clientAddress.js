@@ -13,6 +13,7 @@ const ClientAddressSchema = Schema(
     state           : { type: Boolean, default: true },
     user            : { type: Schema.Types.ObjectId, ref: "User" },
     client          : { type: Schema.Types.ObjectId, ref: "Client" },
+    deliveryZone    : { type: Schema.Types.ObjectId, ref: "DeliveryZone" },
    
   },
   { timestamps: true }

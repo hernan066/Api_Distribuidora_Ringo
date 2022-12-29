@@ -12,7 +12,8 @@ const getClientAddresses = async (req, res = response) => {
         .skip(Number(from))
         .limit(Number(limit))
         .populate("client")
-        .populate("user", ["name", "lastName", "phone", "email"]),
+        .populate("user", ["name", "lastName", "phone", "email"])
+        .populate("deliveryZone", ["name"]),
     ]);
 
     res.status(200).json({
