@@ -16,12 +16,18 @@ const getClientAddresses = async (req, res = response) => {
         .populate("deliveryZone", ["name"]),
     ]);
 
+    const orderClientAddress = clientAddress.sort(function(a, b){
+      if(a.user.name < b.user.name) { return -1; }
+      if(a.user.name > b.user.name) { return 1; }
+      return 0;
+  })
+
     res.status(200).json({
       ok: true,
       status: 200,
       total,
       data: {
-        clientAddress,
+        orderClientAddress,
       },
     });
   } catch (error) {
@@ -38,7 +44,8 @@ const getClientAddress = async (req, res = response) => {
     const { id } = req.params;
     const clientAddress = await ClientAddress.findById(id)
       .populate("client")
-      .populate("user", ["name", "lastName", "phone", "email"]);
+      .populate("user", ["name", "lastName", "phone", "email"])
+      .populate("deliveryZone", ["name"]);
 
     res.status(200).json({
       ok: true,
