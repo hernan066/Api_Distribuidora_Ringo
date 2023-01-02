@@ -8,7 +8,10 @@ const getDeliverySubZones = async (req, res = response) => {
 
     const [total, deliverySubZones] = await Promise.all([
       DeliverySubZone.countDocuments(query),
-      DeliverySubZone.find(query).skip(Number(from)).limit(Number(limit)),
+      DeliverySubZone.find(query)
+      .skip(Number(from))
+      .limit(Number(limit))
+      .populate("deliveryZone", ["name"]),
     ]);
 
     res.status(200).json({
@@ -31,7 +34,7 @@ const getDeliverySubZones = async (req, res = response) => {
 const getDeliverySubZone = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const deliverySubZone = await DeliverySubZone.findById(id);
+    const deliverySubZone = await DeliverySubZone.findById(id).populate("deliveryZone", ["name"]);
 
     res.status(200).json({
       ok: true,
