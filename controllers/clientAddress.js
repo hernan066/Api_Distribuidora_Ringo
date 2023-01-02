@@ -13,7 +13,7 @@ const getClientAddresses = async (req, res = response) => {
         .limit(Number(limit))
         .populate("client")
         .populate("user", ["name", "lastName", "phone", "email"])
-        .populate("deliveryZone", ["name"]),
+        .populate("deliveryZone", ["name", "cost"]),
     ]);
 
     const orderClientAddress = clientAddress.sort(function(a, b){
