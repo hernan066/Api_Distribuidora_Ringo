@@ -11,12 +11,18 @@ const getDeliveryZones = async (req, res = response) => {
       DeliveryZone.find(query).skip(Number(from)).limit(Number(limit)),
     ]);
 
+    const order = deliveryZones.sort(function(a, b){
+      if(a.name < b.name) { return -1; }
+      if(a.name > b.name) { return 1; }
+      return 0;
+  })
+
     res.status(200).json({
       ok: true,
       status: 200,
       total,
       data: {
-        deliveryZones,
+        deliveryZones: order,
       },
     });
   } catch (error) {

@@ -14,12 +14,18 @@ const getDeliverySubZones = async (req, res = response) => {
       .populate("deliveryZone", ["name"]),
     ]);
 
+    const order = deliverySubZones.sort(function(a, b){
+      if(a.deliveryZone.name < b.deliveryZone.name) { return -1; }
+      if(a.deliveryZone.name > b.deliveryZone.name) { return 1; }
+      return 0;
+  })
+
     res.status(200).json({
       ok: true,
       status: 200,
       total,
       data: {
-        deliverySubZones,
+        deliverySubZones: order,
       },
     });
   } catch (error) {
