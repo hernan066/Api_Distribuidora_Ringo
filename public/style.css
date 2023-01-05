@@ -105,6 +105,11 @@
 
 .alert_success {
     background-color: green;
+    text-align: center;
+}
+.alert_success a{
+    margin-top: 15px;
+    font-size: 16px;
 }
 
 .alert_error {

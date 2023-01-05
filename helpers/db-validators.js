@@ -39,20 +39,21 @@ const emailExist = async (email = "") => {
   // Verificar si el correo existe
   const existEmail = await User.findOne({ email });
   if (existEmail) {
-    throw new Error(`El email: ${email}, ya está registrado`);
+    throw new Error(`El email ${email}, ya está registrado`);
   }
 };
 const phoneExist = async (phone) => {
-  const existPhone = await User.findOne({ phone });
+  const phoneFull = `54${phone}`
+  const existPhone = await User.findOne({ phoneFull });
   if (existPhone) {
-    throw new Error(`El teléfono: ${phone}, ya está registrado`);
+    throw new Error(`El teléfono ${phoneFull}, ya está registrado`);
   }
 };
 const patenteExiste = async (patente = "") => {
   // Verificar si el correo existe
   const existePatente = await Repartidor.findOne({ patente });
   if (existePatente) {
-    throw new Error(`La patente: ${patente}, ya está registrada`);
+    throw new Error(`La patente ${patente}, ya está registrada`);
   }
 };
 
