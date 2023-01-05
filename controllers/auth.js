@@ -36,7 +36,7 @@ const loginUser = async (req, res = response) => {
     return res.status(401).json({
       ok: false,
       status: 401,
-      msg: "Email no verificado",
+      msg: "Email no verificado, revise su correo para verificar",
     });
   }
 

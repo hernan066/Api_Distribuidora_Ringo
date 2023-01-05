@@ -10,12 +10,14 @@
   </head>
   <body>
     <div class="container">
-      <div class="alert_success">
-        <p>&#x2611; Cuenta confirmada correctamente</p>
+      <div class="container__msg">
+        <h2> ✅Email confirmado correctamente</h2>
+        <p>Sera direccionado automáticamente a la pagina de ingreso, si eso no ocurre, presione el siguiente enlace</p>
         <a
           href="https://www.distribuidora-ringo.com.ar/#/usuario/login"
           target="_blank"
           rel="noopener noreferrer"
+          
           >Volver a iniciar sesión</a
         >
       </div>
@@ -23,7 +25,7 @@
     <script>
         setTimeout(() => {
             window.location.replace('https://www.distribuidora-ringo.com.ar/#/usuario/login')
-        }, 3000);
-    </script>
+        }, 5000);
+    </script> 
   </body>
 </html>
