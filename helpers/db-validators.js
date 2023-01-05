@@ -43,10 +43,10 @@ const emailExist = async (email = "") => {
   }
 };
 const phoneExist = async (phone) => {
-  const phoneFull = `54${phone}`
-  const existPhone = await User.findOne({ phoneFull });
+  
+  const existPhone = await User.findOne({ phone });
   if (existPhone) {
-    throw new Error(`El teléfono ${phoneFull}, ya está registrado`);
+    throw new Error(`El teléfono ${phone}, ya está registrado`);
   }
 };
 const patenteExiste = async (patente = "") => {
