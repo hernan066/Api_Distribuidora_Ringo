@@ -1,7 +1,10 @@
 const { response, request } = require("express");
 const bcryptjs = require("bcryptjs");
-const { generarJWT } = require("../helpers");
+const { getToken, getTokenData } = require("../helpers");
 const { User } = require("../models");
+const { v4: uuidv4 } = require("uuid");
+const { sendEmail } = require("../config/nodemailer");
+const { getEmailTemplate } = require("../template/emailTemplate");
 
 const getUsers = async (req = request, res = response) => {
   try {
@@ -13,7 +16,7 @@ const getUsers = async (req = request, res = response) => {
       User.find(query)
         .skip(Number(from))
         .limit(Number(limit))
-        .populate('role', 'role')
+        .populate("role", "role"),
     ]);
     res.status(200).json({
       ok: true,
@@ -55,30 +58,44 @@ const getUser = async (req, res = response) => {
 
 const postUser = async (req, res = response) => {
   try {
-    const { state, password, ...body } = req.body;
+    const { state, password, email, ...body } = req.body;
 
     const salt = bcryptjs.genSaltSync();
     newPassword = bcryptjs.hashSync(password, salt);
 
+    // Generar el código
+    const code = uuidv4();
+
     const data = {
       ...body,
+      email,
       password: newPassword,
+      verifiedCode: code,
     };
 
+    // Crear un nuevo usuario
     const user = new User(data);
+
+    // Generar token
+
+    const token = await getToken({ email, code });
+
+    // Obtener un template
+    const url = `${process.env.BASE_URL}/user/verify/${token}`;
+    const template = getEmailTemplate(body.name, url);
+
+    // Enviar el email
+
+    await sendEmail(email, "Confirma email, Distribuidora Ringo", template);
+    await user.save();
 
     // Guardar en BD
     await user.save();
 
-    const token = await generarJWT(user.id);
-
     res.status(200).json({
       ok: true,
       status: 200,
-      data: {
-        user,
-        token,
-      },
+      msg: "Usuario registrado correctamente",
     });
   } catch (error) {
     res.status(500).json({
@@ -147,15 +164,13 @@ const patchUser = async (req, res = response) => {
 };
 
 const deleteUser = async (req, res = response) => {
-
   try {
     const { id } = req.params;
     await User.findByIdAndUpdate(id, { state: false });
-  
+
     res.status(200).json({
       ok: true,
       status: 200,
-     
     });
   } catch (error) {
     res.status(500).json({
@@ -164,7 +179,60 @@ const deleteUser = async (req, res = response) => {
       msg: error.message,
     });
   }
- 
+};
+const getUserVerify = async (req, res = response) => {
+  try {
+    // Obtener el token
+    const { token } = req.params;
+
+    // Verificar la data
+    const data = await getTokenData(token);
+
+    if (data === null) {
+      return res.json({
+        success: false,
+        msg: "Error al obtener data",
+      });
+    }
+
+    //console.log(data);
+
+    const { email, code } = data.data;
+
+    // Verificar existencia del usuario
+    const user = (await User.findOne({ email })) || null;
+
+    if (user === null) {
+      return res.status(401).json({
+        ok: false,
+        msg: "Usuario no existe",
+      });
+    }
+
+    // Verificar el código
+    if (code !== user.verifiedCode) {
+      return res.status(401).json({
+        ok: false,
+        msg: "Usuario no existe",
+      });
+    }
+
+    // Actualizar usuario
+    user.verified = true;
+    await user.save();
+
+    return res.status(200).json({
+      ok: true,
+      status: 200,
+      msg: "Usuario validado con éxito"
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      msg: "Error al confirmar usuario",
+    });
+  }
 };
 
 module.exports = {
@@ -173,5 +241,6 @@ module.exports = {
   postUser,
   putUser,
   deleteUser,
-  patchUser
+  patchUser,
+  getUserVerify,
 };

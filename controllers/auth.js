@@ -5,107 +5,111 @@ const { googleVerify } = require("../helpers/google-verify");
 const { Repartidor, User, Role } = require("../models");
 const jwt = require("jsonwebtoken");
 
-const login = async (req, res = response) => {
+const loginUser = async (req, res = response) => {
+  const cookies = req.cookies;
+
   const { email, password } = req.body;
+  if (!email || !password)
+    return res.status(400).json({ msg: "Email o password no son correctos" });
 
-  try {
-    // Verificar si el email existe
-    const user = await User.findOne({ email });
+  // Verificar si el email existe
+  let role;
+  const foundUser = await User.findOne({ email }).exec();
 
-    //return res.status(200).send(user)
-    if (!user) {
-      return res.status(400).json({
-        msg: "user / Password no son correctos - correo",
-      });
-    }
-
-    // SI el user está activo
-    if (!user.state) {
-      return res.status(400).json({
-        msg: "user / Password no son correctos - state: false",
-      });
-    }
-
-    // Verificar la contraseña
-    const validPassword = bcryptjs.compareSync(password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({
-        msg: "user / Password no son correctos - password",
-      });
-    }
-
-    // Generar el JWT
-    const token = await generarJWT(user._id);
-
-    res.json({
-      user,
-      token,
+  if (foundUser) {
+    role = await Role.findById(foundUser.role);
+  } else {
+    return res.status(401).json({
+      msg: "Email o password no son correctos",
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      msg: "Hable con el administrador",
+  }
+  // SI el user está activo
+  if (!foundUser.state) {
+    return res.status(401).json({
+      ok: false,
+      status: 401,
+      msg: "Email o password no son correctos",
+    });
+  }
+  // si verifico su correo
+  if (foundUser.verified) {
+    return res.status(401).json({
+      ok: false,
+      status: 401,
+      msg: "Email no verificado",
+    });
+  }
+
+  // Verificar la contraseña
+  const validPassword = await bcryptjs.compare(password, foundUser.password);
+
+  if (validPassword) {
+    // create JWTs
+    const accessToken = jwt.sign(
+      {
+        UserInfo: {
+          id: foundUser._id,
+          role: role.role,
+        },
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+    const newRefreshToken = jwt.sign(
+      { id: foundUser._id },
+      process.env.JWT_REFRESH,
+      { expiresIn: "1d" }
+    );
+
+    // Changed to let keyword
+    let newRefreshTokenArray = !cookies?.jwt
+      ? foundUser.refreshToken
+      : foundUser.refreshToken.filter((rt) => rt !== cookies.jwt);
+
+    if (cookies?.jwt) {
+      /* Posibles escenarios:
+                1) El usuario inicia sesión pero nunca usa RT y no cierra la sesión
+                2) RT es robado
+                3) Si 1 y 2, hay que borrar todos los RT cuando el usuario inicia sesión */
+      const refreshToken = cookies.jwt;
+      const foundToken = await User.findOne({ refreshToken }).exec();
+
+      // Se detecta rt reutilizado!
+      if (!foundToken) {
+        // se limpian todos los anteriores refresh tokens
+        newRefreshTokenArray = [];
+      }
+
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+      });
+    }
+
+    // Se guarda el refreshToken en el usuario actual
+    foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+    const result = await foundUser.save();
+
+    // Se crea una Cookie segura con el refresh token
+    res.cookie("jwt", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    // Se envía el id del usuario y el rol en el token
+    res.json({ accessToken, id: foundUser._id });
+  } else {
+    return res.status(401).json({
+      ok: false,
+      status: 401,
+      msg: "Email o password no son correctos",
     });
   }
 };
-const loginAdmin = async (req, res = response) => {
-  const { email, password } = req.body;
 
-  try {
-    // Verificar si el email existe
-    let role;
-    const user = await User.findOne({ email });
-
-    // Verificar si usuario existe
-    if (user) {
-      role = await Role.findById(user.role);
-    } else {
-      return res.status(400).json({
-        msg: "Email o password no son correctos",
-      });
-    }
-
-    // SI el user está activo
-    if (!user.state) {
-      return res.status(401).json({
-        ok: false,
-        status: 401,
-        msg: "Email o password no son correctos",
-      });
-    }
-    // SI no es admin
-    if (role.role !== process.env.ADMIN_ROLE) {
-      return res.status(403).json({
-        ok: false,
-        status: 403,
-        msg: "Esta cuenta no tiene permisos de acceso",
-      });
-    }
-
-    // Verificar la contraseña
-    const validPassword = bcryptjs.compareSync(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({
-        ok: false,
-        status: 401,
-        msg: "Email o password no son correctos",
-      });
-    }
-
-    // Generar el JWT
-    const token = await generarJWT(user._id);
-
-    res.json({
-      user,
-      token,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      msg: "Hable con el administrador",
-    });
-  }
-};
 const loginRepartidor = async (req, res = response) => {
   const { patente, password } = req.body;
 
@@ -146,28 +150,6 @@ const loginRepartidor = async (req, res = response) => {
     console.log(error);
     res.status(500).json({
       msg: "Hable con el administrador",
-    });
-  }
-};
-
-const getRevalidateToken = async (req, res = response) => {
-  try {
-    const { user } = req;
-
-    // Generar JWT
-    //const token = await generarJWT( uid, name );
-    const token = await generarJWT(user._id);
-
-    res.status(200).json({
-      ok: true,
-      user,
-      token,
-    });
-  } catch (error) {
-    res.status(500).json({
-      ok: false,
-      status: 500,
-      msg: error.message,
     });
   }
 };
@@ -216,7 +198,7 @@ const googleSignin = async (req, res = response) => {
 };
 
 //nuevo sistema de login para el dashboard
-const login2 = async (req, res) => {
+const loginAdmin = async (req, res) => {
   const cookies = req.cookies;
 
   const { email, password } = req.body;
@@ -323,7 +305,6 @@ const login2 = async (req, res) => {
 
 const refresh = async (req, res) => {
   const cookies = req.cookies;
- 
 
   if (!cookies?.jwt) {
     return res.status(401).json({
@@ -397,7 +378,7 @@ const refresh = async (req, res) => {
   });
 };
 
-const logout2 = async (req, res) => {
+const logout = async (req, res) => {
   // On client, also delete the accessToken
 
   const cookies = req.cookies;
@@ -412,7 +393,9 @@ const logout2 = async (req, res) => {
   }
 
   // Delete refreshToken in db
-  foundUser.refreshToken = foundUser.refreshToken.filter((rt) => rt !== refreshToken);
+  foundUser.refreshToken = foundUser.refreshToken.filter(
+    (rt) => rt !== refreshToken
+  );
   const result = await foundUser.save();
   console.log(result);
 
@@ -420,13 +403,13 @@ const logout2 = async (req, res) => {
   res.sendStatus(204);
 };
 
+
+
 module.exports = {
-  login,
+  loginUser,
   loginRepartidor,
   googleSignin,
   loginAdmin,
-  getRevalidateToken,
-  login2,
   refresh,
-  logout2,
+  logout,
 };

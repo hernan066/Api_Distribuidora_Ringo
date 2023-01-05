@@ -1,22 +1,27 @@
 const { check } = require("express-validator");
-const { emailExist, phoneExist, isValidRol, existUserById, existRoleById } = require("../helpers");
-const { validarJWT, validateFields, tieneRole, isAdminRole } = require("../middlewares");
+const {
+  emailExist,
+  phoneExist,
+  isValidRol,
+  existUserById,
+  existRoleById,
+} = require("../helpers");
+const {
+  validarJWT,
+  validateFields,
+  tieneRole,
+  isAdminRole,
+} = require("../middlewares");
 
+const getUsersValidations = [validarJWT, validateFields];
 
-
-
-const getUsersValidations = [
-    validarJWT,
-    validateFields,
-  ];
-
-  const getUserValidations = [
-    validarJWT,
-    check("id", "No es un ID válido").isMongoId(),
-    check("id").custom(existUserById),
-    check("rol").custom(isValidRol),
-    validateFields,
-  ];
+const getUserValidations = [
+  validarJWT,
+  check("id", "No es un ID válido").isMongoId(),
+  check("id").custom(existUserById),
+  check("rol").custom(isValidRol),
+  validateFields,
+];
 
 const postUserValidations = [
   check("name", "El nombre es obligatorio").not().isEmpty(),
@@ -35,33 +40,33 @@ const postUserValidations = [
 ];
 
 const putUserValidations = [
-    validarJWT,
-    isAdminRole,
-    check("id", "No es un ID válido").isMongoId(),
-    check("id").custom(existUserById),
-    validateFields,
-  ];
+  validarJWT,
 
-  const patchUserValidations = [
-    validarJWT,
-    check("id", "No es un ID válido").isMongoId(),
-    check("id").custom(existUserById),
-    validateFields,
-  ];
+  check("id", "No es un ID válido").isMongoId(),
+  check("id").custom(existUserById),
+  validateFields,
+];
 
-  const deleteUserValidations = [
-    validarJWT,
-    isAdminRole,
-    check('id', 'No es un ID válido').isMongoId(),
-    check('id').custom( existUserById ),
-    validateFields
+const patchUserValidations = [
+  validarJWT,
+  check("id", "No es un ID válido").isMongoId(),
+  check("id").custom(existUserById),
+  validateFields,
+];
+
+const deleteUserValidations = [
+  validarJWT,
+  isAdminRole,
+  check("id", "No es un ID válido").isMongoId(),
+  check("id").custom(existUserById),
+  validateFields,
 ];
 
 module.exports = {
-    getUserValidations,
-    postUserValidations,
-    putUserValidations,
-    deleteUserValidations,
-    getUsersValidations,
-    patchUserValidations
+  getUserValidations,
+  postUserValidations,
+  putUserValidations,
+  deleteUserValidations,
+  getUsersValidations,
+  patchUserValidations,
 };

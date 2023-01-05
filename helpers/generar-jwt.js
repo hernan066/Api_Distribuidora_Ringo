@@ -1,55 +1,47 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
+/* const getToken = (id = "") => {
+  return new Promise((resolve, reject) => {
+    const payload = { id };
 
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      },
+      (err, token) => {
+        if (err) {
+          console.log(err);
+          reject("No se pudo generar el token");
+        } else {
+          resolve(token);
+        }
+      }
+    );
+  });
+}; */
 
-const generarJWT = ( id = '' ) => {
-
-    return new Promise( (resolve, reject) => {
-
-        const payload = { id };
-
-        jwt.sign( payload, process.env.JWT_SECRET, {
-            expiresIn: '4h'
-        }, ( err, token ) => {
-
-            if ( err ) {
-                console.log(err);
-                reject( 'No se pudo generar el token' )
-            } else {
-                resolve( token );
-            }
-        })
-
-    })
+const getToken = (payload) => {
+  return jwt.sign({
+      data: payload
+  }, process.env.JWT_SECRET, { expiresIn: '1h' });
 }
 
-const generateRefreshToken = (id, res) => {
-    const expiresIn = 60 * 60 * 24 * 30;
-    try {
-        const refreshToken = jwt.sign({ id }, process.env.JWT_REFRESH, {
-            expiresIn,
-        });
+const getTokenData = (token) => {
+  let data = null;
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if(err) {
+          console.log('Error al obtener data del token');
+      } else {
+          data = decoded;
+      }
+  });
 
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: !(process.env.MODO === "developer"),
-            expires: new Date(Date.now() + expiresIn * 1000),
-            sameSite: "none",
-        });
-        // res.cookie("refreshToken", refreshToken, {
-        //     httpOnly: true,
-        //     secure: true,
-        //     expires: new Date(Date.now() + expiresIn * 1000),
-        // });
-    } catch (error) {
-        console.log(error);
-    }
-};
-
-
+  return data;
+}
 
 module.exports = {
-    generarJWT,
-    generateRefreshToken
-}
-
+  getToken,
+  getTokenData
+};
