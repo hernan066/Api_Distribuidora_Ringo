@@ -32,7 +32,7 @@ const loginUser = async (req, res = response) => {
     });
   }
   // si verifico su correo
-  if (foundUser.verified) {
+  if (!foundUser.verified) {
     return res.status(401).json({
       ok: false,
       status: 401,
