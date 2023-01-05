@@ -211,21 +211,14 @@ const getUserVerify = async (req, res = response) => {
 
     // Verificar el código
     if (code !== user.verifiedCode) {
-      return res.status(401).json({
-        ok: false,
-        msg: "Usuario no existe",
-      });
+      return res.redirect('/error.html')
     }
 
     // Actualizar usuario
     user.verified = true;
     await user.save();
 
-    return res.status(200).json({
-      ok: true,
-      status: 200,
-      msg: "Usuario validado con éxito"
-    });
+    return res.redirect('/confirm.html')
   } catch (error) {
     console.log(error);
     return res.json({
