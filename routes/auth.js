@@ -13,6 +13,8 @@ const { loginValidator } = require("../validations/auth/loginValidator");
 
 const router = Router();
 
+
+
 router.post("/login", loginValidator, loginUser);
 
 router.post(
@@ -25,18 +27,12 @@ router.post(
   loginRepartidor
 );
 
-router.post(
-  "/google",
-  [
-    check("id_token", "El id_token es necesario").not().isEmpty(),
-    validateFields,
-  ],
-  googleSignin
-);
+router.post("/google",googleSignin);
 
 //nuevo sistema de login para el dashboard
 router.post("/login2", loginValidator, loginAdmin);
 router.get("/refresh", refresh);
 router.get("/logout2", logout);
+
 
 module.exports = router;

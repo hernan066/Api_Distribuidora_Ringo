@@ -87,7 +87,7 @@ const postUser = async (req, res = response) => {
     // Enviar el email
 
     await sendEmail(email, "Confirma email, Distribuidora Ringo", template);
-    await user.save();
+    
 
     // Guardar en BD
     await user.save();

@@ -155,44 +155,109 @@ const loginRepartidor = async (req, res = response) => {
 };
 
 const googleSignin = async (req, res = response) => {
-  const { id_token } = req.body;
+  const { email, name, lastName, id_social } = req.body;
+  const cookies = req.cookies;
 
   try {
-    const { correo, nombre, img } = await googleVerify(id_token);
+    let foundUser = await User.findOne({ email });
 
-    let usuario = await Usuario.findOne({ correo });
-
-    if (!usuario) {
+    if (!foundUser) {
       // Tengo que crearlo
       const data = {
-        nombre,
-        correo,
-        password: ":P",
-        img,
+        id_social,
+        name,
+        lastName,
+        email,
+        password: null,
+        phone: null,
         google: true,
+        social_provider: "google",
+        role: '636a6311c2e277ca644463fb'
       };
 
-      usuario = new Usuario(data);
-      await usuario.save();
+      foundUser = new User(data);
+      await foundUser.save();
     }
+    
+    // si existe pero no coincide el id_social
+     if (foundUser) {
+      if (id_social !== foundUser.id_social) {
+        return res.status(401).json({
+          ok: false,
+          status: 401,
+          msg: "Error de credenciales",
+        });
+      }
+    } 
 
-    // Si el usuario en DB
-    if (!usuario.estado) {
+    // Si el usuario en DB esta borrado
+    if (!foundUser.state) {
       return res.status(401).json({
         msg: "Hable con el administrador, usuario bloqueado",
       });
     }
 
-    // Generar el JWT
-    const token = await generarJWT(usuario.id);
+    // creo el token
+    const accessToken = jwt.sign(
+      {
+        UserInfo: {
+          id: foundUser._id,
+          role: 'USER_ROLE',
+        },
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+    const newRefreshToken = jwt.sign(
+      { id: foundUser._id },
+      process.env.JWT_REFRESH,
+      { expiresIn: "1d" }
+    );
 
-    res.json({
-      usuario,
-      token,
+    // Changed to let keyword
+    let newRefreshTokenArray = !cookies?.jwt
+      ? foundUser.refreshToken
+      : foundUser.refreshToken.filter((rt) => rt !== cookies.jwt);
+
+    if (cookies?.jwt) {
+      /* Posibles escenarios:
+              1) El usuario inicia sesión pero nunca usa RT y no cierra la sesión
+              2) RT es robado
+              3) Si 1 y 2, hay que borrar todos los RT cuando el usuario inicia sesión */
+      const refreshToken = cookies.jwt;
+      const foundToken = await User.findOne({ refreshToken }).exec();
+
+      // Se detecta rt reutilizado!
+      if (!foundToken) {
+        // se limpian todos los anteriores refresh tokens
+        newRefreshTokenArray = [];
+      }
+
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+      });
+    }
+
+    // Se guarda el refreshToken en el usuario actual
+    foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+    const result = await foundUser.save();
+
+    // Se crea una Cookie segura con el refresh token
+    res.cookie("jwt", newRefreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
     });
+
+    // Se envía el id del usuario y el rol en el token
+    res.json({ accessToken, id: foundUser._id });
   } catch (error) {
-    res.status(400).json({
-      msg: "Token de Google no es válido",
+    console.log(error)
+    res.status(500).json({
+      msg: "Error del servidor",
     });
   }
 };
@@ -402,8 +467,6 @@ const logout = async (req, res) => {
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
   res.sendStatus(204);
 };
-
-
 
 module.exports = {
   loginUser,
