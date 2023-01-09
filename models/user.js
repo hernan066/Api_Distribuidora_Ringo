@@ -14,7 +14,7 @@ const UserSchema = Schema({
   id_social       : {type: String},
   social_provider : {type: String},
   state           : {type: Boolean,default: true,},
-  role            : {type: Schema.Types.ObjectId,ref: 'Role'},
+  role            : {type: Schema.Types.ObjectId,ref: 'Role', default: '636a6311c2e277ca644463fb'},
   
  
   
