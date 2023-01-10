@@ -15,8 +15,8 @@ const getProducts = async (req, res = response) => {
   ]);
 
   const orderProducts = products.sort(function(a, b){
-    if(a.name < b.name) { return -1; }
-    if(a.name > b.name) { return 1; }
+    if(a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
+    if(a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
     return 0;
 })
 
