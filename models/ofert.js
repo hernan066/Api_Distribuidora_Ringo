@@ -4,6 +4,7 @@ const OfertSchema = Schema({
     product            : {type: Schema.Types.ObjectId,ref: 'Product', required: true},
     description        : {type: String,},
     visible            : {type: Boolean, default: true},
+    ofert              : {type: Boolean, default: false},
     state              : {type: Boolean, default: true},
     prices: [{
         price1   : { type: Number,  },
