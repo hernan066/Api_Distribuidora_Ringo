@@ -11,7 +11,15 @@ const getOferts = async (req, res = response) => {
       Ofert.find(query)
         .skip(Number(from))
         .limit(Number(limit))
-        .populate("product", ["name", "description", "unit", "img"]),
+        .populate("product", [
+          "name",
+          "description",
+          "unit",
+          "img",
+          "brand",
+          "category",
+          "type",
+        ]),
     ]);
 
     res.status(200).json({
@@ -39,6 +47,9 @@ const getOfert = async (req, res = response) => {
       "description",
       "unit",
       "img",
+      "brand",
+      "category",
+      "type",
     ]);
 
     res.status(200).json({
