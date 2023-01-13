@@ -5,6 +5,7 @@ const {
   postClientAddress,
   putClientAddress,
   deleteClientAddress,
+  getUserAddress,
 } = require("../controllers/clientAddress");
 const { validarJWT } = require("../middlewares");
 const {
@@ -23,6 +24,8 @@ const router = Router();
 router.get("/", validarJWT, getClientAddresses);
 
 router.get("/:id", getClientAddressValidator, getClientAddress);
+
+router.get("/user/:id",  getUserAddress);
 
 router.post("/", postClientAddressValidator, postClientAddress);
 

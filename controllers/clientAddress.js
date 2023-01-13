@@ -135,6 +135,29 @@ const deleteClientAddress = async (req, res = response) => {
     });
   }
 };
+const getUserAddress = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const clientAddress = await ClientAddress.find({ user: id, state: true })
+      .populate("client")
+      .populate("user", ["name", "lastName", "phone", "email"])
+      .populate("deliveryZone", ["name"]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        clientAddress,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   postClientAddress,
@@ -142,4 +165,5 @@ module.exports = {
   getClientAddress,
   putClientAddress,
   deleteClientAddress,
+  getUserAddress
 };
