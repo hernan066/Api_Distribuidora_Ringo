@@ -6,6 +6,8 @@ const OfertSchema = Schema({
     visible            : {type: Boolean, default: true},
     ofert              : {type: Boolean, default: false},
     state              : {type: Boolean, default: true},
+    basePrice          : {type: Number,},
+    retailPrice        : {type: Number,},
     prices: [{
         price1   : { type: Number,  },
         price2   : { type: Number,  },
