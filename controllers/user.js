@@ -87,7 +87,6 @@ const postUser = async (req, res = response) => {
     // Enviar el email
 
     await sendEmail(email, "Confirma email, Distribuidora Ringo", template);
-    
 
     // Guardar en BD
     await user.save();
@@ -211,19 +210,61 @@ const getUserVerify = async (req, res = response) => {
 
     // Verificar el código
     if (code !== user.verifiedCode) {
-      return res.redirect('/error.html')
+      return res.redirect("/error.html");
     }
 
     // Actualizar usuario
     user.verified = true;
     await user.save();
 
-    return res.redirect('/confirm.html')
+    return res.redirect("/confirm.html");
   } catch (error) {
     console.log(error);
     return res.json({
       success: false,
       msg: "Error al confirmar usuario",
+    });
+  }
+};
+
+const putUserChangePassword = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const { password, newPassword } = req.body;
+
+    const user = await User.findById(id);
+
+   
+
+    if (!bcryptjs.compareSync(password, user.password)) {
+      return res.status(400).json({
+        ok: false,
+        status: 400,
+        msg: "La contraseña ingresada no es correcta",
+      });
+    }
+
+    const salt = bcryptjs.genSaltSync();
+    const updatePassword = bcryptjs.hashSync(newPassword, salt);
+
+    const data = {
+      ...user,
+      password: updatePassword
+    }
+
+    await User.findByIdAndUpdate(id, data);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      msg: "Contraseña cambiada correctamente",
+    });
+  } catch (error) {
+    
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
     });
   }
 };
@@ -236,4 +277,5 @@ module.exports = {
   deleteUser,
   patchUser,
   getUserVerify,
+  putUserChangePassword,
 };

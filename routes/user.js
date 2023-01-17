@@ -6,6 +6,7 @@ const {
   putUser,
   deleteUser,
   getUserVerify,
+  putUserChangePassword,
 } = require("../controllers/user");
 const {
   getUserValidations,
@@ -25,6 +26,7 @@ router.patch("/:id", putUserValidations, putUser);
 //admin
 router.get("/", /* getUsersValidations, */ getUsers);
 router.put("/:id", putUserValidations, putUser);
+router.put("/change-password/:id", putUserValidations, putUserChangePassword);
 router.delete("/:id", deleteUserValidations, deleteUser);
 //verify
 router.get("/verify/:token",  getUserVerify);
