@@ -2,8 +2,6 @@ const { validateFields, validarJWT, isAdminRole } = require("../middlewares");
 const { check } = require("express-validator");
 const { existClientAddressById } = require("../helpers");
 
-
-
 const getClientAddressValidator = [
   validarJWT,
   check("id", "No es un id de Mongo válido").isMongoId(),
@@ -12,7 +10,7 @@ const getClientAddressValidator = [
 ];
 const postClientAddressValidator = [
   validarJWT,
-  
+
   check("address", "La dirección es obligatoria").not().isEmpty(),
   check("province", "La provincia es obligatoria").not().isEmpty(),
   check("city", "La ciudad es obligatoria").not().isEmpty(),
@@ -22,13 +20,13 @@ const postClientAddressValidator = [
 ];
 const putClientAddressValidator = [
   validarJWT,
-  check('id','No es un id de Mongo').isMongoId(),
+  check("id", "No es un id de Mongo").isMongoId(),
   check("id").custom(existClientAddressById),
   validateFields,
 ];
 const deleteClientAddressValidator = [
   validarJWT,
-  isAdminRole,
+
   check("id", "No es un id de Mongo válido").isMongoId(),
   check("id").custom(existClientAddressById),
   validateFields,
