@@ -12,7 +12,7 @@ const getClientAddressValidator = [
 ];
 const postClientAddressValidator = [
   validarJWT,
-  check("phone", "El telefono  es obligatorio").not().isEmpty(),
+  
   check("address", "La dirección es obligatoria").not().isEmpty(),
   check("province", "La provincia es obligatoria").not().isEmpty(),
   check("city", "La ciudad es obligatoria").not().isEmpty(),
