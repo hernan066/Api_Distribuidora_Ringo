@@ -3,7 +3,7 @@ const { Schema, model } = require("mongoose");
 const UserSchema = Schema({
   name            : {type: String,},
   lastName        : {type: String,},
-  email           : {type: String, unique: true,},
+  email           : {type: String,},
   phone           : {type: String, default: null},
   password        : {type: String,},
   avatar          : {type: String, default:"https://ik.imagekit.io/mrprwema7/user_default_nUfUA9Fxa.png?ik-sdk-version=javascript-1.4.3&updatedAt=1668611498443"},
