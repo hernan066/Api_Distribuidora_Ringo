@@ -21,6 +21,7 @@ const {
   Sale,
   ClientAddress,
 } = require("../models");
+const user = require("../models/user");
 
 const isValidRol = async (rol = "") => {
   const existeRol = await Role.findOne({ rol });
@@ -37,7 +38,8 @@ const isRolbyId = async (id) => {
 
 const emailExist = async (email = "") => {
   // Verificar si el correo existe
-  const existEmail = await User.findOne({ email });
+  const state = true
+  const existEmail = await User.findOne({ email, state });
   if (existEmail) {
     throw new Error(`El email ${email}, ya está registrado`);
   }
