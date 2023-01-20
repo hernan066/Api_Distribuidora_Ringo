@@ -442,10 +442,7 @@ const refresh = async (req, res) => {
     // Refresh token was still valid
     //const roles = Object.values(foundUser.roles);
     const role = await Role.findById(foundUser.role);
-    const client = await Client.findOne({ user: foundUser?._id }).populate(
-      "clientType",
-      ["clientType"]
-    );
+   
     const accessToken = jwt.sign(
       {
         UserInfo: {
@@ -466,6 +463,11 @@ const refresh = async (req, res) => {
     foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     const result = await foundUser.save();
 
+   /*  const client = await Client.findOne({ user: foundUser?._id }).populate(
+      "clientType",
+      ["clientType"]
+    ); */
+    console.log(foundUser)
     // Creates Secure Cookie with refresh token
     res.cookie("jwt", newRefreshToken, {
       httpOnly: true,
