@@ -413,10 +413,6 @@ const refresh = async (req, res) => {
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
 
   const foundUser = await User.findOne({ refreshToken }).exec();
-  const client = await Client.findOne({ user: foundUser._id }).populate(
-    "clientType",
-    ["clientType"]
-  );
 
   // Se detecta reutilización de RT
   if (!foundUser) {
@@ -446,6 +442,10 @@ const refresh = async (req, res) => {
     // Refresh token was still valid
     //const roles = Object.values(foundUser.roles);
     const role = await Role.findById(foundUser.role);
+    const client = await Client.findOne({ user: foundUser?._id }).populate(
+      "clientType",
+      ["clientType"]
+    );
     const accessToken = jwt.sign(
       {
         UserInfo: {
