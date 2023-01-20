@@ -95,6 +95,9 @@ const postUser = async (req, res = response) => {
       ok: true,
       status: 200,
       msg: "Usuario registrado correctamente",
+      data:{
+        id: user._id
+      }
     });
   } catch (error) {
     res.status(500).json({

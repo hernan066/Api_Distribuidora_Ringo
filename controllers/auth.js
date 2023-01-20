@@ -159,7 +159,7 @@ const googleSignin = async (req, res = response) => {
   const cookies = req.cookies;
 
   try {
-    let foundUser = await User.findOne({ email });
+    let foundUser = await User.findOne({ id_social, state:true });
 
     if (!foundUser) {
       // Tengo que crearlo
@@ -171,6 +171,7 @@ const googleSignin = async (req, res = response) => {
         password: null,
         phone: null,
         google: true,
+        verified: true,
         social_provider: "google",
         role: '636a6311c2e277ca644463fb'
       };
