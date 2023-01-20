@@ -1,8 +1,7 @@
 const { response } = require("express");
 const bcryptjs = require("bcryptjs");
 const { generarJWT } = require("../helpers/generar-jwt");
-const { googleVerify } = require("../helpers/google-verify");
-const { Repartidor, User, Role } = require("../models");
+const { Repartidor, User, Role, Client } = require("../models");
 const jwt = require("jsonwebtoken");
 
 const loginUser = async (req, res = response) => {
@@ -14,10 +13,15 @@ const loginUser = async (req, res = response) => {
 
   // Verificar si el email existe
   let role;
+  let client;
   const foundUser = await User.findOne({ email }).exec();
 
   if (foundUser) {
     role = await Role.findById(foundUser.role);
+    client = await Client.findOne({ user: foundUser._id }).populate(
+      "clientType",
+      ["clientType"]
+    );
   } else {
     return res.status(401).json({
       msg: "Email o password no son correctos",
@@ -100,7 +104,11 @@ const loginUser = async (req, res = response) => {
     });
 
     // Se envía el id del usuario y el rol en el token
-    res.json({ accessToken, id: foundUser._id });
+    res.json({
+      accessToken,
+      id: foundUser._id,
+      clientType: client.clientType.clientType,
+    });
   } else {
     return res.status(401).json({
       ok: false,
@@ -159,7 +167,7 @@ const googleSignin = async (req, res = response) => {
   const cookies = req.cookies;
 
   try {
-    let foundUser = await User.findOne({ id_social, state:true });
+    let foundUser = await User.findOne({ id_social, state: true });
 
     if (!foundUser) {
       // Tengo que crearlo
@@ -173,15 +181,27 @@ const googleSignin = async (req, res = response) => {
         google: true,
         verified: true,
         social_provider: "google",
-        role: '636a6311c2e277ca644463fb'
+        role: "636a6311c2e277ca644463fb",
       };
 
       foundUser = new User(data);
       await foundUser.save();
+
+      const dataClient = {
+        user: foundUser._id,
+        clientCategory: "636a8e3e8b0abe9de10c7948",
+        clientType: "63b34fef55257d408a217911",
+        cuit: null,
+        contactMeans: "",
+        campaignName: "",
+      };
+
+      newClient = new Client(dataClient);
+      await newClient.save();
     }
-    
+
     // si existe pero no coincide el id_social
-     if (foundUser) {
+    if (foundUser) {
       if (id_social !== foundUser.id_social) {
         return res.status(401).json({
           ok: false,
@@ -189,7 +209,7 @@ const googleSignin = async (req, res = response) => {
           msg: "Error de credenciales",
         });
       }
-    } 
+    }
 
     // Si el usuario en DB esta borrado
     if (!foundUser.state) {
@@ -198,12 +218,18 @@ const googleSignin = async (req, res = response) => {
       });
     }
 
+    // busco datos del cliente
+    const client = await Client.findOne({ user: foundUser._id }).populate(
+      "clientType",
+      ["clientType"]
+    );
+
     // creo el token
     const accessToken = jwt.sign(
       {
         UserInfo: {
           id: foundUser._id,
-          role: 'USER_ROLE',
+          role: "USER_ROLE",
         },
       },
       process.env.JWT_SECRET,
@@ -254,9 +280,13 @@ const googleSignin = async (req, res = response) => {
     });
 
     // Se envía el id del usuario y el rol en el token
-    res.json({ accessToken, id: foundUser._id });
+    res.json({
+      accessToken,
+      id: foundUser._id,
+      clientType: client.clientType.clientType,
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.status(500).json({
       msg: "Error del servidor",
     });
@@ -383,6 +413,10 @@ const refresh = async (req, res) => {
   res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
 
   const foundUser = await User.findOne({ refreshToken }).exec();
+  const client = await Client.findOne({ user: foundUser._id }).populate(
+    "clientType",
+    ["clientType"]
+  );
 
   // Se detecta reutilización de RT
   if (!foundUser) {
@@ -440,7 +474,11 @@ const refresh = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    res.json({ accessToken, id: foundUser._id });
+    res.json({
+      accessToken,
+      id: foundUser._id,
+      clientType: client.clientType.clientType,
+    });
   });
 };
 
