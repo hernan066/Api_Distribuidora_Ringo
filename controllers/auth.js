@@ -463,10 +463,10 @@ const refresh = async (req, res) => {
     foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
     const result = await foundUser.save();
 
-   /*  const client = await Client.findOne({ user: foundUser?._id }).populate(
+    const client = await Client.findOne({ user: foundUser?._id }).populate(
       "clientType",
       ["clientType"]
-    ); */
+    ); 
     console.log(foundUser)
     // Creates Secure Cookie with refresh token
     res.cookie("jwt", newRefreshToken, {
@@ -479,7 +479,7 @@ const refresh = async (req, res) => {
     res.json({
       accessToken,
       id: foundUser._id,
-      clientType: client.clientType.clientType,
+      clientType: client?.clientType?.clientType,
     });
   });
 };
