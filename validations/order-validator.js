@@ -16,8 +16,9 @@ const postOrderValidator = [
   //orderItems
   check("orderItems[0].productId", "No es un id de Mongo válido").isMongoId(),
   check("orderItems[0].productId").custom(existProductById),
-  check('orderItems[0].quantity','La cantidad es obligatoria').not().isEmpty(),
-  check('orderItems[0].price','El precio es obligatorio').not().isEmpty(),
+  check('orderItems[0].totalQuantity','La cantidad es obligatoria').not().isEmpty(),
+  check('orderItems[0].totalPrice','El precio es obligatorio').not().isEmpty(),
+  check('orderItems[0].unitPrice','El precio es obligatorio').not().isEmpty(),
   //shippingAddress
   check("shippingAddress.name", "El nombre  es obligatorio").not().isEmpty(),
   check("shippingAddress.lastName", "El apellido  es obligatorio").not().isEmpty(),
