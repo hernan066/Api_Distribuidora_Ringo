@@ -9,6 +9,12 @@ const getOrderValidator = [
   check("id").custom(existOrderById),
   validateFields,
 ];
+const getOrderUserValidator = [
+  validarJWT,
+  check("id", "No es un id de Mongo válido").isMongoId(),
+  check("id").custom(existUserById),
+  validateFields,
+];
 const postOrderValidator = [
   validarJWT,
   check("userId", "No es un id de Mongo válido").isMongoId(),
@@ -54,4 +60,5 @@ module.exports = {
   postOrderValidator,
   putOrderValidator,
   deleteOrderValidator,
+  getOrderUserValidator
 };

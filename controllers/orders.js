@@ -130,10 +130,35 @@ const deleteOrder = async (req, res = response) => {
   }
 };
 
+const getUserOrder = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const order = await Order.find({ userId: id, state: true })
+      .populate("deliveryTruck")
+      .populate("employee")
+      .populate("deliveryZone");
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        order,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   postOrder,
   getOrders,
   getOrder,
   putOrder,
   deleteOrder,
+  getUserOrder
 };
