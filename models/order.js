@@ -10,8 +10,9 @@ const OrderSchema = new Schema(
       unit          : {type: String},
       description   : {type: String},
       img           : {type: String },
-      quantity      : { type: Number, required: true },
-      price         : { type: Number, required: true },
+      totalQuantity : { type: Number, required: true },
+      totalPrice    : { type: Number, required: true },
+      unitPrice     : { type: Number, required: true },
       
   }],
     
