@@ -141,7 +141,7 @@ const getUserAddress = async (req, res = response) => {
     const clientAddress = await ClientAddress.find({ user: id, state: true })
       .populate("client")
       .populate("user", ["name", "lastName", "phone", "email"])
-      .populate("deliveryZone", ["name"]);
+      .populate("deliveryZone", ["name", "cost"]);
 
     res.status(200).json({
       ok: true,
