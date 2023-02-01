@@ -16,18 +16,18 @@ const getClientAddresses = async (req, res = response) => {
         .populate("deliveryZone", ["name", "cost"]),
     ]);
 
-    const orderClientAddress = clientAddress.sort(function(a, b){
+   /*  const orderClientAddress = clientAddress.sort(function(a, b){
       if(a.user.name < b.user.name) { return -1; }
       if(a.user.name > b.user.name) { return 1; }
       return 0;
-  })
+  }) */
 
     res.status(200).json({
       ok: true,
       status: 200,
       total,
       data: {
-        orderClientAddress,
+        clientAddress,
       },
     });
   } catch (error) {
