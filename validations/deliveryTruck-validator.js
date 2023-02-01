@@ -9,6 +9,12 @@ const getDeliveryTruckValidator = [
   check("id").custom(existDeliveryTruckById),
   validateFields,
 ];
+const getUserDeliveryTruckValidator = [
+  validarJWT,
+  check("id", "No es un id de Mongo válido").isMongoId(),
+  check("id").custom(existUserById),
+  validateFields,
+];
 const postDeliveryTruckValidator = [
   validarJWT,
   check("user", "No es un id de Mongo válido").isMongoId(),
@@ -41,4 +47,5 @@ module.exports = {
   postDeliveryTruckValidator,
   putDeliveryTruckValidator,
   deleteDeliveryTruckValidator,
+  getUserDeliveryTruckValidator
 };

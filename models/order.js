@@ -37,6 +37,7 @@ const OrderSchema = new Schema(
     total             : { type: Number, required: true },
     
     status            :{ type: String, default: 'Pendiente' },
+    active            :{ type: Boolean, default: false },
     
     state              : {type: Boolean, default: true},
     

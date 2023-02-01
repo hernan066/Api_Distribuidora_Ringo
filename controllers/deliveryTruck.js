@@ -9,12 +9,11 @@ const getDeliveryTrucks = async (req, res = response) => {
     const [total, deliveryTrucks] = await Promise.all([
       DeliveryTruck.countDocuments(query),
       DeliveryTruck.find(query)
-      .populate("distributor")
-      .populate("user")
-      .populate("defaultZone")
-      .skip(Number(from))
-      .limit(Number(limit))
-      
+        .populate("distributor")
+        .populate("user")
+        .populate("defaultZone")
+        .skip(Number(from))
+        .limit(Number(limit)),
     ]);
 
     res.status(200).json({
@@ -54,12 +53,37 @@ const getDeliveryTruck = async (req, res = response) => {
     });
   }
 };
+const getUserDeliveryTruck = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const deliveryTruck = await DeliveryTruck.find({ user: id, state: true })
+      .populate("distributor")
+      .populate("user", ["name", "lastName", "phone", "email"])
+      .populate("defaultZone", ["name", "cost"]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        deliveryTruck,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 const postDeliveryTruck = async (req, res = response) => {
   try {
     const { state, ...body } = req.body;
 
-    const deliveryTruckDB = await DeliveryTruck.findOne({ patent: body.patent });
+    const deliveryTruckDB = await DeliveryTruck.findOne({
+      patent: body.patent,
+    });
 
     if (deliveryTruckDB) {
       return res.status(400).json({
@@ -98,9 +122,9 @@ const putDeliveryTruck = async (req, res = response) => {
     const { id } = req.params;
     const { state, ...data } = req.body;
 
-    const deliveryTruck = await DeliveryTruck.findByIdAndUpdate(id, data, { new: true });
-
-    
+    const deliveryTruck = await DeliveryTruck.findByIdAndUpdate(id, data, {
+      new: true,
+    });
 
     res.status(200).json({
       ok: true,
@@ -142,4 +166,5 @@ module.exports = {
   getDeliveryTruck,
   putDeliveryTruck,
   deleteDeliveryTruck,
+  getUserDeliveryTruck,
 };
