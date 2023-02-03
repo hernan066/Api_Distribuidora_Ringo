@@ -39,7 +39,9 @@ const OrderSchema = new Schema(
     status            :{ type: String, default: 'Pendiente' },
     active            :{ type: Boolean, default: false },
     
-    state              : {type: Boolean, default: true},
+    active            :{ type: Boolean, default: false },
+    
+    commentary        : {type: String},
     
    
   },
