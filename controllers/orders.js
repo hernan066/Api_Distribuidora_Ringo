@@ -132,15 +132,8 @@ const putOrder = async (req, res = response) => {
 const deleteOrder = async (req, res = response) => {
   try {
     const { id } = req.params;
-    //const data = await Order.findByIdAndUpdate(id, { state: false }, { new: true });
-    const order = await Order.find({ id, state: true })
+     await Order.findByIdAndUpdate(id, { state: false }, { new: true });
     
-    order.state = false
-
-     // Guardar DB
-     await order.save();
-
-    console.log(data)
 
     res.status(200).json({
       ok: true,
