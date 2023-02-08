@@ -132,11 +132,20 @@ const putOrder = async (req, res = response) => {
 const deleteOrder = async (req, res = response) => {
   try {
     const { id } = req.params;
-    await Order.findByIdAndUpdate(id, { state: false }, { new: true });
+    //const data = await Order.findByIdAndUpdate(id, { state: false }, { new: true });
+    const order = await Order.find({ id, state: true })
+    
+    order.state = false
+
+     // Guardar DB
+     await order.save();
+
+    console.log(data)
 
     res.status(200).json({
       ok: true,
       status: 200,
+      
     });
   } catch (error) {
     res.status(500).json({
