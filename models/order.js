@@ -1,21 +1,26 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 const OrderSchema = new Schema(
-{
-      userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-      
-      orderItems: [{
-      productId     : { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-      name          : {type: String,required:true },
-      unit          : {type: String},
-      description   : {type: String},
-      img           : {type: String },
-      totalQuantity : { type: Number, required: true },
-      totalPrice    : { type: Number, required: true },
-      unitPrice     : { type: Number, required: true },
-      
-  }],
-    
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+
+    orderItems: [
+      {
+        productId: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        name          : { type: String, required: true },
+        unit          : { type: String },
+        description   : { type: String },
+        img           : { type: String },
+        totalQuantity : { type: Number, required: true },
+        totalPrice    : { type: Number, required: true },
+        unitPrice     : { type: Number, required: true },
+      },
+    ],
+
     shippingAddress: {
       name        : { type: String, required: true },
       lastName    : { type: String, required: true },
@@ -26,24 +31,28 @@ const OrderSchema = new Schema(
       city        : { type: String },
       province    : { type: String },
       zip         : { type: Number },
-     
-  },
-    deliveryTruck     : {type: Schema.Types.ObjectId,ref: 'DeliveryTruck',},
-    employee          : {type: Schema.Types.ObjectId,ref: 'Employee',},
-    deliveryZone      : {type: Schema.Types.ObjectId,ref: 'DeliveryZone',},
-    numberOfItems     : { type: Number, required: true },
-    tax               : { type: Number},
-    subTotal          : { type: Number, required: true },
-    total             : { type: Number, required: true },
+    },
     
-    status            :{ type: String, default: 'Pendiente' },
-    active            :{ type: Boolean, default: false },
+    deliveryTruck   : { type: Schema.Types.ObjectId, ref: "DeliveryTruck" },
+    employee        : { type: Schema.Types.ObjectId, ref: "Employee" },
+    deliveryZone    : { type: Schema.Types.ObjectId, ref: "DeliveryZone" },
+    numberOfItems   : { type: Number, required: true },
+    tax             : { type: Number },
+    subTotal        : { type: Number, required: true },
+    total           : { type: Number, required: true },
+
+    status      : { type: String, default: "Pendiente" },
+    active      : { type: Boolean, default: false },
+
+    commentary  : { type: String },
     
-    state            :{ type: Boolean, default: true },
+    payment: {
+      cash      : { type: Number },
+      transfer  : { type: Number },
+      debt      : { type: Number },
+    },
     
-    commentary        : {type: String},
-    
-   
+    state       : { type: Boolean, default: true },
   },
   { timestamps: true }
 );
