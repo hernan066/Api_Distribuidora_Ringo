@@ -47,10 +47,12 @@ const OrderSchema = new Schema(
     commentary  : { type: String },
     
     payment: {
-      cash      : { type: Number },
-      transfer  : { type: Number },
-      debt      : { type: Number },
+      cash      : { type: Number, default: 0 },
+      transfer  : { type: Number, default: 0 },
+      debt      : { type: Number, default: 0 },
     },
+    
+    paid        : { type: Boolean, default: false },
     
     state       : { type: Boolean, default: true },
   },
