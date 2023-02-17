@@ -95,9 +95,9 @@ const postUser = async (req, res = response) => {
       ok: true,
       status: 200,
       msg: "Usuario registrado correctamente",
-      data:{
-        id: user._id
-      }
+      data: {
+        id: user._id,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -237,8 +237,6 @@ const putUserChangePassword = async (req, res = response) => {
 
     const user = await User.findById(id);
 
-   
-
     if (!bcryptjs.compareSync(password, user.password)) {
       return res.status(400).json({
         ok: false,
@@ -248,14 +246,11 @@ const putUserChangePassword = async (req, res = response) => {
     }
 
     const salt = bcryptjs.genSaltSync();
-    const updatePassword = bcryptjs.hashSync(newPassword, salt);
+    user.password = bcryptjs.hashSync(newPassword, salt);
 
-    const data = {
-      ...user,
-      password: updatePassword
-    }
-
-    await User.findByIdAndUpdate(id, data);
+    await User.findByIdAndUpdate(id, user, {
+      new: true,
+    });
 
     res.status(200).json({
       ok: true,
@@ -263,7 +258,6 @@ const putUserChangePassword = async (req, res = response) => {
       msg: "Contraseña cambiada correctamente",
     });
   } catch (error) {
-    
     res.status(500).json({
       ok: false,
       status: 500,
