@@ -7,7 +7,9 @@ const ClientSchema = Schema({
     cuit                : {type: Number,},
     contactMeans        : {type: String,},
     campaignName        : { type: String },
+    debt                : {type: Number, default: 0},
     state               : {type: Boolean,default: true,required: true},
+  
 },
 { timestamps: true }
 );

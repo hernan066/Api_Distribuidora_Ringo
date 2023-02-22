@@ -52,9 +52,11 @@ const OrderSchema = new Schema(
       debt      : { type: Number, default: 0 },
     },
     
-    paid        : { type: Boolean, default: false },
+    paid          : { type: Boolean, default: false },
     
-    state       : { type: Boolean, default: true },
+    deliveryDate  : { type: Date },
+    
+    state         : { type: Boolean, default: true },
   },
   { timestamps: true }
 );
