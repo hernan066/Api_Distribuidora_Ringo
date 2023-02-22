@@ -9,6 +9,12 @@ const getClientValidator = [
   check("id").custom(existClientById),
   validateFields,
 ];
+const getClientUserValidator = [
+  validarJWT,
+  check("id", "No es un id de Mongo válido").isMongoId(),
+  check("id").custom(existUserById),
+  validateFields,
+];
 const postClientValidator = [
  
   check("user", "No es un id de Mongo válido").isMongoId(),
@@ -39,4 +45,5 @@ module.exports = {
   postClientValidator,
   putClientValidator,
   deleteClientValidator,
+  getClientUserValidator
 };

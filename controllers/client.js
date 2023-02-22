@@ -136,10 +136,32 @@ const deleteClient = async (req, res = response) => {
   }
 };
 
+const getUserClient = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const client = await Client.find({ user: id, state: true });
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        client,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   postClient,
   getClients,
   getClient,
   putClient,
   deleteClient,
+  getUserClient,
 };
