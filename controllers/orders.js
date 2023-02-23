@@ -172,6 +172,29 @@ const getUserOrder = async (req, res = response) => {
     });
   }
 };
+const getClientOrder = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const orders = await Order.find({ client: id, state: true })
+      .populate("deliveryTruck")
+      .populate("employee")
+      .populate("deliveryZone");
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        orders,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   postOrder,
@@ -179,5 +202,6 @@ module.exports = {
   getOrder,
   putOrder,
   deleteOrder,
-  getUserOrder
+  getUserOrder,
+  getClientOrder
 };

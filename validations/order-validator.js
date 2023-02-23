@@ -1,6 +1,6 @@
 const { validateFields, validarJWT, isAdminRole } = require("../middlewares");
 const { check} = require("express-validator");
-const { existOrderById, existUserById,  existProductById } = require("../helpers");
+const { existOrderById, existUserById,  existProductById, existClientById } = require("../helpers");
 
 
 const getOrderValidator = [
@@ -13,6 +13,12 @@ const getOrderUserValidator = [
   validarJWT,
   check("id", "No es un id de Mongo válido").isMongoId(),
   check("id").custom(existUserById),
+  validateFields,
+];
+const getOrderClientValidator = [
+  validarJWT,
+  check("id", "No es un id de Mongo válido").isMongoId(),
+  check("id").custom(existClientById),
   validateFields,
 ];
 const postOrderValidator = [
@@ -60,5 +66,6 @@ module.exports = {
   postOrderValidator,
   putOrderValidator,
   deleteOrderValidator,
-  getOrderUserValidator
+  getOrderUserValidator,
+  getOrderClientValidator
 };

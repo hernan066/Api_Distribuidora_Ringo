@@ -1,6 +1,6 @@
 const { Router } = require("express");
-const {  getOrders, postOrder, putOrder, deleteOrder, getOrder, getUserOrder } = require("../controllers/orders");
-const { postOrderValidator, getOrderValidator, putOrderValidator, deleteOrderValidator, getOrderUserValidator } = require("../validations/order-validator");
+const {  getOrders, postOrder, putOrder, deleteOrder, getOrder, getUserOrder, getClientOrder } = require("../controllers/orders");
+const { postOrderValidator, getOrderValidator, putOrderValidator, deleteOrderValidator, getOrderUserValidator, getOrderClientValidator } = require("../validations/order-validator");
 
 const router = Router();
 
@@ -18,6 +18,7 @@ router.get("/", getOrders);
 
 router.get("/:id", getOrderValidator , getOrder);
 router.get("/user/:id", getOrderUserValidator , getUserOrder);
+router.get("/client/:id", getOrderClientValidator , getClientOrder);
 
 router.post("/", postOrderValidator, postOrder);
 
