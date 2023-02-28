@@ -206,15 +206,11 @@ const getOrdersToday = async (req, res = response) => {
     let from = new Date(
       today.getUTCFullYear(),
       today.getUTCMonth(),
-      today.getUTCDate(),
-      03,
-      00,
-      00,
-      000
+      today.getUTCDate()
     );
     let to = new Date(
       today.getUTCFullYear(),
-      today.getUTCMonth(),
+      today.getUTCMonth() + 1,
       today.getUTCDate(),
       23,
       59,
