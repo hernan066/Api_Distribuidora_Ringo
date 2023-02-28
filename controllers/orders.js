@@ -1,3 +1,4 @@
+const { isThisQuarter } = require("date-fns");
 const { response } = require("express");
 const { Order } = require("../models");
 
@@ -219,13 +220,45 @@ const getOrdersToday = async (req, res = response) => {
 
     const query = {
       state: true,
-      $and: [{ updatedAt: { $gte: from } }, { updatedAt: { $lte: to } }],
+      $and: [{ deliveryDate: { $gte: from } }, { deliveryDate: { $lte: to } }],
     };
 
     const [total, orders] = await Promise.all([
       Order.countDocuments(query),
       Order.find(query)
 
+        .populate("deliveryTruck")
+        .populate("employee")
+        .populate("deliveryZone"),
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total,
+      data: {
+        orders,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
+const getOrdersActives = async (req, res = response) => {
+  try {
+    const { limit = 1000, from = 0 } = req.query;
+    const query = { state: true, active: true };
+
+    const [total, orders] = await Promise.all([
+      Order.countDocuments(query),
+      Order.find(query)
+        .skip(Number(from))
+        .limit(Number(limit))
         .populate("deliveryTruck")
         .populate("employee")
         .populate("deliveryZone"),
@@ -257,4 +290,5 @@ module.exports = {
   getUserOrder,
   getClientOrder,
   getOrdersToday,
+  getOrdersActives,
 };
