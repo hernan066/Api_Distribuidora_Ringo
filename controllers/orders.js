@@ -236,6 +236,8 @@ const getOrdersToday = async (req, res = response) => {
       ok: true,
       status: 200,
       total,
+      from,
+      to,
       data: {
         orders,
       },
