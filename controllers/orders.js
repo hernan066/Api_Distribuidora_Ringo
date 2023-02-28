@@ -3,7 +3,7 @@ const { Order } = require("../models");
 
 const getOrders = async (req, res = response) => {
   try {
-    const { limit = 1000, from = 0, active, delivery= '' } = req.query;
+    const { limit = 1000, from = 0, active, delivery = "" } = req.query;
     const query = { state: true };
 
     const [total, orders] = await Promise.all([
@@ -15,15 +15,19 @@ const getOrders = async (req, res = response) => {
         .populate("employee")
         .populate("deliveryZone"),
     ]);
-   
-    if(delivery && delivery !== '' && active === 'true'){
-      console.log('entra', delivery)
-      const ordersActives = await Order.find({ active: true, deliveryTruck: delivery,  state: true })
-      .populate("deliveryTruck")
-      .populate("employee")
-      .populate("deliveryZone")
 
-      return  res.status(200).json({
+    if (delivery && delivery !== "" && active === "true") {
+      console.log("entra", delivery);
+      const ordersActives = await Order.find({
+        active: true,
+        deliveryTruck: delivery,
+        state: true,
+      })
+        .populate("deliveryTruck")
+        .populate("employee")
+        .populate("deliveryZone");
+
+      return res.status(200).json({
         ok: true,
         status: 200,
         total: ordersActives.length,
@@ -132,13 +136,11 @@ const putOrder = async (req, res = response) => {
 const deleteOrder = async (req, res = response) => {
   try {
     const { id } = req.params;
-     await Order.findByIdAndUpdate(id, { state: false }, { new: true });
-    
+    await Order.findByIdAndUpdate(id, { state: false }, { new: true });
 
     res.status(200).json({
       ok: true,
       status: 200,
-      
     });
   } catch (error) {
     res.status(500).json({
@@ -196,6 +198,56 @@ const getClientOrder = async (req, res = response) => {
   }
 };
 
+const getOrdersToday = async (req, res = response) => {
+  try {
+    let today = new Date();
+
+    let from = new Date(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate()
+    );
+    let to = new Date(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate(),
+      23,
+      59,
+      59,
+      999
+    );
+
+    const query = {
+      state: true,
+      $and: [{ updatedAt: { $gte: from } }, { updatedAt: { $lte: to } }],
+    };
+
+    const [total, orders] = await Promise.all([
+      Order.countDocuments(query),
+      Order.find(query)
+
+        .populate("deliveryTruck")
+        .populate("employee")
+        .populate("deliveryZone"),
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total,
+      data: {
+        orders,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   postOrder,
   getOrders,
@@ -203,5 +255,6 @@ module.exports = {
   putOrder,
   deleteOrder,
   getUserOrder,
-  getClientOrder
+  getClientOrder,
+  getOrdersToday,
 };
