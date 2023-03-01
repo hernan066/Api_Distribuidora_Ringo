@@ -253,6 +253,7 @@ const getOrdersByDay = async (req, res = response) => {
   try {
     const {days}= req.params
     const orders = await Order.find({
+      state: true,
       deliveryDate: {
         $lt: new Date(),
         $gte: new Date(new Date().setDate(new Date().getDate() - +days)),
