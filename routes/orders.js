@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const {  getOrders, postOrder, putOrder, deleteOrder, getOrder, getUserOrder, getClientOrder, getOrdersToday, getOrdersActives } = require("../controllers/orders");
+const {  getOrders, postOrder, putOrder, deleteOrder, getOrder, getUserOrder, getClientOrder, getOrdersToday, getOrdersActives, getOrdersByDay } = require("../controllers/orders");
 const { postOrderValidator, getOrderValidator, putOrderValidator, deleteOrderValidator, getOrderUserValidator, getOrderClientValidator } = require("../validations/order-validator");
 
 const router = Router();
@@ -17,6 +17,7 @@ router.delete("/:id",[validarUsuarioWhatsapp, validateFields], postNewOrder); */
 router.get("/", getOrders);
 router.get("/today", getOrdersToday);
 router.get("/active", getOrdersActives);
+router.get("/days/:days", getOrdersByDay);
 
 router.get("/:id", getOrderValidator , getOrder);
 router.get("/user/:id", getOrderUserValidator , getUserOrder);

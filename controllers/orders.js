@@ -1,4 +1,3 @@
-const { isThisQuarter } = require("date-fns");
 const { response } = require("express");
 const { Order } = require("../models");
 
@@ -210,7 +209,7 @@ const getOrdersToday = async (req, res = response) => {
     );
     let to = new Date(
       today.getUTCFullYear(),
-      today.getUTCMonth() + 1,
+      today.getUTCMonth(),
       today.getUTCDate(),
       23,
       59,
@@ -238,6 +237,38 @@ const getOrdersToday = async (req, res = response) => {
       total,
       from,
       to,
+      data: {
+        orders,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+const getOrdersByDay = async (req, res = response) => {
+  try {
+    const {days}= req.params
+    const orders = await Order.find({
+      deliveryDate: {
+        $lt: new Date(),
+        $gte: new Date(new Date().setDate(new Date().getDate() - +days)),
+      },
+    })
+      .populate("deliveryTruck")
+      .populate("employee")
+      .populate("deliveryZone");
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total : orders.length,
+      from: new Date(),
+      to: new Date(new Date().setDate(new Date().getDate() - +days)),
+      range: +days,
       data: {
         orders,
       },
@@ -293,4 +324,5 @@ module.exports = {
   getClientOrder,
   getOrdersToday,
   getOrdersActives,
+  getOrdersByDay,
 };
