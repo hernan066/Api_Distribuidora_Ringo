@@ -259,6 +259,7 @@ const getOrdersByDay = async (req, res = response) => {
         $gte: new Date(new Date().setDate(new Date().getDate() - +days)),
       },
     })
+      .sort({deliveryDate: -1})
       .populate("deliveryTruck")
       .populate("employee")
       .populate("deliveryZone");
