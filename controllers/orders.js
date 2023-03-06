@@ -251,7 +251,7 @@ const getOrdersToday = async (req, res = response) => {
 };
 const getOrdersByDay = async (req, res = response) => {
   try {
-    const {days}= req.params
+    const { days } = req.params;
     const orders = await Order.find({
       state: true,
       deliveryDate: {
@@ -259,7 +259,7 @@ const getOrdersByDay = async (req, res = response) => {
         $gte: new Date(new Date().setDate(new Date().getDate() - +days)),
       },
     })
-      .sort({deliveryDate: 1})
+      .sort({ deliveryDate: 1 })
       .populate("deliveryTruck")
       .populate("employee")
       .populate("deliveryZone");
@@ -267,7 +267,7 @@ const getOrdersByDay = async (req, res = response) => {
     res.status(200).json({
       ok: true,
       status: 200,
-      total : orders.length,
+      total: orders.length,
       from: new Date(),
       to: new Date(new Date().setDate(new Date().getDate() - +days)),
       range: +days,
