@@ -45,8 +45,8 @@ const emailExist = async (email = "") => {
   }
 };
 const phoneExist = async (phone) => {
-  
-  const existPhone = await User.findOne({ phone });
+  const state = true
+  const existPhone = await User.findOne({ phone, state });
   if (existPhone) {
     throw new Error(`El teléfono ${phone}, ya está registrado`);
   }
