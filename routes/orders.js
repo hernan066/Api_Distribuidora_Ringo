@@ -19,6 +19,7 @@ const {
   deleteOrderValidator,
   getOrderUserValidator,
   getOrderClientValidator,
+  postOrderLocalValidator,
 } = require("../validations/order-validator");
 
 const router = Router();
@@ -43,6 +44,7 @@ router.get("/user/:id", getOrderUserValidator, getUserOrder);
 router.get("/client/:id", getOrderClientValidator, getClientOrder);
 
 router.post("/", postOrderValidator, postOrder);
+router.post("/local", postOrderLocalValidator, postOrder);
 
 router.put("/:id", putOrderValidator, putOrder);
 
