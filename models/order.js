@@ -23,10 +23,10 @@ const OrderSchema = new Schema(
     ],
 
     shippingAddress: {
-      name        : { type: String, required: true },
-      lastName    : { type: String, required: true },
-      phone       : { type: String, required: true },
-      address     : { type: String, required: true },
+      name        : { type: String },
+      lastName    : { type: String },
+      phone       : { type: String },
+      address     : { type: String },
       flor        : { type: String },
       department  : { type: String },
       city        : { type: String },
