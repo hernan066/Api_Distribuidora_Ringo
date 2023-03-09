@@ -6,6 +6,9 @@ const ProductLotSchema = Schema({
     quantity        : {type: Number,},
     cost            : {type: Number,},
     stock           : {type: Number,},
+    location        : {type: String,},
+    moveDate        : {type: Date,},
+    
   
     state           : {type: Boolean,default: true,required: true},
 },{ timestamps: true });
