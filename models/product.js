@@ -13,6 +13,7 @@ const ProductSchema = Schema({
     category    : {type: Schema.Types.ObjectId,ref: 'Category'},
    
     stock:[ {
+        productId       : {type: String },
         name            : {type: String },
         img             : {type: String },
         supplier        : {type: String },
