@@ -11,6 +11,18 @@ const ProductSchema = Schema({
     state       : {type: Boolean,default: true,required: true},
     user        : {type: Schema.Types.ObjectId,ref: 'User'},
     category    : {type: Schema.Types.ObjectId,ref: 'Category'},
+   
+    stock:[ {
+        supplier        : {type: String},
+        quantity        : {type: Number,},
+        cost            : {type: Number,},
+        unityCost       : {type: Number,},
+        stock           : {type: Number,},
+        location        : {type: String,},
+        moveDate        : {type: Date,},
+        createdStock    : {type: Date,},
+        updateStock     : {type: Date,},
+      }],
 },{ timestamps: true });
 
 
