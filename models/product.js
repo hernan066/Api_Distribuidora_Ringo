@@ -13,15 +13,17 @@ const ProductSchema = Schema({
     category    : {type: Schema.Types.ObjectId,ref: 'Category'},
    
     stock:[ {
-        supplier        : {type: String},
-        quantity        : {type: Number,},
-        cost            : {type: Number,},
-        unityCost       : {type: Number,},
-        stock           : {type: Number,},
-        location        : {type: String,},
-        moveDate        : {type: Date,},
-        createdStock    : {type: Date,},
-        updateStock     : {type: Date,},
+        name            : {type: String },
+        img             : {type: String },
+        supplier        : {type: String },
+        quantity        : {type: Number },
+        cost            : {type: Number },
+        unityCost       : {type: Number },
+        stock           : {type: Number },
+        location        : {type: String },
+        moveDate        : {type: Date },
+        createdStock    : {type: Date },
+        updateStock     : {type: Date },
       }],
 },{ timestamps: true });
 
