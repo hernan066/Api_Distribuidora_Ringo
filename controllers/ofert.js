@@ -19,6 +19,7 @@ const getOferts = async (req, res = response) => {
           "brand",
           "category",
           "type",
+          "stock"
         ]),
     ]);
 
@@ -50,6 +51,7 @@ const getOfert = async (req, res = response) => {
       "brand",
       "category",
       "type",
+      "stock"
     ]);
 
     res.status(200).json({
