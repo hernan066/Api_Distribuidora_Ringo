@@ -19,9 +19,9 @@ const getOferts = async (req, res = response) => {
           "brand",
           "category",
           "type",
-          "stock"
+          "stock",
         ])
-        .sort(1),
+        .sort({ "product.name": 1 }),
     ]);
 
     res.status(200).json({
@@ -52,7 +52,7 @@ const getOfert = async (req, res = response) => {
       "brand",
       "category",
       "type",
-      "stock"
+      "stock",
     ]);
 
     res.status(200).json({
