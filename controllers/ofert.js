@@ -20,16 +20,25 @@ const getOferts = async (req, res = response) => {
           "category",
           "type",
           "stock",
-        ])
-        .sort({ "product.name": 1 }),
+        ]),
     ]);
+
+    const sortOferts = oferts.sort(function (a, b) {
+      if (a.description < b.description) {
+        return -1;
+      }
+      if (a.description > b.description) {
+        return 1;
+      }
+      return 0;
+    });
 
     res.status(200).json({
       ok: true,
       status: 200,
       total,
       data: {
-        oferts,
+        oferts: sortOferts,
       },
     });
   } catch (error) {
