@@ -20,7 +20,8 @@ const getOferts = async (req, res = response) => {
           "category",
           "type",
           "stock"
-        ]),
+        ])
+        .sort(1),
     ]);
 
     res.status(200).json({
