@@ -14,11 +14,15 @@ const getProducts = async (req, res = response) => {
       .limit(Number(limit)),
   ]);
 
-  const orderProducts = products.sort(function(a, b){
-    if(a.name.toLowerCase() < b.name.toLowerCase()) { return -1; }
-    if(a.name.toLowerCase() > b.name.toLowerCase()) { return 1; }
+  const orderProducts = products.sort(function (a, b) {
+    if (a.name.toLowerCase() < b.name.toLowerCase()) {
+      return -1;
+    }
+    if (a.name.toLowerCase() > b.name.toLowerCase()) {
+      return 1;
+    }
     return 0;
-})
+  });
 
   res.json({
     total,
@@ -73,6 +77,47 @@ const deleteProduct = async (req, res = response) => {
 
   res.json(productDelete);
 };
+const updateProductStock = async (req, res = response) => {
+  const { stockId, totalQuantity } = req.body;
+  const { id } = req.params;
+  try {
+    const productEdit = await Product.findById(id);
+
+    const [stockToEdit] = productEdit.stock.filter(
+      (stock) => stock._id == stockId
+    );
+
+    const restOfStock = productEdit.stock.filter(
+      (stock) => stock._id != stockId
+    );
+    stockToEdit.stock = stockToEdit.stock - totalQuantity;
+    stockToEdit.updateStock = new Date();
+
+    const productE = {
+      ...productEdit,
+      stock: [...restOfStock, stockToEdit],
+    };
+
+    const product = await Product.findByIdAndUpdate(id, productE, {
+      new: true,
+    });
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        product,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   postProduct,
@@ -80,4 +125,5 @@ module.exports = {
   getProduct,
   putProduct,
   deleteProduct,
+  updateProductStock,
 };
