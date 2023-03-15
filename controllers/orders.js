@@ -13,7 +13,8 @@ const getOrders = async (req, res = response) => {
         .limit(Number(limit))
         .populate("deliveryTruck")
         .populate("employee")
-        .populate("deliveryZone"),
+        .populate("deliveryZone")
+        .sort({ createdAt: -1 }),
     ]);
 
     if (delivery && delivery !== "" && active === "true") {
@@ -60,8 +61,7 @@ const getOrder = async (req, res = response) => {
     const order = await Order.findById(id)
       .populate("deliveryTruck")
       .populate("employee")
-      .populate("deliveryZone")
-      .sort({ createdAt: -1 });
+      .populate("deliveryZone");
 
     res.status(200).json({
       ok: true,
