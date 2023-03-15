@@ -61,7 +61,7 @@ const getOrder = async (req, res = response) => {
       .populate("deliveryTruck")
       .populate("employee")
       .populate("deliveryZone")
-      .sort({ createdAt: 1 });
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       ok: true,
