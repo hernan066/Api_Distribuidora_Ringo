@@ -309,6 +309,9 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           count: {
             $sum: "$orderItems.totalQuantity",
           },
+          total: {
+            $sum: "$orderItems.totalPrice",
+          },
         },
       },
       {
@@ -326,9 +329,10 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           name: "$_id.name",
           img: "$_id.img",
           count: 1,
+          total: 1,
         },
       },
-       {
+      {
         $project: {
           _id: 0,
           date: {
@@ -337,8 +341,9 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           name: 1,
           img: 1,
           count: 1,
+          total: 1,
         },
-      }, 
+      },
     ]);
 
     res.status(200).json({
@@ -372,7 +377,6 @@ const reportTotalOrdersProductsByMonth = async (req, res = response) => {
       {
         $group: {
           _id: {
-            
             month: {
               $month: "$deliveryDate",
             },
@@ -390,7 +394,7 @@ const reportTotalOrdersProductsByMonth = async (req, res = response) => {
       {
         $project: {
           _id: 0,
-          
+
           month: {
             $toString: "$_id.month",
           },
@@ -402,17 +406,17 @@ const reportTotalOrdersProductsByMonth = async (req, res = response) => {
           count: 1,
         },
       },
-       {
+      {
         $project: {
           _id: 0,
           date: {
-            $concat: [ "$month", "-", "$year"],
+            $concat: ["$month", "-", "$year"],
           },
           name: 1,
           img: 1,
           count: 1,
         },
-      }, 
+      },
     ]);
 
     res.status(200).json({
