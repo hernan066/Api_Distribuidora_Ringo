@@ -292,6 +292,15 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
         },
       },
       {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+        },
+      },
+      {
         $group: {
           _id: {
             day: {
@@ -312,6 +321,9 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           total: {
             $sum: "$orderItems.totalPrice",
           },
+          totalCost: {
+            $sum: "$CostTotal",
+          },
         },
       },
       {
@@ -330,6 +342,7 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           img: "$_id.img",
           count: 1,
           total: 1,
+          totalCost: 1,
         },
       },
       {
@@ -342,6 +355,10 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           img: 1,
           count: 1,
           total: 1,
+          totalCost: 1,
+          totalProfits: {
+            $subtract: ["$total", "$totalCost"],
+          },
         },
       },
     ]);
