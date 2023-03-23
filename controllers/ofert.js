@@ -79,6 +79,36 @@ const getOfert = async (req, res = response) => {
     });
   }
 };
+const getOfertByProductId = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const ofert = await Ofert.find({ product: id, state: true })
+    .populate("product", [
+      "name",
+      "description",
+      "unit",
+      "img",
+      "brand",
+      "category",
+      "type",
+      "stock",
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        ofert,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 const postOfert = async (req, res = response) => {
   try {
@@ -155,6 +185,7 @@ module.exports = {
   postOfert,
   getOferts,
   getOfert,
+  getOfertByProductId,
   putOfert,
   deleteOfert,
 };
