@@ -14,7 +14,7 @@ router.get('/', getOferts );
 
 // Obtener una marca por id - publico
 router.get('/:id', getOfertValidator , getOfert );
-router.get('/product/:id', getOfertValidator , getOfertByProductId );
+router.get('/product/:id', getOfertByProductId );
 
 // Crear marca - privado - cualquier persona con un token válido
 router.post('/', postOfertValidator , postOfert );
