@@ -119,6 +119,37 @@ const updateProductStock = async (req, res = response) => {
   }
 };
 
+const getOfertByProductId = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const ofert = await Ofert.findOne({ product: id, state: true })
+    .populate("product", [
+      "name",
+      "description",
+      "unit",
+      "img",
+      "brand",
+      "category",
+      "type",
+      "stock",
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        ofert,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   postProduct,
   getProducts,
@@ -126,4 +157,5 @@ module.exports = {
   putProduct,
   deleteProduct,
   updateProductStock,
+  getOfertByProductId
 };
