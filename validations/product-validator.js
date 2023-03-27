@@ -13,7 +13,7 @@ const postProductValidator = [
     check('brand','La marca es obligatoria').not().isEmpty(),
     check('unit','La unidad es obligatoria').not().isEmpty(),
     check('type','El tipo es obligatorio').not().isEmpty(),
-    check('description','La descripción es obligatoria').not().isEmpty(),
+/*     check('description','La descripción es obligatoria').not().isEmpty(), */
     check('category','No es un id de Mongo').isMongoId(),
     check('category').custom( existCategoryById ),
     validateFields
