@@ -68,14 +68,29 @@ const putProduct = async (req, res = response) => {
 };
 
 const deleteProduct = async (req, res = response) => {
-  const { id } = req.params;
-  const productDelete = await Product.findByIdAndUpdate(
-    id,
-    { state: false },
-    { new: true }
-  );
+  try {
+    const { id } = req.params;
+    const productDelete = await Product.findByIdAndUpdate(
+      id,
+      { state: false },
+      { new: true }
+    );
 
-  res.json(productDelete);
+    const data = await Ofert.updateMany({ product: id }, { state: false });
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      msg: "Producto borrado ",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
 };
 const updateProductStock = async (req, res = response) => {
   const { stockId, totalQuantity } = req.body;
@@ -122,17 +137,19 @@ const updateProductStock = async (req, res = response) => {
 const getOfertByProductId = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const ofert = await Ofert.findOne({ product: id, state: true })
-    .populate("product", [
-      "name",
-      "description",
-      "unit",
-      "img",
-      "brand",
-      "category",
-      "type",
-      "stock",
-    ]);
+    const ofert = await Ofert.findOne({ product: id, state: true }).populate(
+      "product",
+      [
+        "name",
+        "description",
+        "unit",
+        "img",
+        "brand",
+        "category",
+        "type",
+        "stock",
+      ]
+    );
 
     res.status(200).json({
       ok: true,
@@ -157,5 +174,5 @@ module.exports = {
   putProduct,
   deleteProduct,
   updateProductStock,
-  getOfertByProductId
+  getOfertByProductId,
 };
