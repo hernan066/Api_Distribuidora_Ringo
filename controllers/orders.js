@@ -3,7 +3,7 @@ const { Order } = require("../models");
 
 const getOrders = async (req, res = response) => {
   try {
-    const { limit = 1000, from = 0, active, delivery = "" } = req.query;
+    const { limit = 10000000, from = 0, active, delivery = "" } = req.query;
     const query = { state: true };
 
     const [total, orders] = await Promise.all([
