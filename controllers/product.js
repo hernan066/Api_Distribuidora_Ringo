@@ -211,7 +211,7 @@ const updateProductStock1 = async (req, res = response) => {
         let acc = [];
         let rest = num;
         for (let i = 0; i < arr.length; i++) {
-          if (rest > 0) {
+          if (rest > 0 && arr[i].stock > 0) {
             acc = [
               ...acc,
               {
