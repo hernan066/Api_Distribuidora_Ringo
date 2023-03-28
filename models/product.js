@@ -25,6 +25,7 @@ const ProductSchema = Schema({
         moveDate        : {type: Date },
         createdStock    : {type: Date },
         updateStock     : {type: Date },
+        return          : {type: Boolean, default: false },
       }],
 },{ timestamps: true });
 
