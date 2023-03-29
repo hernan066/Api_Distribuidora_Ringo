@@ -188,7 +188,7 @@ const updateProductStock1 = async (req, res = response) => {
   // si el numero es positivo restamos stock
   // si el numero es negativo sumamos stock
   // si es cero devolvemos error
-  const { totalQuantity } = req.body;
+  const { totalQuantity, stockId } = req.body;
   const { id } = req.params;
   try {
     const productEdit = await Product.findById(id);
@@ -276,29 +276,55 @@ const updateProductStock1 = async (req, res = response) => {
 
     //----------------negativo-----------------------
     if (totalQuantity < 0) {
-     // agrega stock al ultimo guardado
-      stock[stock.length -1].stock = stock[stock.length -1].stock + (-totalQuantity);
-      stock[stock.length -1].updateStock = new Date();
+      // agrega stock como stock de retorno
+
+      const [filterStock] = productEdit._doc.stock.filter(
+        (stock) => stock._id == stockId
+      );
+
+      const editStock = [
+        {
+          productId: filterStock.productId,
+          name: filterStock.name,
+          img: filterStock.img,
+          supplier: filterStock.supplier,
+          cost: filterStock.cost,
+          unityCost: filterStock.unityCost,
+          location: filterStock.location,
+          moveDate: filterStock.moveDate,
+          createdStock: filterStock.createdStock,
+          
+          stock: -totalQuantity,
+          quantity: -totalQuantity,
+          updateStock: new Date(),
+          return: true,
+        },
+        ...productEdit._doc.stock,
+      ];
+      /* stock[stock.length - 1].stock =
+        stock[stock.length - 1].stock + -totalQuantity;
+      stock[stock.length - 1].updateStock = new Date(); */
 
       const productE = {
         ...productEdit._doc,
-        stock,
+        stock: editStock,
       };
 
       const product = await Product.findByIdAndUpdate(id, productE, {
         new: true,
-      }); 
+      });
 
       return res.status(200).json({
         ok: true,
         status: 200,
+
         data: {
           product,
         },
       });
     }
-     //----------------cero-----------------------
-    if(totalQuantity == 0){
+    //----------------cero-----------------------
+    if (totalQuantity == 0) {
       return res.status(400).json({
         ok: false,
         status: 400,
@@ -313,7 +339,6 @@ const updateProductStock1 = async (req, res = response) => {
       msg: error.message,
     });
   }
-
 };
 
 const updateProductStock = async (req, res = response) => {
