@@ -226,6 +226,7 @@ const updateProductStock1 = async (req, res = response) => {
                 location: arr[i].location,
                 moveDate: arr[i].moveDate,
                 createdStock: arr[i].createdStock,
+                return: arr[i].return,
                 stock: arr[i].stock - rest > 0 ? arr[i].stock - rest : 0,
                 updateStock: new Date(),
               },
@@ -249,6 +250,7 @@ const updateProductStock1 = async (req, res = response) => {
                 createdStock: arr[i].createdStock,
                 stock: arr[i].stock,
                 updateStock: arr[i].updateStock,
+                return: arr[i].return,
               },
             ];
           }
