@@ -451,6 +451,167 @@ const reportTotalOrdersProductsByMonth = async (req, res = response) => {
     });
   }
 };
+const reportTotalOrdersProductsByRange = async (req, res = response) => {
+  try {
+    const { from, to } = req.body; // "Tue, 21 Mar 2023 00:00:00 GMT"
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          deliveryDate: {
+            $gt: new Date(from),
+            $lt: new Date(to),
+          },
+        },
+      },
+      {
+        $unwind: {
+          path: "$orderItems",
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            name: "$orderItems.description",
+            img: "$orderItems.img",
+          },
+          count: {
+            $sum: "$orderItems.totalQuantity",
+          },
+          total: {
+            $sum: "$orderItems.totalPrice",
+          },
+          totalCost: {
+            $sum: "$CostTotal",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id.name",
+          img: "$_id.img",
+          count: 1,
+          total: 1,
+          totalCost: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      from,
+      to,
+      total: report.length,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
+  try {
+    const { from, to } = req.body; // "Tue, 21 Mar 2023 00:00:00 GMT"
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          deliveryDate: {
+            $gt: new Date(from),
+            $lt: new Date(to),
+          },
+        },
+      },
+      {
+        $unwind: {
+          path: "$orderItems",
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            id: "$orderItems.productId",
+          },
+          count: {
+            $sum: "$orderItems.totalQuantity",
+          },
+          total: {
+            $sum: "$orderItems.totalPrice",
+          },
+          totalCost: {
+            $sum: "$CostTotal",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id.id",
+          foreignField: "_id",
+          as: "productOrder",
+        },
+      },
+      {
+        $unwind: {
+          path: "$productOrder",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$productOrder._id",
+          name: "$productOrder.name",
+          img: "$productOrder.img",
+          count: 1,
+          total: 1,
+          totalCost: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      from,
+      to,
+      total: report.length,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 // clientes, total, por mes
 const reportNewClientByMonth = async (req, res = response) => {
   try {
@@ -521,5 +682,7 @@ module.exports = {
   reportTotalOrdersProducts,
   reportTotalOrdersProductsByDay,
   reportTotalOrdersProductsByMonth,
+  reportTotalOrdersProductsByRange,
+  reportTotalOrdersProductsByRangeTest,
   reportNewClientByMonth,
 };
