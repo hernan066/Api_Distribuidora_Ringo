@@ -503,6 +503,9 @@ const reportTotalOrdersProductsByRange = async (req, res = response) => {
           count: 1,
           total: 1,
           totalCost: 1,
+          totalProfits: {
+            $subtract: ["$total", "$totalCost"],
+          },
         },
       },
     ]);
@@ -527,7 +530,8 @@ const reportTotalOrdersProductsByRange = async (req, res = response) => {
 };
 const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
   try {
-    const { from, to } = req.body; // "Tue, 21 Mar 2023 00:00:00 GMT"
+    const { from, to } = req.body;
+    console.log(from, to) // "Tue, 21 Mar 2023 00:00:00 GMT"
     const report = await Order.aggregate([
       {
         $match: {
@@ -590,6 +594,9 @@ const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
           count: 1,
           total: 1,
           totalCost: 1,
+          totalProfits: {
+            $subtract: ["$total", "$totalCost"],
+          },
         },
       },
     ]);
