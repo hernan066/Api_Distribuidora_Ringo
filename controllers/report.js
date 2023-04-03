@@ -840,7 +840,7 @@ const reportTotalSellByRangeDay = async (req, res = response) => {
           totalSell: 1,
           totalCost: 1,
           date: {
-            $concat: ["$day", "-", "$month", "-", "$year"],
+            $concat: ["$month", "-", "$day", "-", "$year"],
           },
           totalProfits: {
             $subtract: ["$totalSell", "$totalCost"],
