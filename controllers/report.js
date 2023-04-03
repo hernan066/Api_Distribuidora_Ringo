@@ -734,17 +734,116 @@ const reportPaymentByRangeDay = async (req, res = response) => {
           cashTotal: 1,
           transferTotal: 1,
           debtTotal: 1,
-          
         },
       },
       {
         $project: {
-          total: { $sum: [ "$cashTotal", "$transferTotal", "$debtTotal" ]},
+          total: { $sum: ["$cashTotal", "$transferTotal", "$debtTotal"] },
           cashTotal: 1,
           transferTotal: 1,
           debtTotal: 1,
           date: {
             $concat: ["$day", "-", "$month", "-", "$year"],
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      from,
+      to,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+const reportTotalSellByRangeDay = async (req, res = response) => {
+  try {
+    const { from, to } = req.body;
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          deliveryDate: {
+            $gt: new Date(from),
+            $lt: new Date(to),
+          },
+        },
+      },
+      {
+        $unwind: {
+          path: "$orderItems",
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: {
+              $dayOfMonth: "$deliveryDate",
+            },
+            month: {
+              $month: "$deliveryDate",
+            },
+            year: {
+              $year: "$deliveryDate",
+            },
+          },
+          count: {
+            $sum: "$orderItems.totalQuantity",
+          },
+          totalSell: {
+            $sum: "$orderItems.totalPrice",
+          },
+          totalCost: {
+            $sum: "$CostTotal",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          day: {
+            $toString: "$_id.day",
+          },
+          month: {
+            $toString: "$_id.month",
+          },
+          year: {
+            $toString: "$_id.year",
+          },
+          count: 1,
+          totalSell: 1,
+          totalCost: 1,
+        },
+      },
+      {
+        $project: {
+          count: 1,
+          totalSell: 1,
+          totalCost: 1,
+          date: {
+            $concat: ["$day", "-", "$month", "-", "$year"],
+          },
+          totalProfits: {
+            $subtract: ["$totalSell", "$totalCost"],
           },
         },
       },
@@ -779,4 +878,5 @@ module.exports = {
   reportTotalOrdersProductsByRangeTest,
   reportNewClientByMonth,
   reportPaymentByRangeDay,
+  reportTotalSellByRangeDay,
 };
