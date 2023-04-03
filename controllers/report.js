@@ -734,10 +734,12 @@ const reportPaymentByRangeDay = async (req, res = response) => {
           cashTotal: 1,
           transferTotal: 1,
           debtTotal: 1,
+          
         },
       },
       {
         $project: {
+          total: { $sum: [ "$cashTotal", "$transferTotal", "$debtTotal" ]},
           cashTotal: 1,
           transferTotal: 1,
           debtTotal: 1,
