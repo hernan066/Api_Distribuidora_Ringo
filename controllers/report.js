@@ -531,7 +531,7 @@ const reportTotalOrdersProductsByRange = async (req, res = response) => {
 const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
   try {
     const { from, to } = req.body;
-    console.log(from, to) // "Tue, 21 Mar 2023 00:00:00 GMT"
+    console.log(from, to); // "Tue, 21 Mar 2023 00:00:00 GMT"
     const report = await Order.aggregate([
       {
         $match: {
@@ -681,6 +681,90 @@ const reportNewClientByMonth = async (req, res = response) => {
     });
   }
 };
+// payments
+const reportPaymentByRangeDay = async (req, res = response) => {
+  try {
+    const { from, to } = req.body;
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          deliveryDate: {
+            $gt: new Date(from),
+            $lt: new Date(to),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: {
+              $dayOfMonth: "$deliveryDate",
+            },
+            month: {
+              $month: "$deliveryDate",
+            },
+            year: {
+              $year: "$deliveryDate",
+            },
+          },
+          cashTotal: {
+            $sum: "$payment.cash",
+          },
+          transferTotal: {
+            $sum: "$payment.transfer",
+          },
+          debtTotal: {
+            $sum: "$payment.debt",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          day: {
+            $toString: "$_id.day",
+          },
+          month: {
+            $toString: "$_id.month",
+          },
+          year: {
+            $toString: "$_id.year",
+          },
+          cashTotal: 1,
+          transferTotal: 1,
+          debtTotal: 1,
+        },
+      },
+      {
+        $project: {
+          cashTotal: 1,
+          transferTotal: 1,
+          debtTotal: 1,
+          date: {
+            $concat: ["$day", "-", "$month", "-", "$year"],
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      from,
+      to,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   reportTotalOrdersByMonth,
@@ -692,4 +776,5 @@ module.exports = {
   reportTotalOrdersProductsByRange,
   reportTotalOrdersProductsByRangeTest,
   reportNewClientByMonth,
+  reportPaymentByRangeDay,
 };
