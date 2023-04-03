@@ -684,7 +684,7 @@ const reportNewClientByMonth = async (req, res = response) => {
 // payments
 const reportPaymentByRangeDay = async (req, res = response) => {
   try {
-    const { from, to } = req.params;
+    const { from, to } = req.body;
     const report = await Order.aggregate([
       {
         $match: {

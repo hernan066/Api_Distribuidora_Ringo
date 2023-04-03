@@ -17,7 +17,7 @@ router.post("/totalOrderProductsByRangeTest", reportTotalOrdersProductsByRangeTe
 
 router.get("/newClientByMonth", reportNewClientByMonth);
 
-router.get("/reportPaymentByRangeDay", reportPaymentByRangeDay);
+router.post("/reportPaymentByRangeDay", reportPaymentByRangeDay);
 
 
 
