@@ -223,6 +223,97 @@ const reportTotalOrders = async (req, res = response) => {
     });
   }
 };
+//Limitado desde el 21/03/2023
+const reportTotalOrders21_03 = async (req, res = response) => {
+  try {
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          deliveryDate: {
+            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
+          },
+        },
+      },
+      {
+        $unwind: {
+          path: "$orderItems",
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            id: "$orderItems.productId",
+          },
+          count: {
+            $sum: "$orderItems.totalQuantity",
+          },
+          total: {
+            $sum: "$orderItems.totalPrice",
+          },
+          totalCost: {
+            $sum: "$CostTotal",
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id.id",
+          foreignField: "_id",
+          as: "productOrder",
+        },
+      },
+      {
+        $unwind: {
+          path: "$productOrder",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          productId: "$productOrder._id",
+          name: "$productOrder.name",
+          img: "$productOrder.img",
+          count: 1,
+          total: 1,
+          totalCost: 1,
+          totalProfits: {
+            $subtract: ["$total", "$totalCost"],
+          },
+        },
+      },
+      {
+        $sort: {
+          totalProfits: -1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 // productos, total, por mes, por dia
 const reportTotalOrdersProducts = async (req, res = response) => {
   try {
@@ -959,6 +1050,7 @@ module.exports = {
   reportTotalOrdersByMonth,
   reportTotalOrdersByDay,
   reportTotalOrders,
+  reportTotalOrders21_03,
   reportTotalOrdersProducts,
   reportTotalOrdersProductsByDay,
   reportTotalOrdersProductsByMonth,
