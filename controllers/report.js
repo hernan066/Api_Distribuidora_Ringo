@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Order } = require("../models");
+const { Order, Product } = require("../models");
 const { Client } = require("../models");
 
 // ordenes, total, por mes, por dia
@@ -1045,6 +1045,81 @@ const reportTotalSellByRangeDay = async (req, res = response) => {
     });
   }
 };
+// stock
+const reportTotalStock = async (req, res = response) => {
+  try {
+    const report = await Product.aggregate([
+      {
+        $match: {
+          state: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$stock",
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          img: 1,
+          stock: 1,
+          actualStock: "$stock.stock",
+        },
+      },
+      {
+        $match: {
+          actualStock: {
+            $gt: 0,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            name: "$name",
+            img: "$img",
+          },
+          actualStock: {
+            $sum: "$stock.stock",
+          },
+          quantityBuy: {
+            $sum: "$stock.quantity",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          name: "$_id.name",
+          img: "$_id.img",
+          actualStock: 1,
+          quantityBuy: 1,
+        },
+      },
+      {
+        $sort: {
+          name: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total: report.length,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   reportTotalOrdersByMonth,
@@ -1059,4 +1134,5 @@ module.exports = {
   reportNewClientByMonth,
   reportPaymentByRangeDay,
   reportTotalSellByRangeDay,
+  reportTotalStock,
 };
