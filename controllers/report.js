@@ -9,6 +9,40 @@ const reportTotalOrdersByMonth = async (req, res = response) => {
       {
         $match: {
           state: true,
+          deliveryDate: {
+            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
+          },
+        },
+      },
+      {
+        $unwind: {
+          path: "$orderItems",
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+          totalSell: {
+            $sum: "$orderItems.totalPrice",
+          },
+          totalProfits: {
+            $subtract: ["$totalSell", "$CostTotal"],
+          },
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          orderItems: 1,
+          CostTotal: 1,
+          totalSell: 1,
+          totalProfits: {
+            $subtract: ["$totalSell", "$CostTotal"],
+          },
         },
       },
       {
@@ -21,51 +55,25 @@ const reportTotalOrdersByMonth = async (req, res = response) => {
               $year: "$deliveryDate",
             },
           },
-          totalSales: {
-            $sum: "$total",
+          totalSell: {
+            $sum: "$totalSell",
           },
-          totalCash: {
-            $sum: "$payment.cash",
+          totalCost: {
+            $sum: "$CostTotal",
           },
-          totalTransfer: {
-            $sum: "$payment.transfer",
-          },
-          totalDebt: {
-            $sum: "$payment.debt",
+          totalProfits: {
+            $sum: "$totalProfits",
           },
         },
       },
       {
         $project: {
           _id: 0,
-
-          month: {
-            $toString: "$_id.month",
-          },
-          year: {
-            $toString: "$_id.year",
-          },
-          totalSales: 1,
-          totalCash: 1,
-          totalTransfer: 1,
-          totalDebt: 1,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          date: {
-            $concat: ["$month", "-", "$year"],
-          },
-          totalSales: 1,
-          totalCash: 1,
-          totalTransfer: 1,
-          totalDebt: 1,
-        },
-      },
-      {
-        $sort: {
-          date: 1,
+          totalCost: 1,
+          totalSell: 1,
+          totalProfits: 1,
+          month: "$_id.month",
+          year: "$_id.year",
         },
       },
     ]);
