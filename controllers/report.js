@@ -76,6 +76,11 @@ const reportTotalOrdersByMonth = async (req, res = response) => {
           year: "$_id.year",
         },
       },
+      {
+        $sort: {
+          month: 1,
+        },
+      },
     ]);
 
     res.status(200).json({
