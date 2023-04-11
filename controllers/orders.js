@@ -55,6 +55,89 @@ const getOrders = async (req, res = response) => {
   }
 };
 
+const getOrdersPaginate = async (req, res = response) => {
+  try {
+    const { limit = 10000, page = 1, active = "false", paid } = req.query;
+    // active = "false"  => all
+
+    if (active === "true") {
+      const query = { state: true, active: true };
+
+      const [total, orders] = await Promise.all([
+        Order.countDocuments(query),
+        Order.find(query)
+          .skip(Number((page - 1) * limit))
+          .limit(Number(limit * 1))
+          .populate("deliveryTruck")
+          .populate("employee")
+          .populate("deliveryZone")
+          .sort({ createdAt: -1 }),
+      ]);
+
+      return res.status(200).json({
+        ok: true,
+        status: 200,
+        total,
+        data: {
+          orders,
+        },
+      });
+    }
+    if (paid === "false") {
+      const query = { state: true, paid: false };
+
+      const [total, orders] = await Promise.all([
+        Order.countDocuments(query),
+        Order.find(query)
+          .skip(Number((page - 1) * limit))
+          .limit(Number(limit * 1))
+          .populate("deliveryTruck")
+          .populate("employee")
+          .populate("deliveryZone")
+          .sort({ createdAt: -1 }),
+      ]);
+
+      return res.status(200).json({
+        ok: true,
+        status: 200,
+        total,
+        data: {
+          orders,
+        },
+      });
+    }
+
+    const query = { state: true };
+
+    const [total, orders] = await Promise.all([
+      Order.countDocuments(query),
+      Order.find(query)
+        .skip(Number((page - 1) * limit))
+        .limit(Number(limit * 1))
+        .populate("deliveryTruck")
+        .populate("employee")
+        .populate("deliveryZone")
+        .sort({ createdAt: -1 }),
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total,
+      data: {
+        orders,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 const getOrder = async (req, res = response) => {
   try {
     const { id } = req.params;
@@ -328,4 +411,5 @@ module.exports = {
   getOrdersToday,
   getOrdersActives,
   getOrdersByDay,
+  getOrdersPaginate
 };

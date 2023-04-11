@@ -11,6 +11,7 @@ const {
   getOrdersActives,
   getOrdersByDay,
   getOrdersTotalsByMonth,
+  getOrdersPaginate,
 } = require("../controllers/orders");
 const {
   postOrderValidator,
@@ -35,6 +36,7 @@ router.put("/:id",[validarUsuarioWhatsapp, validateFields], postNewOrder);
 
 router.delete("/:id",[validarUsuarioWhatsapp, validateFields], postNewOrder); */
 router.get("/", getOrders);
+router.get("/paginate", getOrdersPaginate);
 router.get("/today", getOrdersToday);
 router.get("/active", getOrdersActives);
 router.get("/days/:days", getOrdersByDay);
