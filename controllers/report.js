@@ -1216,6 +1216,81 @@ const reportTotalStock = async (req, res = response) => {
   }
 };
 
+// clients
+const reportTotalClientDebt = async (req, res = response) => {
+  try {
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          paid: false,
+          status: "Entregado",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "clientOrder",
+        },
+      },
+      {
+        $unwind: {
+          path: "$clientOrder",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            id: "$clientOrder._id",
+            name: "$clientOrder.name",
+            lastName: "$clientOrder.lastName",
+          },
+          totalDebt: {
+            $sum: "$payment.debt",
+          },
+          totalCash: {
+            $sum: "$payment.cash",
+          },
+          totalTransfer: {
+            $sum: "$payment.transfer",
+          },
+        },
+      },
+      {
+        $project: {
+          totalDebt: 1,
+          totalCash: 1,
+          totalTransfer: 1,
+          name: "$_id.name",
+          lastName: "$_id.lastName",
+        },
+      },
+      {
+        $sort: {
+          totalDebt: -1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total: report.length,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   reportTotalOrdersByMonth,
   reportTotalOrdersByDay,
@@ -1230,4 +1305,5 @@ module.exports = {
   reportPaymentByRangeDay,
   reportTotalSellByRangeDay,
   reportTotalStock,
+  reportTotalClientDebt
 };
