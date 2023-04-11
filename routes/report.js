@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { reportTotalOrdersByMonth, reportTotalOrdersByDay, reportTotalOrdersProducts, reportNewClientByMonth, reportTotalOrders, reportTotalOrdersProductsByDay, reportTotalOrdersProductsByRange, reportTotalOrdersProductsByRangeTest, reportPaymentByRangeDay, reportTotalSellByRangeDay, reportTotalOrders21_03, reportTotalStock, reportTotalClientDebt } = require("../controllers/report");
+const { reportTotalOrdersByMonth, reportTotalOrdersByDay, reportTotalOrdersProducts, reportNewClientByMonth, reportTotalOrders, reportTotalOrdersProductsByDay, reportTotalOrdersProductsByRange, reportTotalOrdersProductsByRangeTest, reportPaymentByRangeDay, reportTotalSellByRangeDay, reportTotalOrders21_03, reportTotalStock, reportTotalClientDebt, reportTotalClientBuy } = require("../controllers/report");
 
 
 const router = Router();
@@ -26,6 +26,7 @@ router.post("/reportTotalSellByRangeDay", reportTotalSellByRangeDay);
 router.get("/reportTotalStock", reportTotalStock);
 //clients
 router.get("/reportTotalClientDebt", reportTotalClientDebt);
+router.get("/reportTotalClientBuy", reportTotalClientBuy);
 
 
 

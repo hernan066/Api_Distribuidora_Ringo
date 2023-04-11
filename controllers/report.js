@@ -1260,6 +1260,7 @@ const reportTotalClientDebt = async (req, res = response) => {
       },
       {
         $project: {
+          _id: 0,
           totalDebt: 1,
           totalCash: 1,
           totalTransfer: 1,
@@ -1270,6 +1271,126 @@ const reportTotalClientDebt = async (req, res = response) => {
       {
         $sort: {
           totalDebt: -1,
+        },
+      },
+      {
+        $match: {
+          totalDebt: {
+            $gt: 0,
+          },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total: report.length,
+      data: {
+        report,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+const reportTotalClientBuy = async (req, res = response) => {
+  try {
+    const report = await Order.aggregate([
+      {
+        $match: {
+          state: true,
+          status: "Entregado",
+          deliveryDate: {
+            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "clientOrder",
+        },
+      },
+      {
+        $unwind: {
+          path: "$orderItems",
+        },
+      },
+      {
+        $unwind: {
+          path: "$clientOrder",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          deliveryDate: 1,
+          client: 1,
+          userId: "$clientOrder._id",
+          name: "$clientOrder.name",
+          lastName: "$clientOrder.lastName",
+          totalBuy: "$orderItems.totalPrice",
+          orderItems: 1,
+          totalCost: {
+            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+          },
+        },
+      },
+      {
+        $project: {
+          deliveryDate: 1,
+          client: 1,
+          userId: 1,
+          name: 1,
+          lastName: 1,
+          orderItems: 1,
+          totalBuy: 1,
+          totalCost: 1,
+          totalProfits: {
+            $subtract: ["$totalBuy", "$totalCost"],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            userId: "$userId",
+            name: "$name",
+            lastName: "$lastName",
+          },
+          totalCost: {
+            $sum: "$totalCost",
+          },
+          totalBuy: {
+            $sum: "$totalBuy",
+          },
+          totalProfits: {
+            $sum: "$totalProfits",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          totalBuy: 1,
+          totalCost: 1,
+          totalProfits: 1,
+          name: "$_id.name",
+          lastName: "$_id.lastName",
+          userId: "$_id.userId",
+          totalProfits: 1,
+        },
+      },
+      {
+        $sort: {
+          totalBuy: -1,
         },
       },
     ]);
@@ -1305,5 +1426,6 @@ module.exports = {
   reportPaymentByRangeDay,
   reportTotalSellByRangeDay,
   reportTotalStock,
-  reportTotalClientDebt
+  reportTotalClientDebt,
+  reportTotalClientBuy,
 };
