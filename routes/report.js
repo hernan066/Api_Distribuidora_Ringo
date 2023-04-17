@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { reportTotalOrdersByMonth, reportTotalOrdersByDay, reportTotalOrdersProducts, reportNewClientByMonth, reportTotalOrders, reportTotalOrdersProductsByDay, reportTotalOrdersProductsByRange, reportTotalOrdersProductsByRangeTest, reportPaymentByRangeDay, reportTotalSellByRangeDay, reportTotalOrders21_03, reportTotalStock, reportTotalClientDebt, reportTotalClientBuy, reportTotalClientBuyByRangeDays } = require("../controllers/report");
+const { reportTotalOrdersByMonth, reportTotalOrdersByDay, reportTotalOrdersProducts, reportNewClientByMonth, reportTotalOrders, reportTotalOrdersProductsByDay, reportTotalOrdersProductsByRange, reportTotalOrdersProductsByRangeTest, reportPaymentByRangeDay, reportTotalSellByRangeDay, reportTotalOrders21_03, reportTotalStock, reportTotalClientDebt, reportTotalClientBuy, reportTotalClientBuyByRangeDays, reportTotalClientBuyAll, reportTotalClientBuyIndividual, reportTotalClientBuyIndividualByDay } = require("../controllers/report");
 
 
 const router = Router();
@@ -26,8 +26,10 @@ router.post("/reportTotalSellByRangeDay", reportTotalSellByRangeDay);
 router.get("/reportTotalStock", reportTotalStock);
 //clients
 router.get("/reportTotalClientDebt", reportTotalClientDebt);
-router.get("/reportTotalClientBuy", reportTotalClientBuy);
+router.get("/reportTotalClientBuy", reportTotalClientBuyAll); // from 21/03/2023
+router.get("/reportTotalClientBuy/:id", reportTotalClientBuyIndividual); // from 21/03/2023
 router.post("/reportTotalClientBuyByRangeDays", reportTotalClientBuyByRangeDays);
+router.get("/reportTotalClientBuyByDay/:id", reportTotalClientBuyIndividualByDay);
 
 
 
