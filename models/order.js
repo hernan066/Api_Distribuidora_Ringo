@@ -56,6 +56,7 @@ const OrderSchema = new Schema(
     },
     
     paid          : { type: Boolean, default: false },
+    discount      : { type: Number, default: 0 },
     
     deliveryDate  : { type: Date },
     
