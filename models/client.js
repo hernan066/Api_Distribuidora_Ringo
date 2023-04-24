@@ -8,7 +8,8 @@ const ClientSchema = Schema({
     contactMeans        : {type: String,},
     campaignName        : { type: String },
     debt                : {type: Number, default: 0},
-    state               : {type: Boolean,default: true,required: true},
+    state               : {type: Boolean, default: true,required: true},
+    points              : {type: Number, default: 0},
   
 },
 { timestamps: true }
