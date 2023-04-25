@@ -12,6 +12,7 @@ const {
   getOrdersByDay,
   getOrdersTotalsByMonth,
   getOrdersPaginate,
+  getClientOrderDebt,
 } = require("../controllers/orders");
 const {
   postOrderValidator,
@@ -44,6 +45,7 @@ router.get("/days/:days", getOrdersByDay);
 router.get("/:id", getOrderValidator, getOrder);
 router.get("/user/:id", getOrderUserValidator, getUserOrder);
 router.get("/client/:id", getOrderClientValidator, getClientOrder);
+router.get("/clientDebt/:id", getOrderClientValidator, getClientOrderDebt);
 
 router.post("/", postOrderValidator, postOrder);
 router.post("/local", postOrderLocalValidator, postOrder);

@@ -400,6 +400,28 @@ const getOrdersActives = async (req, res = response) => {
   }
 };
 
+const getClientOrderDebt = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const orders = await Order.find({ state: true, client: id, paid: false, status: "Entregado"  });
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      total: orders.length,
+      data: {
+        orders,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
+
 module.exports = {
   postOrder,
   getOrders,
@@ -411,5 +433,6 @@ module.exports = {
   getOrdersToday,
   getOrdersActives,
   getOrdersByDay,
-  getOrdersPaginate
+  getOrdersPaginate,
+  getClientOrderDebt
 };
