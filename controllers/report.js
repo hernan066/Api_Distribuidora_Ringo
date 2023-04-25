@@ -1110,7 +1110,7 @@ const reportTotalClientDebt = async (req, res = response) => {
       {
         $group: {
           _id: {
-            id: "$clientOrder._id",
+            id: "$client",
             name: "$clientOrder.name",
             lastName: "$clientOrder.lastName",
           },
@@ -1133,6 +1133,7 @@ const reportTotalClientDebt = async (req, res = response) => {
           totalTransfer: 1,
           name: "$_id.name",
           lastName: "$_id.lastName",
+          clientId: "$_id.id"
         },
       },
       {
@@ -1291,7 +1292,9 @@ const reportTotalClientBuyAll = async (req, res = response) => {
           state: true,
           status: "Entregado",
           deliveryDate: {
-            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
+            $gt: new Date(
+              "Tue, 21 Mar 2023 03:00:00 GMT"
+            ),
           },
         },
       },
@@ -1319,12 +1322,16 @@ const reportTotalClientBuyAll = async (req, res = response) => {
           deliveryDate: 1,
           client: 1,
           userId: "$clientOrder._id",
+          clientId: "$client",
           name: "$clientOrder.name",
           lastName: "$clientOrder.lastName",
           totalBuy: "$orderItems.totalPrice",
           orderItems: 1,
           totalCost: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+            $multiply: [
+              "$orderItems.totalQuantity",
+              "$orderItems.unitCost",
+            ],
           },
         },
       },
@@ -1347,6 +1354,7 @@ const reportTotalClientBuyAll = async (req, res = response) => {
         $group: {
           _id: {
             userId: "$userId",
+            clientId: "$client",
             name: "$name",
             lastName: "$lastName",
           },
@@ -1370,6 +1378,7 @@ const reportTotalClientBuyAll = async (req, res = response) => {
           name: "$_id.name",
           lastName: "$_id.lastName",
           userId: "$_id.userId",
+          clientId: "$_id.clientId",
           totalProfits: 1,
         },
       },
