@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Order } = require("../models");
+const { Order, Points, Client } = require("../models");
 
 const getOrders = async (req, res = response) => {
   try {
@@ -164,16 +164,39 @@ const getOrder = async (req, res = response) => {
 
 const postOrder = async (req, res = response) => {
   try {
-    const { state, ...body } = req.body;
+    const { state, paid, subTotal, client, ...body } = req.body;
 
-    //return res.send(req.body)
-
-    // Generar la data a guardar
     const data = {
+      paid,
+      subTotal,
+      client,
       ...body,
     };
 
     const order = new Order(data);
+
+    // Si esta paga se cargan los puntos
+    if (paid) {
+      const dataPoints = {
+        clientId: client,
+        points: Math.trunc(subTotal),
+        action: "buy",
+        orderId: order._id,
+      };
+
+      const points = new Points(dataPoints);
+      // Guardar DB
+      await points.save();
+
+      // actualizo puntos dentro de cliente
+      const pointsData = await Points.find({ state: true, clientId: client });
+      const totalPoints = pointsData.reduce(
+        (acc, curr) => acc + curr.points,
+        0
+      );
+      console.log(totalPoints);
+      await Client.findByIdAndUpdate(client, { points: totalPoints });
+    }
 
     // Guardar DB
     await order.save();
@@ -199,7 +222,31 @@ const putOrder = async (req, res = response) => {
     const { id } = req.params;
     const { state, ...data } = req.body;
 
-    const order = await Order.findByIdAndUpdate(id, data, { new: true });
+    const order = await Order.findByIdAndUpdate(id, data);
+
+    // Si estaba impaga y paso a estar paga
+    if (order.paid === false && req.body.paid === true) {
+      const dataPoints = {
+        clientId: order.client,
+        points: Math.trunc(order.subTotal),
+        action: "buy",
+        orderId: order._id,
+      };
+
+      const points = new Points(dataPoints);
+      // Guardar DB
+      await points.save();
+
+      // actualizo puntos dentro de cliente
+      const pointsData = await Points.find({ state: true, clientId: order.client });
+      const totalPoints = pointsData.reduce(
+        (acc, curr) => acc + curr.points,
+        0
+      );
+     console.log(totalPoints)
+      const id = order.client
+      await Client.findByIdAndUpdate(id, { points: totalPoints });
+    }
 
     res.status(200).json({
       ok: true,
@@ -220,7 +267,30 @@ const putOrder = async (req, res = response) => {
 const deleteOrder = async (req, res = response) => {
   try {
     const { id } = req.params;
-    await Order.findByIdAndUpdate(id, { state: false }, { new: true });
+    const order = await Order.findByIdAndUpdate(
+      id,
+      { state: false },
+      { new: true }
+    );
+
+    // Si esta paga se cargan los puntos
+    if (order.paid) {
+      await Points.findOneAndUpdate(
+        { orderId: order._id },
+        { state: false },
+        { new: true }
+      );
+
+      // actualizo puntos dentro de cliente
+      const pointsData = await Points.find({ state: true, clientId: order.client });
+      const totalPoints = pointsData.reduce(
+        (acc, curr) => acc + curr.points,
+        0
+      );
+      console.log(totalPoints)
+      const id = order.client
+      await Client.findByIdAndUpdate(id, { points: totalPoints });
+    }
 
     res.status(200).json({
       ok: true,
@@ -403,7 +473,12 @@ const getOrdersActives = async (req, res = response) => {
 const getClientOrderDebt = async (req, res = response) => {
   try {
     const { id } = req.params;
-    const orders = await Order.find({ state: true, client: id, paid: false, status: "Entregado"  });
+    const orders = await Order.find({
+      state: true,
+      client: id,
+      paid: false,
+      status: "Entregado",
+    });
 
     res.status(200).json({
       ok: true,
@@ -434,5 +509,5 @@ module.exports = {
   getOrdersActives,
   getOrdersByDay,
   getOrdersPaginate,
-  getClientOrderDebt
+  getClientOrderDebt,
 };

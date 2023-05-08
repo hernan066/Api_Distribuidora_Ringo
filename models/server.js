@@ -40,6 +40,8 @@ class Server {
       sale: "/api/sales",
       imageKit: "/api/imageKit",
       reports: "/api/reports",
+      points: "/api/points",
+      recommendation: "/api/recommendation",
     };
 
     // Conectar a base de datos
@@ -130,6 +132,8 @@ class Server {
     this.app.use(this.paths.imageKit, require("../routes/imageKit"));
     this.app.use(this.paths.clientAddress, require("../routes/clientAddress"));
     this.app.use(this.paths.reports, require("../routes/report"));
+    this.app.use(this.paths.points, require("../routes/points"));
+    this.app.use(this.paths.recommendation, require("../routes/recommendation"));
   }
 
   errors() {

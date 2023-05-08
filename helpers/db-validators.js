@@ -20,6 +20,7 @@ const {
   Order,
   Sale,
   ClientAddress,
+  Points,
 } = require("../models");
 const user = require("../models/user");
 
@@ -154,6 +155,13 @@ const existClientById = async (id) => {
     throw new Error(`El id no existe ${id}`);
   }
 };
+const existPointsById = async (id) => {
+ 
+  const exist = await Points.findById(id);
+  if (!exist) {
+    throw new Error(`El id no existe ${id}`);
+  }
+};
 const existClientCategoryById = async (id) => {
   // Verificar si el correo existe
   const exist = await ClientCategory.findById(id);
@@ -269,4 +277,5 @@ module.exports = {
   existOrderById,
   existSaleById,
   existClientAddressById,
+  existPointsById
 };

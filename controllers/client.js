@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Client } = require("../models");
+const { Client, Recommendation } = require("../models");
 
 const getClients = async (req, res = response) => {
   try {
@@ -59,7 +59,7 @@ const getClient = async (req, res = response) => {
 
 const postClient = async (req, res = response) => {
   try {
-    const { state, ...body } = req.body;
+    const { state, recommendation, ...body } = req.body;
 
     const clientDB = await Client.findOne({ cuit: body.cuit });
 
@@ -75,6 +75,18 @@ const postClient = async (req, res = response) => {
     };
 
     const client = new Client(data);
+
+    if (recommendation) {
+      const data = {
+        clientId: recommendation,
+        recommendedClient: client._id,
+        recommendedUser: client.user,
+      };
+      const recomm = new Recommendation(data);
+
+      // Guardar DB
+      await recomm.save();
+    }
 
     // Guardar DB
     await client.save();
