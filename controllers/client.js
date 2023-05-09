@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Client, Recommendation } = require("../models");
+const { Client, Recommendation, ClientAddress } = require("../models");
 
 const getClients = async (req, res = response) => {
   try {
@@ -168,6 +168,26 @@ const getUserClient = async (req, res = response) => {
     });
   }
 };
+const getAddressesClient = async (req, res = response) => {
+  try {
+    const { id } = req.params;
+    const clientAddress = await ClientAddress.find({ client: id, state: true });
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      data: {
+        clientAddress,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   postClient,
@@ -176,4 +196,5 @@ module.exports = {
   putClient,
   deleteClient,
   getUserClient,
+  getAddressesClient
 };

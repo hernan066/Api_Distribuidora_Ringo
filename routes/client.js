@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getClients, getClient, putClient, deleteClient, postClient, getUserClient } = require('../controllers/client');
+const { getClients, getClient, putClient, deleteClient, postClient, getUserClient, getAddressesClient } = require('../controllers/client');
 const { getClientValidator, postClientValidator, putClientValidator, deleteClientValidator, getClientUserValidator } = require('../validations/client-validator');
 
 
@@ -16,6 +16,8 @@ router.get('/', getClients );
 router.get('/:id', getClientValidator , getClient );
 
 router.get('/user/:id', getClientUserValidator , getUserClient );
+
+router.get('/addresses/:id', getClientValidator , getAddressesClient );
 
 // Crear Cliente - privado - cualquier persona con un token válido
 router.post('/', postClientValidator , postClient );
