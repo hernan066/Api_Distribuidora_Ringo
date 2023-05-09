@@ -238,13 +238,16 @@ const putOrder = async (req, res = response) => {
       await points.save();
 
       // actualizo puntos dentro de cliente
-      const pointsData = await Points.find({ state: true, clientId: order.client });
+      const pointsData = await Points.find({
+        state: true,
+        clientId: order.client,
+      });
       const totalPoints = pointsData.reduce(
         (acc, curr) => acc + curr.points,
         0
       );
-     console.log(totalPoints)
-      const id = order.client
+      console.log(totalPoints);
+      const id = order.client;
       await Client.findByIdAndUpdate(id, { points: totalPoints });
     }
 
@@ -282,13 +285,16 @@ const deleteOrder = async (req, res = response) => {
       );
 
       // actualizo puntos dentro de cliente
-      const pointsData = await Points.find({ state: true, clientId: order.client });
+      const pointsData = await Points.find({
+        state: true,
+        clientId: order.client,
+      });
       const totalPoints = pointsData.reduce(
         (acc, curr) => acc + curr.points,
         0
       );
-      console.log(totalPoints)
-      const id = order.client
+      console.log(totalPoints);
+      const id = order.client;
       await Client.findByIdAndUpdate(id, { points: totalPoints });
     }
 
@@ -334,7 +340,8 @@ const getClientOrder = async (req, res = response) => {
     const orders = await Order.find({ client: id, state: true })
       .populate("deliveryTruck")
       .populate("employee")
-      .populate("deliveryZone");
+      .populate("deliveryZone")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       ok: true,
