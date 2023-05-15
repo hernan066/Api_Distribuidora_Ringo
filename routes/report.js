@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { reportTotalOrdersByMonth, reportTotalOrdersByDay, reportTotalOrdersProducts, reportNewClientByMonth, reportTotalOrders, reportTotalOrdersProductsByDay, reportTotalOrdersProductsByRange, reportTotalOrdersProductsByRangeTest, reportPaymentByRangeDay, reportTotalSellByRangeDay, reportTotalOrders21_03, reportTotalStock, reportTotalClientDebt, reportTotalClientBuy, reportTotalClientBuyByRangeDays, reportTotalClientBuyAll, reportTotalClientBuyIndividual, reportTotalClientBuyIndividualByDay } = require("../controllers/report");
+const { reportTotalOrdersByMonth, reportTotalOrdersByDay, reportTotalOrdersProducts, reportNewClientByMonth, reportTotalOrders, reportTotalOrdersProductsByDay, reportTotalOrdersProductsByRange, reportTotalOrdersProductsByRangeTest, reportPaymentByRangeDay, reportTotalSellByRangeDay, reportTotalOrders21_03, reportTotalStock, reportTotalClientDebt, reportTotalClientBuyByRangeDays, reportTotalClientBuyAll, reportTotalClientBuyIndividual, reportTotalClientBuyIndividualByDay, reportTotalIndividualProduct } = require("../controllers/report");
 
 
 const router = Router();
@@ -12,6 +12,7 @@ router.get("/orders", reportTotalOrders);
 
 router.get("/totalOrderProducts", reportTotalOrdersProducts);
 router.get("/totalOrderProducts21_03", reportTotalOrders21_03);
+router.get("/totalIndividualProduct/:id", reportTotalIndividualProduct);
 
 router.get("/totalOrderProductsByDay", reportTotalOrdersProductsByDay);
 router.get("/totalOrderProductsByRange", reportTotalOrdersProductsByRange);

@@ -49,6 +49,11 @@ const deletePointsValidation = [
   check("id").custom(existPointsById),
   validateFields,
 ];
+const resetPointsValidation = [
+  validarJWT,
+  isAdminRole,
+  validateFields,
+];
 
 module.exports = {
   getAllPointsValidation,
@@ -56,4 +61,5 @@ module.exports = {
   postPointsValidation,
   putPointsValidation,
   deletePointsValidation,
+  resetPointsValidation
 };

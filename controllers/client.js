@@ -1,5 +1,5 @@
 const { response } = require("express");
-const { Client, Recommendation, ClientAddress } = require("../models");
+const { Client, Recommendation, ClientAddress, Points } = require("../models");
 
 const getClients = async (req, res = response) => {
   try {
@@ -15,6 +15,8 @@ const getClients = async (req, res = response) => {
         .populate("user", ["name", "lastName", "phone", "email"])
         .populate("clientType", ["clientType"]),
     ]);
+
+    
 
     res.status(200).json({
       ok: true,
@@ -41,11 +43,21 @@ const getClient = async (req, res = response) => {
       .populate("user", ["name", "lastName", "phone", "email"])
       .populate("clientType", ["clientType"]);
 
+    const points = await Points.find({ state: true, clientId: id });
+    const totalPoints = points.reduce((acc, curr) => acc + curr.points, 0);
+
+    const dataClient = client;
+
+    const data = {
+      ...dataClient._doc,
+      points: totalPoints,
+    };
+
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        client,
+        client: data,
       },
     });
   } catch (error) {
@@ -196,5 +208,5 @@ module.exports = {
   putClient,
   deleteClient,
   getUserClient,
-  getAddressesClient
+  getAddressesClient,
 };

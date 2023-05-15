@@ -5,6 +5,7 @@ const {
   postPoints,
   putPoints,
   deletePoints,
+  resetPoints,
 } = require("../controllers/points");
 const {
   getAllPointsValidation,
@@ -12,6 +13,7 @@ const {
   postPointsValidation,
   putPointsValidation,
   deletePointsValidation,
+  resetPointsValidation,
 } = require("../validations/points-validator");
 
 const router = Router();
@@ -26,5 +28,7 @@ router.get("/client/:id", getAllPointsByClientValidation, getAllPointsByClient);
 router.post("/", postPointsValidation, postPoints);
 router.put("/:id", putPointsValidation, putPoints);
 router.delete("/:id", deletePointsValidation, deletePoints);
+
+router.post("/reset", resetPointsValidation, resetPoints);
 
 module.exports = router;

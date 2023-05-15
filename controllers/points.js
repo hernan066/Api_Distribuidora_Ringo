@@ -131,11 +131,31 @@ const deletePoints = async (req, res = response) => {
     });
   }
 };
+const resetPoints = async (req, res = response) => {
+  try {
+    
+    await Points.updateMany({ state: true }, { state: false }, { new: true });
+    await Client.updateMany({ state: true }, { points: 0 }, { new: true });
+
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      msg: "Puntos reseteados"
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      status: 500,
+      msg: error.message,
+    });
+  }
+};
 
 module.exports = {
   getAllPoints,
   getAllPointsByClient,
   postPoints,
   putPoints,
-  deletePoints
+  deletePoints,
+  resetPoints
 };
