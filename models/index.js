@@ -23,32 +23,29 @@ const ClientAddress = require('./clientAddress');
 const Points = require('./points');
 const Recommendation = require('./recommendation');
 
-
-
 module.exports = {
-    Category,
-    Product,
-    Role,
-    Server,
-    User,
-    Order,
-    Repartidor,
-    Brand,
-    Supplier,
-    ProductLot,
-    Ofert,
-    DeliveryZone,
-    DeliverySubZone,
-    Client,
-    ClientCategory,
-    ClientType,
-    Distributor,
-    DeliveryTruck,
-    Employee,
-    Salary, 
-    Sale,
-    ClientAddress,
-    Points,
-    Recommendation
-}
-
+	Category,
+	Product,
+	Role,
+	Server,
+	User,
+	Order,
+	Repartidor,
+	Brand,
+	Supplier,
+	ProductLot,
+	Ofert,
+	DeliveryZone,
+	DeliverySubZone,
+	Client,
+	ClientCategory,
+	ClientType,
+	Distributor,
+	DeliveryTruck,
+	Employee,
+	Salary,
+	Sale,
+	ClientAddress,
+	Points,
+	Recommendation,
+};

@@ -1,19 +1,19 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const {
-  getClientAddresses,
-  getClientAddress,
-  postClientAddress,
-  putClientAddress,
-  deleteClientAddress,
-  getUserAddress,
-} = require("../controllers/clientAddress");
-const { validarJWT } = require("../middlewares");
+	getClientAddresses,
+	getClientAddress,
+	postClientAddress,
+	putClientAddress,
+	deleteClientAddress,
+	getUserAddress,
+} = require('../controllers/clientAddress');
+const { validarJWT } = require('../middlewares');
 const {
-  getClientAddressValidator,
-  postClientAddressValidator,
-  putClientAddressValidator,
-  deleteClientAddressValidator,
-} = require("../validations/clientAddress-validator");
+	getClientAddressValidator,
+	postClientAddressValidator,
+	putClientAddressValidator,
+	deleteClientAddressValidator,
+} = require('../validations/clientAddress-validator');
 
 const router = Router();
 
@@ -21,16 +21,16 @@ const router = Router();
  * {{url}}/api/clients_address
  */
 
-router.get("/", validarJWT, getClientAddresses);
+router.get('/', validarJWT, getClientAddresses);
 
-router.get("/:id", getClientAddressValidator, getClientAddress);
+router.get('/:id', getClientAddressValidator, getClientAddress);
 
-router.get("/user/:id",  getUserAddress);
+router.get('/user/:id', getUserAddress);
 
-router.post("/", postClientAddressValidator, postClientAddress);
+router.post('/', postClientAddressValidator, postClientAddress);
 
-router.put("/:id", putClientAddressValidator, putClientAddress);
+router.put('/:id', putClientAddressValidator, putClientAddress);
 
-router.delete("/:id", deleteClientAddressValidator, deleteClientAddress);
+router.delete('/:id', deleteClientAddressValidator, deleteClientAddress);
 
 module.exports = router;

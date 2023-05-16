@@ -1,93 +1,83 @@
 const { response } = require('express');
 const { Brand } = require('../models');
 
+const getBrands = async (req, res = response) => {
+	const { limit = 5, from = 0 } = req.query;
+	const query = { state: true };
 
+	const [total, brands] = await Promise.all([
+		Brand.countDocuments(query),
+		Brand.find(query)
+			.populate('user', 'name')
+			.skip(Number(from))
+			.limit(Number(limit)),
+	]);
 
-const getBrands = async(req, res = response ) => {
+	res.json({
+		total,
+		brands,
+	});
+};
 
-    const { limit = 5, from = 0 } = req.query;
-    const query = { state: true };
+const getBrand = async (req, res = response) => {
+	const { id } = req.params;
+	const brand = await Brand.findById(id).populate('user', 'name');
 
-    const [ total, brands ] = await Promise.all([
-        Brand.countDocuments(query),
-        Brand.find(query)
-            .populate('user', 'name')
-            .skip( Number( from ) )
-            .limit(Number( limit ))
-    ]);
+	res.json(brand);
+};
 
-    res.json({
-        total,
-        brands
-    });
-}
+const postBrand = async (req, res = response) => {
+	const name = req.body.name.toUpperCase();
 
-const getBrand = async(req, res = response ) => {
+	const brandDB = await Brand.findOne({ name });
 
-    const { id } = req.params;
-    const brand = await Brand.findById( id )
-                            .populate('user', 'name');
+	if (brandDB) {
+		return res.status(400).json({
+			msg: `La marca ${brandDB.name}, ya existe`,
+		});
+	}
 
-    res.json( brand );
+	// Generar la data a guardar
+	const data = {
+		name,
+		user: req.user._id,
+	};
 
-}
+	const brand = new Brand(data);
 
-const postBrand = async(req, res = response ) => {
+	// Guardar DB
+	await brand.save();
 
-    const name = req.body.name.toUpperCase();
+	res.status(201).json(brand);
+};
 
-    const brandDB = await Brand.findOne({ name });
+const putBrand = async (req, res = response) => {
+	const { id } = req.params;
+	const { state, user, ...data } = req.body;
 
-    if ( brandDB ) {
-        return res.status(400).json({
-            msg: `La marca ${ brandDB.name }, ya existe`
-        });
-    }
+	data.name = data.name.toUpperCase();
+	data.user = req.user._id;
 
-    // Generar la data a guardar
-    const data = {
-        name,
-        user: req.user._id
-    }
+	const brand = await Brand.findByIdAndUpdate(id, data, { new: true });
 
-    const brand = new Brand( data );
+	res.json(brand);
+};
 
-    // Guardar DB
-    await brand.save();
+const deleteBrand = async (req, res = response) => {
+	const { id } = req.params;
+	const deleteBrand = await Brand.findByIdAndUpdate(
+		id,
+		{ state: false },
+		{ new: true }
+	);
 
-    res.status(201).json(brand);
-
-}
-
-const putBrand = async( req, res = response ) => {
-
-    const { id } = req.params;
-    const { state, user, ...data } = req.body;
-
-    data.name  = data.name.toUpperCase();
-    data.user = req.user._id;
-
-    const brand = await Brand.findByIdAndUpdate(id, data, { new: true });
-
-    res.json( brand );
-
-}
-
-const deleteBrand = async(req, res =response ) => {
-
-    const { id } = req.params;
-    const deleteBrand = await Brand.findByIdAndUpdate( id, { state: false }, {new: true });
-
-    res.json( deleteBrand );
-}
-
-
-
+	res.json(deleteBrand);
+};
 
 module.exports = {
-    postBrand,
-    getBrands,
-    getBrand,
-    putBrand,
-    deleteBrand
-}
+	postBrand,
+	getBrands,
+	getBrand,
+	putBrand,
+	deleteBrand,
+};

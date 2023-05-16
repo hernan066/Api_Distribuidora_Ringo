@@ -1,10 +1,18 @@
 const { Router } = require('express');
-const { getCategories, getCategory, putCategory, deleteCategory, postCategory } = require('../controllers/category');
+const {
+	getCategories,
+	getCategory,
+	putCategory,
+	deleteCategory,
+	postCategory,
+} = require('../controllers/category');
 
-
-
-
-const { getCategoryValidation, postCategoryValidation, deleteCategoryValidation, putCategoryValidation } = require('../validations/category-validator');
+const {
+	getCategoryValidation,
+	postCategoryValidation,
+	deleteCategoryValidation,
+	putCategoryValidation,
+} = require('../validations/category-validator');
 
 const router = Router();
 
@@ -13,20 +21,18 @@ const router = Router();
  */
 
 //  Obtener todas las categorías - publico
-router.get('/', getCategories );
+router.get('/', getCategories);
 
 // Obtener una categoría por id - publico
-router.get('/:id', getCategoryValidation , getCategory );
+router.get('/:id', getCategoryValidation, getCategory);
 
 // Crear categoría - privado - cualquier persona con un token válido
-router.post('/', postCategoryValidation , postCategory );
+router.post('/', postCategoryValidation, postCategory);
 
 // Actualizar - privado - cualquiera con token válido
-router.put('/:id',putCategoryValidation, putCategory );
+router.put('/:id', putCategoryValidation, putCategory);
 
 // Borrar una categoría - Admin
-router.delete('/:id', deleteCategoryValidation ,deleteCategory);
-
-
+router.delete('/:id', deleteCategoryValidation, deleteCategory);
 
 module.exports = router;

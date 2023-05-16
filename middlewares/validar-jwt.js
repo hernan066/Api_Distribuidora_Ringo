@@ -1,23 +1,23 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 // const User = require("../models/user");
 
 const validarJWT = async (req, res, next) => {
-  const token = req.header("x-token");
+	const token = req.header('x-token');
 
-  if (!token) {
-    return res.status(401).json({
-      ok: false,
-      msg: "No hay token en la petición",
-      token,
-    });
-  }
+	if (!token) {
+		return res.status(401).json({
+			ok: false,
+			msg: 'No hay token en la petición',
+			token,
+		});
+	}
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.sendStatus(403); //invalid token
-    req.user = decoded.UserInfo.id;
-    req.role = decoded.UserInfo.role;
-    next();
-  });
+	jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+		if (err) return res.sendStatus(403); // invalid token
+		req.user = decoded.UserInfo.id;
+		req.role = decoded.UserInfo.role;
+		next();
+	});
 };
 /* const validarJWT = async (req , res  next) => {
   const token = req.header("x-token");
@@ -66,5 +66,5 @@ const validarJWT = async (req, res, next) => {
 }; */
 
 module.exports = {
-  validarJWT,
+	validarJWT,
 };

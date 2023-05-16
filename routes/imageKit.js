@@ -1,4 +1,4 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const ImageKit = require('imagekit');
 const router = Router();
 
@@ -7,14 +7,14 @@ const router = Router();
  */
 
 const imagekit = new ImageKit({
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-  });
+	urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
+	publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
+	privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
 
-router.get("/", function (req, res) {
-  let result = imagekit.getAuthenticationParameters();
-  res.send(result);
-}); 
+router.get('/', function (req, res) {
+	const result = imagekit.getAuthenticationParameters();
+	res.send(result);
+});
 
 module.exports = router;

@@ -1,7 +1,9 @@
-const { response } = require("express");
-const { Order, Product } = require("../models");
-const { Client } = require("../models");
-const { ObjectId } = require("mongodb");
+/* eslint-disable no-dupe-keys */
+/* eslint-disable camelcase */
+const { response } = require('express')
+const { Order, Product } = require('../models')
+const { Client } = require('../models')
+const { ObjectId } = require('mongodb')
 
 // ordenes, total, por mes, por dia
 const reportTotalOrdersByMonth = async (req, res = response) => {
@@ -11,29 +13,29 @@ const reportTotalOrdersByMonth = async (req, res = response) => {
         $match: {
           state: true,
           deliveryDate: {
-            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
-          },
-        },
+            $gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT')
+          }
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
           },
           totalSell: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalProfits: {
-            $subtract: ["$totalSell", "$CostTotal"],
-          },
-        },
+            $subtract: ['$totalSell', '$CostTotal']
+          }
+        }
       },
       {
         $project: {
@@ -42,30 +44,30 @@ const reportTotalOrdersByMonth = async (req, res = response) => {
           CostTotal: 1,
           totalSell: 1,
           totalProfits: {
-            $subtract: ["$totalSell", "$CostTotal"],
-          },
-        },
+            $subtract: ['$totalSell', '$CostTotal']
+          }
+        }
       },
       {
         $group: {
           _id: {
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
-            },
+              $year: '$deliveryDate'
+            }
           },
           totalSell: {
-            $sum: "$totalSell",
+            $sum: '$totalSell'
           },
           totalCost: {
-            $sum: "$CostTotal",
+            $sum: '$CostTotal'
           },
           totalProfits: {
-            $sum: "$totalProfits",
-          },
-        },
+            $sum: '$totalProfits'
+          }
+        }
       },
       {
         $project: {
@@ -73,144 +75,144 @@ const reportTotalOrdersByMonth = async (req, res = response) => {
           totalCost: 1,
           totalSell: 1,
           totalProfits: 1,
-          month: "$_id.month",
-          year: "$_id.year",
-        },
+          month: '$_id.month',
+          year: '$_id.year'
+        }
       },
       {
         $sort: {
-          month: 1,
-        },
-      },
-    ]);
+          month: 1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 
 const reportTotalOrdersByDay = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $group: {
           _id: {
             day: {
-              $dayOfMonth: "$deliveryDate",
+              $dayOfMonth: '$deliveryDate'
             },
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
-            },
+              $year: '$deliveryDate'
+            }
           },
           totalSales: {
-            $sum: "$total",
+            $sum: '$total'
           },
           totalCash: {
-            $sum: "$payment.cash",
+            $sum: '$payment.cash'
           },
           totalTransfer: {
-            $sum: "$payment.transfer",
+            $sum: '$payment.transfer'
           },
           totalDebt: {
-            $sum: "$payment.debt",
-          },
-        },
+            $sum: '$payment.debt'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
           day: {
-            $toString: "$_id.day",
+            $toString: '$_id.day'
           },
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
+            $toString: '$_id.year'
           },
           totalSales: 1,
           totalCash: 1,
           totalTransfer: 1,
-          totalDebt: 1,
-        },
+          totalDebt: 1
+        }
       },
       {
         $project: {
           _id: 0,
           date: {
-            $concat: ["$day", "-", "$month", "-", "$year"],
+            $concat: ['$day', '-', '$month', '-', '$year']
           },
           totalSales: 1,
           totalCash: 1,
           totalTransfer: 1,
-          totalDebt: 1,
-        },
+          totalDebt: 1
+        }
       },
       {
         $sort: {
-          date: 1,
-        },
-      },
-    ]);
+          date: 1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalOrders = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $group: {
           _id: {},
           totalSales: {
-            $sum: "$total",
+            $sum: '$total'
           },
           totalCash: {
-            $sum: "$payment.cash",
+            $sum: '$payment.cash'
           },
           totalTransfer: {
-            $sum: "$payment.transfer",
+            $sum: '$payment.transfer'
           },
           totalDebt: {
-            $sum: "$payment.debt",
-          },
-        },
+            $sum: '$payment.debt'
+          }
+        }
       },
       {
         $project: {
@@ -218,27 +220,27 @@ const reportTotalOrders = async (req, res = response) => {
           totalSales: 1,
           totalCash: 1,
           totalTransfer: 1,
-          totalDebt: 1,
-        },
-      },
-    ]);
+          totalDebt: 1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
-//Limitado desde el 21/03/2023
+}
+// Limitado desde el 21/03/2023
 const reportTotalOrders21_03 = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
@@ -246,251 +248,251 @@ const reportTotalOrders21_03 = async (req, res = response) => {
         $match: {
           state: true,
           deliveryDate: {
-            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
-          },
-        },
+            $gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT')
+          }
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            id: "$orderItems.productId",
+            id: '$orderItems.productId'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           total: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $lookup: {
-          from: "products",
-          localField: "_id.id",
-          foreignField: "_id",
-          as: "productOrder",
-        },
+          from: 'products',
+          localField: '_id.id',
+          foreignField: '_id',
+          as: 'productOrder'
+        }
       },
       {
         $unwind: {
-          path: "$productOrder",
-        },
+          path: '$productOrder'
+        }
       },
       {
         $project: {
           _id: 0,
-          productId: "$productOrder._id",
-          name: "$productOrder.name",
-          img: "$productOrder.img",
+          productId: '$productOrder._id',
+          name: '$productOrder.name',
+          img: '$productOrder.img',
           count: 1,
           total: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$total", "$totalCost"],
-          },
-        },
+            $subtract: ['$total', '$totalCost']
+          }
+        }
       },
       {
         $sort: {
-          totalProfits: -1,
-        },
-      },
-    ]);
+          totalProfits: -1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 // productos, total, por mes, por dia
 const reportTotalOrdersProducts = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            id: "$orderItems.productId",
+            id: '$orderItems.productId'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           total: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $lookup: {
-          from: "products",
-          localField: "_id.id",
-          foreignField: "_id",
-          as: "productOrder",
-        },
+          from: 'products',
+          localField: '_id.id',
+          foreignField: '_id',
+          as: 'productOrder'
+        }
       },
       {
         $unwind: {
-          path: "$productOrder",
-        },
+          path: '$productOrder'
+        }
       },
       {
         $project: {
           _id: 0,
-          productId: "$productOrder._id",
-          name: "$productOrder.name",
-          img: "$productOrder.img",
+          productId: '$productOrder._id',
+          name: '$productOrder.name',
+          img: '$productOrder.img',
           count: 1,
           total: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$total", "$totalCost"],
-          },
-        },
+            $subtract: ['$total', '$totalCost']
+          }
+        }
       },
       {
         $sort: {
-          total: -1,
-        },
-      },
-    ]);
+          total: -1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 
 const reportTotalOrdersProductsByDay = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
             day: {
-              $dayOfMonth: "$deliveryDate",
+              $dayOfMonth: '$deliveryDate'
             },
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
+              $year: '$deliveryDate'
             },
-            name: "$orderItems.description",
-            img: "$orderItems.img",
+            name: '$orderItems.description',
+            img: '$orderItems.img'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           total: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
           day: {
-            $toString: "$_id.day",
+            $toString: '$_id.day'
           },
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
+            $toString: '$_id.year'
           },
-          name: "$_id.name",
-          img: "$_id.img",
+          name: '$_id.name',
+          img: '$_id.img',
           count: 1,
           total: 1,
-          totalCost: 1,
-        },
+          totalCost: 1
+        }
       },
       {
         $project: {
           _id: 0,
           date: {
-            $concat: ["$day", "-", "$month", "-", "$year"],
+            $concat: ['$day', '-', '$month', '-', '$year']
           },
           name: 1,
           img: 1,
@@ -498,158 +500,158 @@ const reportTotalOrdersProductsByDay = async (req, res = response) => {
           total: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$total", "$totalCost"],
-          },
-        },
-      },
-    ]);
+            $subtract: ['$total', '$totalCost']
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalOrdersProductsByMonth = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $group: {
           _id: {
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
+              $year: '$deliveryDate'
             },
-            name: "$orderItems.description",
-            img: "$orderItems.img",
+            name: '$orderItems.description',
+            img: '$orderItems.img'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
-          },
-        },
+            $sum: '$orderItems.totalQuantity'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
 
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
+            $toString: '$_id.year'
           },
-          name: "$_id.name",
-          img: "$_id.img",
-          count: 1,
-        },
+          name: '$_id.name',
+          img: '$_id.img',
+          count: 1
+        }
       },
       {
         $project: {
           _id: 0,
           date: {
-            $concat: ["$month", "-", "$year"],
+            $concat: ['$month', '-', '$year']
           },
           name: 1,
           img: 1,
-          count: 1,
-        },
-      },
-    ]);
+          count: 1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalOrdersProductsByRange = async (req, res = response) => {
   try {
-    const { from, to } = req.body; // "Tue, 21 Mar 2023 00:00:00 GMT"
+    const { from, to } = req.body // "Tue, 21 Mar 2023 00:00:00 GMT"
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
           deliveryDate: {
             $gt: new Date(from),
-            $lt: new Date(to),
-          },
-        },
+            $lt: new Date(to)
+          }
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            name: "$orderItems.description",
-            img: "$orderItems.img",
+            name: '$orderItems.description',
+            img: '$orderItems.img'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           total: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
-          name: "$_id.name",
-          img: "$_id.img",
+          name: '$_id.name',
+          img: '$_id.img',
           count: 1,
           total: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$total", "$totalCost"],
-          },
-        },
-      },
-    ]);
+            $subtract: ['$total', '$totalCost']
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
@@ -658,89 +660,89 @@ const reportTotalOrdersProductsByRange = async (req, res = response) => {
       to,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
   try {
-    const { from, to } = req.body;
-    console.log(from, to); // "Tue, 21 Mar 2023 00:00:00 GMT"
+    const { from, to } = req.body
+    console.log(from, to) // "Tue, 21 Mar 2023 00:00:00 GMT"
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
           deliveryDate: {
             $gt: new Date(from),
-            $lt: new Date(to),
-          },
-        },
+            $lt: new Date(to)
+          }
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            id: "$orderItems.productId",
+            id: '$orderItems.productId'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           total: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $lookup: {
-          from: "products",
-          localField: "_id.id",
-          foreignField: "_id",
-          as: "productOrder",
-        },
+          from: 'products',
+          localField: '_id.id',
+          foreignField: '_id',
+          as: 'productOrder'
+        }
       },
       {
         $unwind: {
-          path: "$productOrder",
-        },
+          path: '$productOrder'
+        }
       },
       {
         $project: {
           _id: 0,
-          productId: "$productOrder._id",
-          name: "$productOrder.name",
-          img: "$productOrder.img",
+          productId: '$productOrder._id',
+          name: '$productOrder.name',
+          img: '$productOrder.img',
           count: 1,
           total: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$total", "$totalCost"],
-          },
-        },
-      },
-    ]);
+            $subtract: ['$total', '$totalCost']
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
@@ -749,17 +751,17 @@ const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
       to,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalIndividualProduct = async (req, res = response) => {
   const { id } = res.params
   try {
@@ -768,223 +770,223 @@ const reportTotalIndividualProduct = async (req, res = response) => {
         $match: {
           state: true,
           deliveryDate: {
-            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
-          },
-        },
+            $gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT')
+          }
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            id: "$orderItems.productId",
+            id: '$orderItems.productId'
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           total: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $lookup: {
-          from: "products",
-          localField: "_id.id",
-          foreignField: "_id",
-          as: "productOrder",
-        },
+          from: 'products',
+          localField: '_id.id',
+          foreignField: '_id',
+          as: 'productOrder'
+        }
       },
       {
         $unwind: {
-          path: "$productOrder",
-        },
+          path: '$productOrder'
+        }
       },
       {
         $project: {
           _id: 0,
-          productId: "$productOrder._id",
-          name: "$productOrder.name",
-          img: "$productOrder.img",
+          productId: '$productOrder._id',
+          name: '$productOrder.name',
+          img: '$productOrder.img',
           count: 1,
           total: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$total", "$totalCost"],
-          },
-        },
+            $subtract: ['$total', '$totalCost']
+          }
+        }
       },
       {
         $sort: {
-          totalProfits: -1,
-        },
+          totalProfits: -1
+        }
       },
       {
         $match: {
           productId: new ObjectId(id)
-        },
-      },
-    ]);
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 // clientes, total, por mes
 const reportNewClientByMonth = async (req, res = response) => {
   try {
     const report = await Client.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $group: {
           _id: {
             month: {
-              $month: "$createdAt",
+              $month: '$createdAt'
             },
             year: {
-              $year: "$createdAt",
-            },
+              $year: '$createdAt'
+            }
           },
           count: {
-            $sum: 1,
-          },
-        },
+            $sum: 1
+          }
+        }
       },
       {
         $project: {
           _id: 0,
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
+            $toString: '$_id.year'
           },
-          count: 1,
-        },
+          count: 1
+        }
       },
       {
         $project: {
           _id: 0,
           date: {
-            $concat: ["$month", "-", "$year"],
+            $concat: ['$month', '-', '$year']
           },
-          count: 1,
-        },
-      },
-    ]);
+          count: 1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 // payments
 const reportPaymentByRangeDay = async (req, res = response) => {
   try {
-    const { from, to } = req.body;
+    const { from, to } = req.body
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
           deliveryDate: {
             $gt: new Date(from),
-            $lt: new Date(to),
-          },
-        },
+            $lt: new Date(to)
+          }
+        }
       },
       {
         $group: {
           _id: {
             day: {
-              $dayOfMonth: "$deliveryDate",
+              $dayOfMonth: '$deliveryDate'
             },
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
-            },
+              $year: '$deliveryDate'
+            }
           },
           cashTotal: {
-            $sum: "$payment.cash",
+            $sum: '$payment.cash'
           },
           transferTotal: {
-            $sum: "$payment.transfer",
+            $sum: '$payment.transfer'
           },
           debtTotal: {
-            $sum: "$payment.debt",
-          },
-        },
+            $sum: '$payment.debt'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
           day: {
-            $toString: "$_id.day",
+            $toString: '$_id.day'
           },
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
+            $toString: '$_id.year'
           },
           cashTotal: 1,
           transferTotal: 1,
-          debtTotal: 1,
-        },
+          debtTotal: 1
+        }
       },
       {
         $project: {
-          total: { $sum: ["$cashTotal", "$transferTotal", "$debtTotal"] },
+          total: { $sum: ['$cashTotal', '$transferTotal', '$debtTotal'] },
           cashTotal: 1,
           transferTotal: 1,
           debtTotal: 1,
           date: {
-            $concat: ["$day", "-", "$month", "-", "$year"],
-          },
-        },
-      },
-    ]);
+            $concat: ['$day', '-', '$month', '-', '$year']
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
@@ -992,84 +994,84 @@ const reportPaymentByRangeDay = async (req, res = response) => {
       from,
       to,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalSellByRangeDay = async (req, res = response) => {
   try {
-    const { from, to } = req.body;
+    const { from, to } = req.body
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
           deliveryDate: {
             $gt: new Date(from),
-            $lt: new Date(to),
-          },
-        },
+            $lt: new Date(to)
+          }
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $project: {
           deliveryDate: 1,
           orderItems: 1,
           CostTotal: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
             day: {
-              $dayOfMonth: "$deliveryDate",
+              $dayOfMonth: '$deliveryDate'
             },
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
-            },
+              $year: '$deliveryDate'
+            }
           },
           count: {
-            $sum: "$orderItems.totalQuantity",
+            $sum: '$orderItems.totalQuantity'
           },
           totalSell: {
-            $sum: "$orderItems.totalPrice",
+            $sum: '$orderItems.totalPrice'
           },
           totalCost: {
-            $sum: "$CostTotal",
-          },
-        },
+            $sum: '$CostTotal'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
           day: {
-            $toString: "$_id.day",
+            $toString: '$_id.day'
           },
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
+            $toString: '$_id.year'
           },
           count: 1,
           totalSell: 1,
-          totalCost: 1,
-        },
+          totalCost: 1
+        }
       },
       {
         $project: {
@@ -1077,14 +1079,14 @@ const reportTotalSellByRangeDay = async (req, res = response) => {
           totalSell: 1,
           totalCost: 1,
           date: {
-            $concat: ["$month", "-", "$day", "-", "$year"],
+            $concat: ['$month', '-', '$day', '-', '$year']
           },
           totalProfits: {
-            $subtract: ["$totalSell", "$totalCost"],
-          },
-        },
-      },
-    ]);
+            $subtract: ['$totalSell', '$totalCost']
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
@@ -1092,92 +1094,92 @@ const reportTotalSellByRangeDay = async (req, res = response) => {
       from,
       to,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 // stock
 const reportTotalStock = async (req, res = response) => {
   try {
     const report = await Product.aggregate([
       {
         $match: {
-          state: true,
-        },
+          state: true
+        }
       },
       {
         $unwind: {
-          path: "$stock",
-        },
+          path: '$stock'
+        }
       },
       {
         $project: {
           name: 1,
           img: 1,
           stock: 1,
-          actualStock: "$stock.stock",
-        },
+          actualStock: '$stock.stock'
+        }
       },
       {
         $match: {
           actualStock: {
-            $gt: 0,
-          },
-        },
+            $gt: 0
+          }
+        }
       },
       {
         $group: {
           _id: {
-            name: "$name",
-            img: "$img",
+            name: '$name',
+            img: '$img'
           },
           actualStock: {
-            $sum: "$stock.stock",
+            $sum: '$stock.stock'
           },
           quantityBuy: {
-            $sum: "$stock.quantity",
-          },
-        },
+            $sum: '$stock.quantity'
+          }
+        }
       },
       {
         $project: {
           _id: 0,
-          name: "$_id.name",
-          img: "$_id.img",
+          name: '$_id.name',
+          img: '$_id.img',
           actualStock: 1,
-          quantityBuy: 1,
-        },
+          quantityBuy: 1
+        }
       },
       {
         $sort: {
-          name: 1,
-        },
-      },
-    ]);
+          name: 1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 
 // clients
 const reportTotalClientDebt = async (req, res = response) => {
@@ -1187,39 +1189,39 @@ const reportTotalClientDebt = async (req, res = response) => {
         $match: {
           state: true,
           paid: false,
-          status: "Entregado",
-        },
+          status: 'Entregado'
+        }
       },
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "clientOrder",
-        },
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'clientOrder'
+        }
       },
       {
         $unwind: {
-          path: "$clientOrder",
-        },
+          path: '$clientOrder'
+        }
       },
       {
         $group: {
           _id: {
-            id: "$client",
-            name: "$clientOrder.name",
-            lastName: "$clientOrder.lastName",
+            id: '$client',
+            name: '$clientOrder.name',
+            lastName: '$clientOrder.lastName'
           },
           totalDebt: {
-            $sum: "$payment.debt",
+            $sum: '$payment.debt'
           },
           totalCash: {
-            $sum: "$payment.cash",
+            $sum: '$payment.cash'
           },
           totalTransfer: {
-            $sum: "$payment.transfer",
-          },
-        },
+            $sum: '$payment.transfer'
+          }
+        }
       },
       {
         $project: {
@@ -1227,88 +1229,88 @@ const reportTotalClientDebt = async (req, res = response) => {
           totalDebt: 1,
           totalCash: 1,
           totalTransfer: 1,
-          name: "$_id.name",
-          lastName: "$_id.lastName",
-          clientId: "$_id.id"
-        },
+          name: '$_id.name',
+          lastName: '$_id.lastName',
+          clientId: '$_id.id'
+        }
       },
       {
         $sort: {
-          totalDebt: -1,
-        },
+          totalDebt: -1
+        }
       },
       {
         $match: {
           totalDebt: {
-            $gt: 0,
-          },
-        },
-      },
-    ]);
+            $gt: 0
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 
 const reportTotalClientBuyByRangeDays = async (req, res = response) => {
   try {
-    const { from, to } = req.body;
+    const { from, to } = req.body
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
-          status: "Entregado",
+          status: 'Entregado',
           deliveryDate: {
             $gt: new Date(from),
-            $lt: new Date(to),
-          },
-        },
+            $lt: new Date(to)
+          }
+        }
       },
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "clientOrder",
-        },
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'clientOrder'
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $unwind: {
-          path: "$clientOrder",
-        },
+          path: '$clientOrder'
+        }
       },
       {
         $project: {
           _id: 0,
           deliveryDate: 1,
           client: 1,
-          userId: "$clientOrder._id",
-          name: "$clientOrder.name",
-          lastName: "$clientOrder.lastName",
-          totalBuy: "$orderItems.totalPrice",
+          userId: '$clientOrder._id',
+          name: '$clientOrder.name',
+          lastName: '$clientOrder.lastName',
+          totalBuy: '$orderItems.totalPrice',
           orderItems: 1,
           totalCost: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $project: {
@@ -1321,27 +1323,27 @@ const reportTotalClientBuyByRangeDays = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$totalBuy", "$totalCost"],
-          },
-        },
+            $subtract: ['$totalBuy', '$totalCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            userId: "$userId",
-            name: "$name",
-            lastName: "$lastName",
+            userId: '$userId',
+            name: '$name',
+            lastName: '$lastName'
           },
           totalCost: {
-            $sum: "$totalCost",
+            $sum: '$totalCost'
           },
           totalBuy: {
-            $sum: "$totalBuy",
+            $sum: '$totalBuy'
           },
           totalProfits: {
-            $sum: "$totalProfits",
-          },
-        },
+            $sum: '$totalProfits'
+          }
+        }
       },
       {
         $project: {
@@ -1349,18 +1351,18 @@ const reportTotalClientBuyByRangeDays = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: 1,
-          name: "$_id.name",
-          lastName: "$_id.lastName",
-          userId: "$_id.userId",
-          totalProfits: 1,
-        },
+          name: '$_id.name',
+          lastName: '$_id.lastName',
+          userId: '$_id.userId',
+          totalProfits: 1
+        }
       },
       {
         $sort: {
-          totalBuy: -1,
-        },
-      },
-    ]);
+          totalBuy: -1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
@@ -1369,67 +1371,67 @@ const reportTotalClientBuyByRangeDays = async (req, res = response) => {
       from,
       to,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalClientBuyAll = async (req, res = response) => {
   try {
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
-          status: "Entregado",
+          status: 'Entregado',
           deliveryDate: {
             $gt: new Date(
-              "Tue, 21 Mar 2023 03:00:00 GMT"
-            ),
-          },
-        },
+              'Tue, 21 Mar 2023 03:00:00 GMT'
+            )
+          }
+        }
       },
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "clientOrder",
-        },
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'clientOrder'
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $unwind: {
-          path: "$clientOrder",
-        },
+          path: '$clientOrder'
+        }
       },
       {
         $project: {
           _id: 0,
           deliveryDate: 1,
           client: 1,
-          userId: "$clientOrder._id",
-          clientId: "$client",
-          name: "$clientOrder.name",
-          lastName: "$clientOrder.lastName",
-          totalBuy: "$orderItems.totalPrice",
+          userId: '$clientOrder._id',
+          clientId: '$client',
+          name: '$clientOrder.name',
+          lastName: '$clientOrder.lastName',
+          totalBuy: '$orderItems.totalPrice',
           orderItems: 1,
           totalCost: {
             $multiply: [
-              "$orderItems.totalQuantity",
-              "$orderItems.unitCost",
-            ],
-          },
-        },
+              '$orderItems.totalQuantity',
+              '$orderItems.unitCost'
+            ]
+          }
+        }
       },
       {
         $project: {
@@ -1442,28 +1444,28 @@ const reportTotalClientBuyAll = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$totalBuy", "$totalCost"],
-          },
-        },
+            $subtract: ['$totalBuy', '$totalCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            userId: "$userId",
-            clientId: "$client",
-            name: "$name",
-            lastName: "$lastName",
+            userId: '$userId',
+            clientId: '$client',
+            name: '$name',
+            lastName: '$lastName'
           },
           totalCost: {
-            $sum: "$totalCost",
+            $sum: '$totalCost'
           },
           totalBuy: {
-            $sum: "$totalBuy",
+            $sum: '$totalBuy'
           },
           totalProfits: {
-            $sum: "$totalProfits",
-          },
-        },
+            $sum: '$totalProfits'
+          }
+        }
       },
       {
         $project: {
@@ -1471,82 +1473,82 @@ const reportTotalClientBuyAll = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: 1,
-          name: "$_id.name",
-          lastName: "$_id.lastName",
-          userId: "$_id.userId",
-          clientId: "$_id.clientId",
-          totalProfits: 1,
-        },
+          name: '$_id.name',
+          lastName: '$_id.lastName',
+          userId: '$_id.userId',
+          clientId: '$_id.clientId',
+          totalProfits: 1
+        }
       },
       {
         $sort: {
-          totalBuy: -1,
-        },
-      },
-    ]);
+          totalBuy: -1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalClientBuyIndividual = async (req, res = response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
           client: new ObjectId(id),
-          status: "Entregado",
+          status: 'Entregado',
           deliveryDate: {
-            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
-          },
-        },
+            $gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT')
+          }
+        }
       },
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "clientOrder",
-        },
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'clientOrder'
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $unwind: {
-          path: "$clientOrder",
-        },
+          path: '$clientOrder'
+        }
       },
       {
         $project: {
           _id: 0,
           deliveryDate: 1,
           client: 1,
-          userId: "$clientOrder._id",
-          name: "$clientOrder.name",
-          lastName: "$clientOrder.lastName",
-          totalBuy: "$orderItems.totalPrice",
+          userId: '$clientOrder._id',
+          name: '$clientOrder.name',
+          lastName: '$clientOrder.lastName',
+          totalBuy: '$orderItems.totalPrice',
           orderItems: 1,
           totalCost: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $project: {
@@ -1559,27 +1561,27 @@ const reportTotalClientBuyIndividual = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$totalBuy", "$totalCost"],
-          },
-        },
+            $subtract: ['$totalBuy', '$totalCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            userId: "$userId",
-            name: "$name",
-            lastName: "$lastName",
+            userId: '$userId',
+            name: '$name',
+            lastName: '$lastName'
           },
           totalCost: {
-            $sum: "$totalCost",
+            $sum: '$totalCost'
           },
           totalBuy: {
-            $sum: "$totalBuy",
+            $sum: '$totalBuy'
           },
           totalProfits: {
-            $sum: "$totalProfits",
-          },
-        },
+            $sum: '$totalProfits'
+          }
+        }
       },
       {
         $project: {
@@ -1587,81 +1589,81 @@ const reportTotalClientBuyIndividual = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: 1,
-          name: "$_id.name",
-          lastName: "$_id.lastName",
-          userId: "$_id.userId",
-          totalProfits: 1,
-        },
+          name: '$_id.name',
+          lastName: '$_id.lastName',
+          userId: '$_id.userId',
+          totalProfits: 1
+        }
       },
       {
         $sort: {
-          totalBuy: -1,
-        },
-      },
-    ]);
+          totalBuy: -1
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 const reportTotalClientBuyIndividualByDay = async (req, res = response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params
     const report = await Order.aggregate([
       {
         $match: {
           state: true,
           client: new ObjectId(id),
-          status: "Entregado",
+          status: 'Entregado',
           deliveryDate: {
-            $gt: new Date("Tue, 21 Mar 2023 03:00:00 GMT"),
-          },
-        },
+            $gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT')
+          }
+        }
       },
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "clientOrder",
-        },
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'clientOrder'
+        }
       },
       {
         $unwind: {
-          path: "$orderItems",
-        },
+          path: '$orderItems'
+        }
       },
       {
         $unwind: {
-          path: "$clientOrder",
-        },
+          path: '$clientOrder'
+        }
       },
       {
         $project: {
           _id: 0,
           deliveryDate: 1,
           client: 1,
-          userId: "$clientOrder._id",
-          name: "$clientOrder.name",
-          lastName: "$clientOrder.lastName",
-          totalBuy: "$orderItems.totalPrice",
+          userId: '$clientOrder._id',
+          name: '$clientOrder.name',
+          lastName: '$clientOrder.lastName',
+          totalBuy: '$orderItems.totalPrice',
           orderItems: 1,
           totalCost: {
-            $multiply: ["$orderItems.totalQuantity", "$orderItems.unitCost"],
-          },
-        },
+            $multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost']
+          }
+        }
       },
       {
         $project: {
@@ -1674,36 +1676,36 @@ const reportTotalClientBuyIndividualByDay = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: {
-            $subtract: ["$totalBuy", "$totalCost"],
-          },
-        },
+            $subtract: ['$totalBuy', '$totalCost']
+          }
+        }
       },
       {
         $group: {
           _id: {
-            userId: "$userId",
-            name: "$name",
-            lastName: "$lastName",
+            userId: '$userId',
+            name: '$name',
+            lastName: '$lastName',
             day: {
-              $dayOfMonth: "$deliveryDate",
+              $dayOfMonth: '$deliveryDate'
             },
             month: {
-              $month: "$deliveryDate",
+              $month: '$deliveryDate'
             },
             year: {
-              $year: "$deliveryDate",
-            },
+              $year: '$deliveryDate'
+            }
           },
           totalCost: {
-            $sum: "$totalCost",
+            $sum: '$totalCost'
           },
           totalBuy: {
-            $sum: "$totalBuy",
+            $sum: '$totalBuy'
           },
           totalProfits: {
-            $sum: "$totalProfits",
-          },
-        },
+            $sum: '$totalProfits'
+          }
+        }
       },
       {
         $project: {
@@ -1711,20 +1713,20 @@ const reportTotalClientBuyIndividualByDay = async (req, res = response) => {
           totalBuy: 1,
           totalCost: 1,
           totalProfits: 1,
-          name: "$_id.name",
-          lastName: "$_id.lastName",
-          userId: "$_id.userId",
+          name: '$_id.name',
+          lastName: '$_id.lastName',
+          userId: '$_id.userId',
           totalProfits: 1,
           day: {
-            $toString: "$_id.day",
+            $toString: '$_id.day'
           },
           month: {
-            $toString: "$_id.month",
+            $toString: '$_id.month'
           },
           year: {
-            $toString: "$_id.year",
-          },
-        },
+            $toString: '$_id.year'
+          }
+        }
       },
       {
         $project: {
@@ -1736,28 +1738,28 @@ const reportTotalClientBuyIndividualByDay = async (req, res = response) => {
           userId: 1,
           totalProfits: 1,
           date: {
-            $concat: ["$day", "-", "$month", "-", "$year"],
-          },
-        },
-      },
-    ]);
+            $concat: ['$day', '-', '$month', '-', '$year']
+          }
+        }
+      }
+    ])
 
     res.status(200).json({
       ok: true,
       status: 200,
       total: report.length,
       data: {
-        report,
-      },
-    });
+        report
+      }
+    })
   } catch (error) {
     res.status(500).json({
       ok: false,
       status: 500,
-      msg: error.message,
-    });
+      msg: error.message
+    })
   }
-};
+}
 
 module.exports = {
   reportTotalOrdersByMonth,
@@ -1778,5 +1780,5 @@ module.exports = {
   reportTotalClientBuyAll,
   reportTotalClientBuyIndividual,
   reportTotalClientBuyByRangeDays,
-  reportTotalClientBuyIndividualByDay,
-};
+  reportTotalClientBuyIndividualByDay
+}
