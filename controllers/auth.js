@@ -570,6 +570,74 @@ const logout = async (req, res) => {
 	res.sendStatus(204);
 };
 
+const loginDeliveryApp = async (req, res) => {
+	const { email, password } = req.body;
+	if (!email || !password)
+		return res.status(400).json({ msg: 'Email o password no son correctos' });
+
+	// Verificar si el email existe
+	let role;
+	const foundUser = await User.findOne({ email }).exec();
+
+	if (foundUser) {
+		role = await Role.findById(foundUser.role);
+	} else {
+		return res.status(401).json({
+			msg: 'Email o password no son correctos',
+		});
+	}
+	// SI el user está activo
+	if (!foundUser.state) {
+		return res.status(401).json({
+			ok: false,
+			status: 401,
+			msg: 'Email o password no son correctos',
+		});
+	}
+	// SI no es repartidor
+	if (role.role !== process.env.DELIVERY_ROLE) {
+		return res.status(403).json({
+			ok: false,
+			status: 403,
+			msg: 'Esta cuenta no tiene permisos de acceso',
+		});
+	}
+
+	// Verificar la contraseña
+	const validPassword = await bcryptjs.compare(password, foundUser.password);
+
+	if (validPassword) {
+		// create JWTs
+		const accessToken = jwt.sign(
+			{
+				UserInfo: {
+					id: foundUser._id,
+					role: role.role,
+				},
+			},
+			process.env.JWT_SECRET,
+			{ expiresIn: '1d' }
+		);
+
+		// Se envía el id del usuario y el rol en el token
+		return res.status(201).json({
+			ok: true,
+			status: 201,
+			msg: 'Login exitoso',
+			data: {
+				accessToken,
+				id: foundUser._id,
+			},
+		});
+	} else {
+		return res.status(401).json({
+			ok: false,
+			status: 401,
+			msg: 'Email o password no son correctos',
+		});
+	}
+};
+
 module.exports = {
 	loginUser,
 	loginDeliveryTruck,
@@ -577,4 +645,5 @@ module.exports = {
 	loginAdmin,
 	refresh,
 	logout,
+	loginDeliveryApp,
 };

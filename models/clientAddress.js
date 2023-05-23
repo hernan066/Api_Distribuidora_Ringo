@@ -14,6 +14,8 @@ const ClientAddressSchema = Schema(
 		user: { type: Schema.Types.ObjectId, ref: 'User' },
 		client: { type: Schema.Types.ObjectId, ref: 'Client' },
 		deliveryZone: { type: Schema.Types.ObjectId, ref: 'DeliveryZone' },
+		lat: { type: Number },
+		lng: { type: Number },
 	},
 	{ timestamps: true }
 );
