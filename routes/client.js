@@ -2,6 +2,7 @@ const { Router } = require('express')
 const { getClients, getClient, putClient, deleteClient, postClient, getUserClient, getAddressesClient } = require('../controllers/client')
 const { getClientValidator, postClientValidator, putClientValidator, deleteClientValidator, getClientUserValidator } = require('../validations/client-validator')
 
+
 const router = Router()
 
 /**
@@ -10,6 +11,8 @@ const router = Router()
 
 //  Obtener todas las Clientes - publico
 router.get('/', getClients)
+// cambiar los clientes a activos si compraron en los ultimos 30 dias
+// router.get('/setActiveClients', activeClient)
 
 // Obtener una Cliente por id - publico
 router.get('/:id', getClientValidator, getClient)
@@ -26,5 +29,7 @@ router.put('/:id', putClientValidator, putClient)
 
 // Borrar una Cliente - Admin
 router.delete('/:id', deleteClientValidator, deleteClient)
+
+
 
 module.exports = router

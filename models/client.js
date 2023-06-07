@@ -19,6 +19,7 @@ const ClientSchema = Schema(
 		debt: { type: Number, default: 0 },
 		state: { type: Boolean, default: true, required: true },
 		points: { type: Number, default: 0 },
+		active: { type: Boolean, default: false },
 	},
 	{ timestamps: true }
 );
