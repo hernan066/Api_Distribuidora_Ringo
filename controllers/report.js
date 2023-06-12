@@ -763,7 +763,7 @@ const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
 	}
 };
 const reportTotalIndividualProduct = async (req, res = response) => {
-	const { id } = res.params;
+	const { id } = req.params;
 	try {
 		const report = await Order.aggregate([
 			{
@@ -858,6 +858,103 @@ const reportTotalIndividualProduct = async (req, res = response) => {
 		});
 	}
 };
+const reportTotalIndividualProductLast30days = async (req, res = response) => {
+	const { id } = req.params;
+	try {
+		const report = await Order.aggregate([
+			{
+				$match: {
+					state: true,
+					deliveryDate: {
+						$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$orderItems',
+				},
+			},
+			{
+				$project: {
+					deliveryDate: 1,
+					orderItems: 1,
+					CostTotal: {
+						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						id: '$orderItems.productId',
+					},
+					count: {
+						$sum: '$orderItems.totalQuantity',
+					},
+					total: {
+						$sum: '$orderItems.totalPrice',
+					},
+					totalCost: {
+						$sum: '$CostTotal',
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'products',
+					localField: '_id.id',
+					foreignField: '_id',
+					as: 'productOrder',
+				},
+			},
+			{
+				$unwind: {
+					path: '$productOrder',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					productId: '$productOrder._id',
+					name: '$productOrder.name',
+					img: '$productOrder.img',
+					count: 1,
+					total: 1,
+					totalCost: 1,
+					totalProfits: {
+						$subtract: ['$total', '$totalCost'],
+					},
+				},
+			},
+			{
+				$sort: {
+					totalProfits: -1,
+				},
+			},
+			{
+				$match: {
+					productId: new ObjectId(id),
+				},
+			},
+		]);
+
+		res.status(200).json({
+			ok: true,
+			status: 200,
+			data: {
+				report,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			ok: false,
+			status: 500,
+			msg: error.message,
+		});
+	}
+};
+
 // clientes, total, por mes
 const reportNewClientByMonth = async (req, res = response) => {
 	try {
@@ -1157,7 +1254,7 @@ const reportTotalSellByRangeDay = async (req, res = response) => {
 					zone: '$zones.name',
 				},
 			},
-      {
+			{
 				$sort: {
 					zone: 1,
 				},
@@ -1853,4 +1950,5 @@ module.exports = {
 	reportTotalClientBuyIndividual,
 	reportTotalClientBuyByRangeDays,
 	reportTotalClientBuyIndividualByDay,
+	reportTotalIndividualProductLast30days,
 };

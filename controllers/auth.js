@@ -403,7 +403,7 @@ const loginAdmin = async (req, res) => {
 				},
 			},
 			process.env.JWT_SECRET,
-			{ expiresIn: '15m' }
+			{ expiresIn: '120m' }
 		);
 		const newRefreshToken = jwt.sign(
 			{ id: foundUser._id },
