@@ -20,6 +20,9 @@ const {
 	reportTotalClientBuyIndividualByDay,
 	reportTotalIndividualProduct,
 	reportTotalIndividualProductLast30days,
+	reportTotalOneCategorySellToday,
+	reportTotalStockOneCategoryToday,
+	reportTotalOneCategoryBuyToday,
 } = require('../controllers/report');
 
 const router = Router();
@@ -63,6 +66,19 @@ router.post(
 router.get(
 	'/reportTotalClientBuyByDay/:id',
 	reportTotalClientBuyIndividualByDay
+);
+// category
+router.get(
+	'/reportTotalOneCategorySellToday/:category',
+	reportTotalOneCategorySellToday
+);
+router.get(
+	'/reportTotalStockOneCategoryToday/:category',
+	reportTotalStockOneCategoryToday
+);
+router.get(
+	'/reportTotalOneCategoryBuyToday/:category',
+	reportTotalOneCategoryBuyToday
 );
 
 module.exports = router;
