@@ -1092,7 +1092,7 @@ const reportTotalOneCategoryBuyToday = async (req, res = response) => {
 		const month = today.getMonth();
 		const day = today.getDate();
 		const from = new Date(year, month, day, 0, 0, 0, 0);
-		const report = await Order.aggregate([
+		const report = await Product.aggregate([
 			{
 				$match: {
 					state: true,
