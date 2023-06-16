@@ -20,9 +20,6 @@ const {
 	reportTotalClientBuyIndividualByDay,
 	reportTotalIndividualProduct,
 	reportTotalIndividualProductLast30days,
-	reportTotalOneCategorySellToday,
-	reportTotalStockOneCategoryToday,
-	reportTotalOneCategoryBuyToday,
 } = require('../controllers/report');
 const { getCategoryReport } = require('../controllers/reports/categoryReport');
 
@@ -31,7 +28,9 @@ const router = Router();
 // /api/reports
 
 // nuevas rutas con querys
+// category
 router.get('/category/:category', getCategoryReport);
+
 router.get('/ordersByMonth', reportTotalOrdersByMonth);
 router.get('/ordersByDay', reportTotalOrdersByDay);
 router.get('/orders', reportTotalOrders);
@@ -69,19 +68,6 @@ router.post(
 router.get(
 	'/reportTotalClientBuyByDay/:id',
 	reportTotalClientBuyIndividualByDay
-);
-// category
-router.get(
-	'/reportTotalOneCategorySellToday/:category',
-	reportTotalOneCategorySellToday
-);
-router.get(
-	'/reportTotalStockOneCategoryToday/:category',
-	reportTotalStockOneCategoryToday
-);
-router.get(
-	'/reportTotalOneCategoryBuyToday/:category',
-	reportTotalOneCategoryBuyToday
 );
 
 module.exports = router;
