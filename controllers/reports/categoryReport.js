@@ -380,6 +380,166 @@ const getCategoryReport = async (req, res = response) => {
 		});
 	}
 };
+// últimos 30 días
+const getCategoryReportByDay = async (req, res = response) => {
+	const from = new Date(new Date().setDate(new Date().getDate() - 30));
+	const { category } = req.params;
+
+	try {
+		const report = await Order.aggregate([
+			{
+				$match: {
+					state: true,
+					status: 'Entregado',
+					deliveryDate: {
+						$gte: from,
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$orderItems',
+				},
+			},
+			{
+				$project: {
+					deliveryDate: 1,
+					orderItems: 1,
+					deliveryZone: 1,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						productId: '$orderItems.productId',
+						deliveryZone: '$deliveryZone',
+						day: {
+							$dayOfMonth: '$deliveryDate',
+						},
+						month: {
+							$month: '$deliveryDate',
+						},
+						year: {
+							$year: '$deliveryDate',
+						},
+					},
+					count: {
+						$sum: '$orderItems.totalQuantity',
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'deliveryzones',
+					localField: '_id.deliveryZone',
+					foreignField: '_id',
+					as: 'deliveryZone',
+				},
+			},
+			{
+				$lookup: {
+					from: 'products',
+					localField: '_id.productId',
+					foreignField: '_id',
+					as: 'productOrder',
+				},
+			},
+			{
+				$lookup: {
+					from: 'categories',
+					localField: 'productOrder.category',
+					foreignField: '_id',
+					as: 'category',
+				},
+			},
+			{
+				$unwind: {
+					path: '$productOrder',
+				},
+			},
+			{
+				$unwind: {
+					path: '$deliveryZone',
+				},
+			},
+			{
+				$unwind: {
+					path: '$category',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					deliveryZone: '$deliveryZone.name',
+					category: '$category.name',
+					count: 1,
+					day: {
+						$toString: '$_id.day',
+					},
+					month: {
+						$toString: '$_id.month',
+					},
+					year: {
+						$toString: '$_id.year',
+					},
+				},
+			},
+			{
+				$project: {
+					date: {
+						$concat: ['$month', '-', '$day', '-', '$year'],
+					},
+					count: 1,
+					deliveryZone: 1,
+					category: 1,
+				},
+			},
+			{
+				$match: {
+					category,
+				},
+			},
+			{
+				$group: {
+					_id: {
+						deliveryZone: '$deliveryZone',
+						category: '$category',
+						date: '$date',
+					},
+					totalQuantitySell: {
+						$sum: '$count',
+					},
+				},
+			},
+			{
+				$project: {
+					totalQuantitySell: 1,
+					category: '$_id.category',
+					deliveryZone: '$_id.deliveryZone',
+					date: '$_id.date',
+					_id: 0,
+				},
+			},
+		]);
+
+		res.status(200).json({
+			ok: true,
+			status: 200,
+			from,
+
+			data: {
+				report,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			ok: false,
+			status: 500,
+			msg: error.message,
+		});
+	}
+};
 module.exports = {
 	getCategoryReport,
+	getCategoryReportByDay,
 };

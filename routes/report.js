@@ -21,7 +21,10 @@ const {
 	reportTotalIndividualProduct,
 	reportTotalIndividualProductLast30days,
 } = require('../controllers/report');
-const { getCategoryReport } = require('../controllers/reports/categoryReport');
+const {
+	getCategoryReport,
+	getCategoryReportByDay,
+} = require('../controllers/reports/categoryReport');
 
 const router = Router();
 
@@ -30,6 +33,7 @@ const router = Router();
 // nuevas rutas con querys
 // category
 router.get('/category/:category', getCategoryReport);
+router.get('/category/orderByDay/:category', getCategoryReportByDay);
 
 router.get('/ordersByMonth', reportTotalOrdersByMonth);
 router.get('/ordersByDay', reportTotalOrdersByDay);
