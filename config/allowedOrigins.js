@@ -1,13 +1,18 @@
 const allowedOrigins = [
-    'https://dr-dashboard.netlify.app',
-    'http://127.0.0.1:5500',
-    'http://localhost:3500',
-    'http://localhost:3010',
-    'https://www.distribuidora-ringo.com.ar',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://localhost:3015',
-    'https://dr-distribution-app.netlify.app'
+	'https://dr-dashboard.netlify.app',
+	'http://127.0.0.1:5500',
+	'http://localhost:3500',
+	'http://localhost:3010',
+	'https://www.distribuidora-ringo.com.ar',
+	'http://localhost:3000',
+	'http://127.0.0.1:3000',
+	'http://localhost:3015',
+	'https://dr-distribution-app.netlify.app',
+	'http://192.168.100.1:3015',
+	'http://192.168.100.2:3015',
+	'http://192.168.100.3:3015',
+	'http://192.168.100.4:3015',
+	'http://192.168.100.5:3015',
 ];
 
 module.exports = allowedOrigins;
