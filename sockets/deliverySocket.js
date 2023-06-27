@@ -10,6 +10,7 @@ module.exports = (io) => {
 				lat: data.lat,
 				lng: data.lng,
 			}); */
+			nameSpace.emit('delivery', data);
 		});
 
 		socket.on('disconnect', (data) => {

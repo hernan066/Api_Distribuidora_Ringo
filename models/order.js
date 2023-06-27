@@ -34,6 +34,8 @@ const OrderSchema = new Schema(
 			city: { type: String },
 			province: { type: String },
 			zip: { type: Number },
+			lat: { type: Number },
+			lng: { type: Number },
 		},
 
 		deliveryTruck: { type: Schema.Types.ObjectId, ref: 'DeliveryTruck' },

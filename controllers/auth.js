@@ -119,9 +119,8 @@ const loginUser = async (req, res = response) => {
 };
 
 const loginDeliveryTruck = async (req, res) => {
+	const cookies = req.cookies;
 	try {
-		const cookies = req.cookies;
-
 		const { email, password } = req.body;
 		if (!email || !password)
 			return res.status(400).json({ msg: 'Email o password no son correctos' });
@@ -145,7 +144,7 @@ const loginDeliveryTruck = async (req, res) => {
 				msg: 'Email o password no son correctos',
 			});
 		}
-		// SI no es admin
+		// SI no es repartidor
 		if (role.role !== process.env.DELIVERY_ROLE) {
 			return res.status(403).json({
 				ok: false,
@@ -167,7 +166,7 @@ const loginDeliveryTruck = async (req, res) => {
 					},
 				},
 				process.env.JWT_SECRET,
-				{ expiresIn: '18h' }
+				{ expiresIn: '120m' }
 			);
 			const newRefreshToken = jwt.sign(
 				{ id: foundUser._id },
@@ -214,7 +213,12 @@ const loginDeliveryTruck = async (req, res) => {
 			});
 
 			// Se envía el id del usuario y el rol en el token
-			res.json({ accessToken, id: foundUser._id });
+			return res.status(201).json({
+				ok: true,
+				status: 201,
+				accessToken,
+				id: foundUser._id,
+			});
 		} else {
 			return res.status(401).json({
 				ok: false,
@@ -470,88 +474,98 @@ const loginAdmin = async (req, res) => {
 };
 
 const refresh = async (req, res) => {
-	const cookies = req.cookies;
+	try {
+		const cookies = req.cookies;
 
-	if (!cookies?.jwt) {
-		return res.status(401).json({
-			ok: false,
-			status: 401,
-			msg: 'No autorizado',
-		});
-	}
-	const refreshToken = cookies.jwt;
-	res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
-
-	const foundUser = await User.findOne({ refreshToken }).exec();
-
-	// Se detecta reutilización de RT
-	if (!foundUser) {
-		jwt.verify(refreshToken, process.env.JWT_SECRET, async (err, decoded) => {
-			if (err) return res.sendStatus(403); // Forbidden
-			// Delete refresh tokens of hacked user
-			const hackedUser = await User.findOne({ _id: decoded.id }).exec();
-			hackedUser.refreshToken = [];
-			await hackedUser.save();
-		});
-		return res.sendStatus(403); // Forbidden
-	}
-
-	const newRefreshTokenArray = foundUser.refreshToken.filter(
-		(rt) => rt !== refreshToken
-	);
-
-	// evaluate jwt
-	jwt.verify(refreshToken, process.env.JWT_REFRESH, async (err, decoded) => {
-		if (err) {
-			// expired refresh token
-			foundUser.refreshToken = [...newRefreshTokenArray];
-			await foundUser.save();
+		if (!cookies?.jwt) {
+			console.log('Cookies >>>>>>>>>>>>>>', cookies);
+			return res.status(401).json({
+				ok: false,
+				status: 401,
+				msg: 'No autorizado',
+			});
 		}
-		if (err || foundUser.id !== decoded.id) return res.sendStatus(403);
+		const refreshToken = cookies.jwt;
+		res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true });
 
-		// Refresh token was still valid
-		// const roles = Object.values(foundUser.roles);
-		const role = await Role.findById(foundUser.role);
+		const foundUser = await User.findOne({ refreshToken }).exec();
 
-		const accessToken = jwt.sign(
-			{
-				UserInfo: {
-					id: decoded.id,
-					role: role.role,
+		// Se detecta reutilización de RT
+		if (!foundUser) {
+			jwt.verify(refreshToken, process.env.JWT_SECRET, async (err, decoded) => {
+				if (err) return res.sendStatus(403); // Forbidden
+				// Delete refresh tokens of hacked user
+				const hackedUser = await User.findOne({ _id: decoded.id }).exec();
+				hackedUser.refreshToken = [];
+				await hackedUser.save();
+			});
+			return res.sendStatus(403); // Forbidden
+		}
+
+		const newRefreshTokenArray = foundUser.refreshToken.filter(
+			(rt) => rt !== refreshToken
+		);
+
+		// evaluate jwt
+		jwt.verify(refreshToken, process.env.JWT_REFRESH, async (err, decoded) => {
+			if (err) {
+				// expired refresh token
+				foundUser.refreshToken = [...newRefreshTokenArray];
+				await foundUser.save();
+			}
+			if (err || foundUser.id !== decoded.id) return res.sendStatus(403);
+
+			// Refresh token was still valid
+			// const roles = Object.values(foundUser.roles);
+			const role = await Role.findById(foundUser.role);
+
+			const accessToken = jwt.sign(
+				{
+					UserInfo: {
+						id: decoded.id,
+						role: role.role,
+					},
 				},
-			},
-			process.env.JWT_SECRET,
-			{ expiresIn: '15m' }
-		);
+				process.env.JWT_SECRET,
+				{ expiresIn: '15m' }
+			);
 
-		const newRefreshToken = jwt.sign(
-			{ id: foundUser._id },
-			process.env.JWT_REFRESH,
-			{ expiresIn: '1d' }
-		);
-		// Saving refreshToken with current user
-		foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-		await foundUser.save();
+			const newRefreshToken = jwt.sign(
+				{ id: foundUser._id },
+				process.env.JWT_REFRESH,
+				{ expiresIn: '1d' }
+			);
+			// Saving refreshToken with current user
+			foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken];
+			await foundUser.save();
 
-		const client = await Client.findOne({ user: foundUser?._id }).populate(
-			'clientType',
-			['clientType']
-		);
-		console.log(foundUser);
-		// Creates Secure Cookie with refresh token
-		res.cookie('jwt', newRefreshToken, {
-			httpOnly: true,
-			secure: true,
-			sameSite: 'None',
-			maxAge: 24 * 60 * 60 * 1000,
+			const client = await Client.findOne({ user: foundUser?._id }).populate(
+				'clientType',
+				['clientType']
+			);
+			console.log(foundUser);
+			// Creates Secure Cookie with refresh token
+			res.cookie('jwt', newRefreshToken, {
+				httpOnly: true,
+				secure: true,
+				sameSite: 'None',
+				maxAge: 24 * 60 * 60 * 1000,
+			});
+
+			return res.json({
+				accessToken,
+				id: foundUser._id,
+				clientType: client?.clientType?.clientType,
+			});
 		});
-
-		res.json({
-			accessToken,
-			id: foundUser._id,
-			clientType: client?.clientType?.clientType,
+	} catch (error) {
+		console.log(error);
+		return res.status(500).json({
+			ok: false,
+			status: 500,
+			msg: error.message,
 		});
-	});
+	}
 };
 
 const logout = async (req, res) => {
