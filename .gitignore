@@ -8,3 +8,4 @@ uploads/productos/**.*
 uploads/usuarios/**.*
 
 logs
+.vscode

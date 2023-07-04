@@ -5,12 +5,9 @@ module.exports = (io) => {
 
 		socket.on('position', (data) => {
 			console.log('CLIENTE EMITIO: ', data);
-			/* nameSpace.emit(`position/${data.id_order}`, {
-				id_order: data.id_order,
-				lat: data.lat,
-				lng: data.lng,
-			}); */
-			nameSpace.emit('delivery', data);
+			if (data?.truckId) {
+				nameSpace.emit('delivery', data);
+			}
 		});
 
 		socket.on('disconnect', (data) => {

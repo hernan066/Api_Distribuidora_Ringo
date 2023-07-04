@@ -1,16 +1,3 @@
-/* require('dotenv').config();
-const { activeClient } = require('./helpers/active-verify');
-const Server = require('./models/server');
-const cron = require('node-cron');
-
-const server = new Server();
-
-server.listen();
-
-cron.schedule('0 0 * * *', () => {
-	activeClient();
-}); */
-
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const { dbConnection } = require('./database/config');
@@ -112,6 +99,8 @@ app.use('/api/imageKit', require('./routes/imageKit'));
 app.use('/api/reports', require('./routes/report'));
 app.use('/api/points', require('./routes/points'));
 app.use('/api/recommendation', require('./routes/recommendation'));
+
+app.use('/api/orderActive', require('./routes/ordersActive'));
 
 // -----------error----------------
 app.use(errorHandler);
