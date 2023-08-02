@@ -12,6 +12,7 @@ const {
 	getOrdersByDay,
 	getOrdersPaginate,
 	getClientOrderDebt,
+	getOrdersCashier,
 } = require('../controllers/orders');
 const {
 	postOrderValidator,
@@ -31,6 +32,7 @@ router.get('/', getOrders);
 router.get('/paginate', getOrdersPaginate);
 router.get('/today', getOrdersToday);
 router.get('/active', getOrdersActives);
+router.get('/cashier', getOrdersCashier);
 router.get('/days/:days', getOrdersByDay);
 
 router.get('/:id', getOrderValidator, getOrder);

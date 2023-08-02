@@ -6,6 +6,7 @@ const {
 	postOfert,
 	getOferts,
 	getOfertByProductId,
+	ofertsWithCategory,
 } = require('../controllers/ofert');
 
 const {
@@ -25,6 +26,7 @@ const router = Router();
 router.get('/', getOferts);
 
 // Obtener una marca por id - publico
+router.get('/categories', ofertsWithCategory);
 router.get('/:id', getOfertValidator, getOfert);
 router.get('/product/:id', getOfertByProductId);
 

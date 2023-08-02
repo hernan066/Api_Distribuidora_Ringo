@@ -7,6 +7,9 @@ const CategorySchema = Schema(
 			required: true,
 			unique: true,
 		},
+		img: {
+			type: String,
+		},
 		state: {
 			type: Boolean,
 			default: true,

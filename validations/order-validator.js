@@ -58,8 +58,8 @@ const postOrderValidator = [
 ];
 const postOrderLocalValidator = [
 	validarJWT,
-	check('userId', 'No es un id de Mongo válido').isMongoId(),
-	check('userId').custom(existUserById),
+	/* check('userId', 'No es un id de Mongo válido').isMongoId(),
+	check('userId').custom(existUserById), */
 	// orderItems
 	check('orderItems[0].productId', 'No es un id de Mongo válido').isMongoId(),
 	check('orderItems[0].productId').custom(existProductById),

@@ -20,7 +20,7 @@ const isAdminRole = async (req, res = response, next) => {
 	next();
 };
 
-const tieneRole = (...roles) => {
+const haveRole = (...roles) => {
 	return (req, res = response, next) => {
 		if (!req.user) {
 			return res.status(500).json({
@@ -40,5 +40,6 @@ const tieneRole = (...roles) => {
 
 module.exports = {
 	isAdminRole,
-	tieneRole,
+
+	haveRole,
 };

@@ -2,11 +2,17 @@ const { Schema, model } = require('mongoose');
 
 const OrderSchema = new Schema(
 	{
-		userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+		userCashier: { type: Schema.Types.ObjectId, ref: 'User', default: null }, // id del usuario cajero
+		userSeller: { type: Schema.Types.ObjectId, ref: 'User', default: null }, // id del usuario vendedor
 		client: { type: Schema.Types.ObjectId, ref: 'Client' },
+		userId: { type: Schema.Types.ObjectId, ref: 'User' },
+		receiptId: { type: String },
+
+		cashierMode: { type: Boolean, default: false }, // true = enviado a caja
 
 		orderItems: [
 			{
+				uniqueId: { type: String },
 				productId: {
 					type: Schema.Types.ObjectId,
 					ref: 'Product',
@@ -25,6 +31,7 @@ const OrderSchema = new Schema(
 		],
 
 		shippingAddress: {
+			addressId: { type: Schema.Types.ObjectId, ref: 'ClientAddress' },
 			name: { type: String },
 			lastName: { type: String },
 			phone: { type: String },

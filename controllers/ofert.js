@@ -183,6 +183,60 @@ const deleteOfert = async (req, res = response) => {
 	}
 };
 
+const ofertsWithCategory = async (req, res = response) => {
+	try {
+		const allOferts = await Ofert.aggregate([
+			[
+				{
+					$match: {
+						state: true,
+						visible: true,
+					},
+				},
+				{
+					$lookup: {
+						from: 'products',
+						localField: 'product',
+						foreignField: '_id',
+						as: 'product',
+					},
+				},
+				{
+					$unwind: {
+						path: '$product',
+					},
+				},
+				{
+					$lookup: {
+						from: 'categories',
+						localField: 'product.category',
+						foreignField: '_id',
+						as: 'category',
+					},
+				},
+				{
+					$unwind: {
+						path: '$category',
+					},
+				},
+			],
+		]);
+		res.status(200).json({
+			ok: true,
+			status: 200,
+			data: {
+				oferts: allOferts,
+			},
+		});
+	} catch (error) {
+		res.status(500).json({
+			ok: false,
+			status: 500,
+			msg: error.message,
+		});
+	}
+};
+
 module.exports = {
 	postOfert,
 	getOferts,
@@ -190,4 +244,5 @@ module.exports = {
 	getOfertByProductId,
 	putOfert,
 	deleteOfert,
+	ofertsWithCategory,
 };

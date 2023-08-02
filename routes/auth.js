@@ -7,12 +7,15 @@ const {
 	logout,
 	loginUser,
 	loginDeliveryTruck,
+
+	loginCashierSeller,
 } = require('../controllers/auth');
 const { loginValidator } = require('../validations/auth/loginValidator');
 
 const router = Router();
 
 router.post('/login', loginValidator, loginUser);
+router.post('/login_cashier_seller', loginValidator, loginCashierSeller);
 
 // repartidor
 router.post('/login-delivery', loginValidator, loginDeliveryTruck);
