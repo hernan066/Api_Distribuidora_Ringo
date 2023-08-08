@@ -190,7 +190,6 @@ const ofertsWithCategory = async (req, res = response) => {
 				{
 					$match: {
 						state: true,
-						visible: true,
 					},
 				},
 				{

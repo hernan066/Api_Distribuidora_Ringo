@@ -8,7 +8,7 @@ const OfertSchema = Schema(
 		visible: { type: Boolean, default: true },
 		ofert: { type: Boolean, default: false },
 		state: { type: Boolean, default: true },
-		basePrice: { type: Number },
+		basePrice: { type: Number }, // consumidor final
 		retailPrice: { type: Number },
 		prices: [
 			{
