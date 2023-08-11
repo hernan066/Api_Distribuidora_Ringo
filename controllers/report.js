@@ -765,7 +765,7 @@ const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
 const reportTotalIndividualProduct = async (req, res = response) => {
 	const { id } = req.params;
 	try {
-		const report = await Order.aggregate([
+		const totals = await Order.aggregate([
 			{
 				$match: {
 					state: true,
@@ -842,12 +842,98 @@ const reportTotalIndividualProduct = async (req, res = response) => {
 				},
 			},
 		]);
+		const byMonth = await Order.aggregate([
+			{
+				$match: {
+					state: true,
+					deliveryDate: {
+						$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
+					},
+				},
+			},
+			{
+				$unwind: {
+					path: '$orderItems',
+				},
+			},
+			{
+				$project: {
+					deliveryDate: 1,
+					orderItems: 1,
+					CostTotal: {
+						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						id: '$orderItems.productId',
+						month: {
+							$month: '$deliveryDate',
+						},
+						year: {
+							$year: '$deliveryDate',
+						},
+					},
+					count: {
+						$sum: '$orderItems.totalQuantity',
+					},
+					total: {
+						$sum: '$orderItems.totalPrice',
+					},
+					totalCost: {
+						$sum: '$CostTotal',
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'products',
+					localField: '_id.id',
+					foreignField: '_id',
+					as: 'productOrder',
+				},
+			},
+			{
+				$unwind: {
+					path: '$productOrder',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					month: '$_id.month',
+					year: '$_id.year',
+					productId: '$productOrder._id',
+					name: '$productOrder.name',
+					img: '$productOrder.img',
+					count: 1,
+					total: 1,
+					totalCost: 1,
+					totalProfits: {
+						$subtract: ['$total', '$totalCost'],
+					},
+				},
+			},
+			{
+				$sort: {
+					month: 1,
+				},
+			},
+			{
+				$match: {
+					productId: new ObjectId(id),
+				},
+			},
+		]);
 
 		res.status(200).json({
 			ok: true,
 			status: 200,
 			data: {
-				report,
+				report: totals,
+				byMonth,
 			},
 		});
 	} catch (error) {
