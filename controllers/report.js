@@ -764,169 +764,339 @@ const reportTotalOrdersProductsByRangeTest = async (req, res = response) => {
 };
 const reportTotalIndividualProduct = async (req, res = response) => {
 	const { id } = req.params;
+	const { client } = req.query;
 	try {
-		const totals = await Order.aggregate([
-			{
-				$match: {
-					state: true,
-					deliveryDate: {
-						$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
-					},
-				},
-			},
-			{
-				$unwind: {
-					path: '$orderItems',
-				},
-			},
-			{
-				$project: {
-					deliveryDate: 1,
-					orderItems: 1,
-					CostTotal: {
-						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
-					},
-				},
-			},
-			{
-				$group: {
-					_id: {
-						id: '$orderItems.productId',
-					},
-					count: {
-						$sum: '$orderItems.totalQuantity',
-					},
-					total: {
-						$sum: '$orderItems.totalPrice',
-					},
-					totalCost: {
-						$sum: '$CostTotal',
-					},
-				},
-			},
-			{
-				$lookup: {
-					from: 'products',
-					localField: '_id.id',
-					foreignField: '_id',
-					as: 'productOrder',
-				},
-			},
-			{
-				$unwind: {
-					path: '$productOrder',
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					productId: '$productOrder._id',
-					name: '$productOrder.name',
-					img: '$productOrder.img',
-					count: 1,
-					total: 1,
-					totalCost: 1,
-					totalProfits: {
-						$subtract: ['$total', '$totalCost'],
-					},
-				},
-			},
-			{
-				$sort: {
-					totalProfits: -1,
-				},
-			},
-			{
-				$match: {
-					productId: new ObjectId(id),
-				},
-			},
-		]);
-		const byMonth = await Order.aggregate([
-			{
-				$match: {
-					state: true,
-					deliveryDate: {
-						$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
-					},
-				},
-			},
-			{
-				$unwind: {
-					path: '$orderItems',
-				},
-			},
-			{
-				$project: {
-					deliveryDate: 1,
-					orderItems: 1,
-					CostTotal: {
-						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
-					},
-				},
-			},
-			{
-				$group: {
-					_id: {
-						id: '$orderItems.productId',
-						month: {
-							$month: '$deliveryDate',
-						},
-						year: {
-							$year: '$deliveryDate',
+		let totals;
+		let byMonth;
+		if (client) {
+			totals = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						client: new ObjectId(client),
+						deliveryDate: {
+							$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
 						},
 					},
-					count: {
-						$sum: '$orderItems.totalQuantity',
-					},
-					total: {
-						$sum: '$orderItems.totalPrice',
-					},
-					totalCost: {
-						$sum: '$CostTotal',
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
 					},
 				},
-			},
-			{
-				$lookup: {
-					from: 'products',
-					localField: '_id.id',
-					foreignField: '_id',
-					as: 'productOrder',
-				},
-			},
-			{
-				$unwind: {
-					path: '$productOrder',
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					month: '$_id.month',
-					year: '$_id.year',
-					productId: '$productOrder._id',
-					name: '$productOrder.name',
-					img: '$productOrder.img',
-					count: 1,
-					total: 1,
-					totalCost: 1,
-					totalProfits: {
-						$subtract: ['$total', '$totalCost'],
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
 					},
 				},
-			},
-			{
-				$sort: {
-					month: 1,
+				{
+					$group: {
+						_id: {
+							id: '$orderItems.productId',
+						},
+						count: {
+							$sum: '$orderItems.totalQuantity',
+						},
+						total: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+					},
 				},
-			},
-			{
-				$match: {
-					productId: new ObjectId(id),
+				{
+					$lookup: {
+						from: 'products',
+						localField: '_id.id',
+						foreignField: '_id',
+						as: 'productOrder',
+					},
 				},
-			},
-		]);
+				{
+					$unwind: {
+						path: '$productOrder',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						productId: '$productOrder._id',
+						name: '$productOrder.name',
+						img: '$productOrder.img',
+						count: 1,
+						total: 1,
+						totalCost: 1,
+						totalProfits: {
+							$subtract: ['$total', '$totalCost'],
+						},
+					},
+				},
+				{
+					$sort: {
+						totalProfits: -1,
+					},
+				},
+				{
+					$match: {
+						productId: new ObjectId(id),
+					},
+				},
+			]);
+			byMonth = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						client: new ObjectId(client),
+						deliveryDate: {
+							$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							id: '$orderItems.productId',
+							month: {
+								$month: '$deliveryDate',
+							},
+							year: {
+								$year: '$deliveryDate',
+							},
+						},
+						count: {
+							$sum: '$orderItems.totalQuantity',
+						},
+						total: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+					},
+				},
+				{
+					$lookup: {
+						from: 'products',
+						localField: '_id.id',
+						foreignField: '_id',
+						as: 'productOrder',
+					},
+				},
+				{
+					$unwind: {
+						path: '$productOrder',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						month: '$_id.month',
+						year: '$_id.year',
+						productId: '$productOrder._id',
+						name: '$productOrder.name',
+						img: '$productOrder.img',
+						count: 1,
+						total: 1,
+						totalCost: 1,
+						totalProfits: {
+							$subtract: ['$total', '$totalCost'],
+						},
+					},
+				},
+				{
+					$sort: {
+						month: 1,
+					},
+				},
+				{
+					$match: {
+						productId: new ObjectId(id),
+					},
+				},
+			]);
+		} else {
+			totals = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						deliveryDate: {
+							$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							id: '$orderItems.productId',
+						},
+						count: {
+							$sum: '$orderItems.totalQuantity',
+						},
+						total: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+					},
+				},
+				{
+					$lookup: {
+						from: 'products',
+						localField: '_id.id',
+						foreignField: '_id',
+						as: 'productOrder',
+					},
+				},
+				{
+					$unwind: {
+						path: '$productOrder',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						productId: '$productOrder._id',
+						name: '$productOrder.name',
+						img: '$productOrder.img',
+						count: 1,
+						total: 1,
+						totalCost: 1,
+						totalProfits: {
+							$subtract: ['$total', '$totalCost'],
+						},
+					},
+				},
+				{
+					$sort: {
+						totalProfits: -1,
+					},
+				},
+				{
+					$match: {
+						productId: new ObjectId(id),
+					},
+				},
+			]);
+			byMonth = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						deliveryDate: {
+							$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							id: '$orderItems.productId',
+							month: {
+								$month: '$deliveryDate',
+							},
+							year: {
+								$year: '$deliveryDate',
+							},
+						},
+						count: {
+							$sum: '$orderItems.totalQuantity',
+						},
+						total: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+					},
+				},
+				{
+					$lookup: {
+						from: 'products',
+						localField: '_id.id',
+						foreignField: '_id',
+						as: 'productOrder',
+					},
+				},
+				{
+					$unwind: {
+						path: '$productOrder',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						month: '$_id.month',
+						year: '$_id.year',
+						productId: '$productOrder._id',
+						name: '$productOrder.name',
+						img: '$productOrder.img',
+						count: 1,
+						total: 1,
+						totalCost: 1,
+						totalProfits: {
+							$subtract: ['$total', '$totalCost'],
+						},
+					},
+				},
+				{
+					$sort: {
+						month: 1,
+					},
+				},
+				{
+					$match: {
+						productId: new ObjectId(id),
+					},
+				},
+			]);
+		}
 
 		res.status(200).json({
 			ok: true,
@@ -946,84 +1116,167 @@ const reportTotalIndividualProduct = async (req, res = response) => {
 };
 const reportTotalIndividualProductLast30days = async (req, res = response) => {
 	const { id } = req.params;
+	const { client } = req.query;
 	try {
-		const report = await Order.aggregate([
-			{
-				$match: {
-					state: true,
-					deliveryDate: {
-						$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+		let report;
+		if (client) {
+			report = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						client: new ObjectId(client),
+						deliveryDate: {
+							$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+						},
 					},
 				},
-			},
-			{
-				$unwind: {
-					path: '$orderItems',
-				},
-			},
-			{
-				$project: {
-					deliveryDate: 1,
-					orderItems: 1,
-					CostTotal: {
-						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+				{
+					$unwind: {
+						path: '$orderItems',
 					},
 				},
-			},
-			{
-				$group: {
-					_id: {
-						id: '$orderItems.productId',
-					},
-					count: {
-						$sum: '$orderItems.totalQuantity',
-					},
-					total: {
-						$sum: '$orderItems.totalPrice',
-					},
-					totalCost: {
-						$sum: '$CostTotal',
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
 					},
 				},
-			},
-			{
-				$lookup: {
-					from: 'products',
-					localField: '_id.id',
-					foreignField: '_id',
-					as: 'productOrder',
-				},
-			},
-			{
-				$unwind: {
-					path: '$productOrder',
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					productId: '$productOrder._id',
-					name: '$productOrder.name',
-					img: '$productOrder.img',
-					count: 1,
-					total: 1,
-					totalCost: 1,
-					totalProfits: {
-						$subtract: ['$total', '$totalCost'],
+				{
+					$group: {
+						_id: {
+							id: '$orderItems.productId',
+						},
+						count: {
+							$sum: '$orderItems.totalQuantity',
+						},
+						total: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
 					},
 				},
-			},
-			{
-				$sort: {
-					totalProfits: -1,
+				{
+					$lookup: {
+						from: 'products',
+						localField: '_id.id',
+						foreignField: '_id',
+						as: 'productOrder',
+					},
 				},
-			},
-			{
-				$match: {
-					productId: new ObjectId(id),
+				{
+					$unwind: {
+						path: '$productOrder',
+					},
 				},
-			},
-		]);
+				{
+					$project: {
+						_id: 0,
+						productId: '$productOrder._id',
+						name: '$productOrder.name',
+						img: '$productOrder.img',
+						count: 1,
+						total: 1,
+						totalCost: 1,
+						totalProfits: {
+							$subtract: ['$total', '$totalCost'],
+						},
+					},
+				},
+				{
+					$sort: {
+						totalProfits: -1,
+					},
+				},
+				{
+					$match: {
+						productId: new ObjectId(id),
+					},
+				},
+			]);
+		} else {
+			report = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						deliveryDate: {
+							$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							id: '$orderItems.productId',
+						},
+						count: {
+							$sum: '$orderItems.totalQuantity',
+						},
+						total: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+					},
+				},
+				{
+					$lookup: {
+						from: 'products',
+						localField: '_id.id',
+						foreignField: '_id',
+						as: 'productOrder',
+					},
+				},
+				{
+					$unwind: {
+						path: '$productOrder',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						productId: '$productOrder._id',
+						name: '$productOrder.name',
+						img: '$productOrder.img',
+						count: 1,
+						total: 1,
+						totalCost: 1,
+						totalProfits: {
+							$subtract: ['$total', '$totalCost'],
+						},
+					},
+				},
+				{
+					$sort: {
+						totalProfits: -1,
+					},
+				},
+				{
+					$match: {
+						productId: new ObjectId(id),
+					},
+				},
+			]);
+		}
 
 		res.status(200).json({
 			ok: true,
