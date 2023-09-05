@@ -36,7 +36,9 @@ const getDeliveryTrucks = async (req, res = response) => {
 const getDeliveryTruck = async (req, res = response) => {
 	try {
 		const { id } = req.params;
-		const deliveryTruck = await DeliveryTruck.findById(id);
+		const deliveryTruck = await DeliveryTruck.findById(id)
+			.populate('user', ['name', 'lastName', 'phone', 'email'])
+			.populate('distributor');
 
 		res.status(200).json({
 			ok: true,

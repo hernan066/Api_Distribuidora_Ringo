@@ -25,6 +25,7 @@ const {
 	getCategoryReport,
 	getCategoryReportByDay,
 } = require('../controllers/reports/categoryReport');
+const { deliveryOrders } = require('../controllers/reports/deliveryReport');
 
 const router = Router();
 
@@ -73,5 +74,8 @@ router.get(
 	'/reportTotalClientBuyByDay/:id',
 	reportTotalClientBuyIndividualByDay
 );
+
+// delivery
+router.post('/deliveryOrders/:id', deliveryOrders);
 
 module.exports = router;
