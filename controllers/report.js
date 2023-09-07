@@ -1912,6 +1912,14 @@ const reportTotalClientBuyAll = async (req, res = response) => {
 					from: 'users',
 					localField: 'userId',
 					foreignField: '_id',
+					as: 'userOrder',
+				},
+			},
+			{
+				$lookup: {
+					from: 'clients',
+					localField: 'client',
+					foreignField: '_id',
 					as: 'clientOrder',
 				},
 			},
@@ -1926,16 +1934,22 @@ const reportTotalClientBuyAll = async (req, res = response) => {
 				},
 			},
 			{
+				$unwind: {
+					path: '$userOrder',
+				},
+			},
+			{
 				$project: {
 					_id: 0,
 					deliveryDate: 1,
 					client: 1,
-					userId: '$clientOrder._id',
+					userId: '$userOrder._id',
 					clientId: '$client',
-					name: '$clientOrder.name',
-					lastName: '$clientOrder.lastName',
+					name: '$userOrder.name',
+					lastName: '$userOrder.lastName',
 					totalBuy: '$orderItems.totalPrice',
 					orderItems: 1,
+					active: '$clientOrder.active',
 					totalCost: {
 						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
 					},
@@ -1944,6 +1958,7 @@ const reportTotalClientBuyAll = async (req, res = response) => {
 			{
 				$project: {
 					deliveryDate: 1,
+					active: 1,
 					client: 1,
 					userId: 1,
 					name: 1,
@@ -1963,6 +1978,7 @@ const reportTotalClientBuyAll = async (req, res = response) => {
 						clientId: '$client',
 						name: '$name',
 						lastName: '$lastName',
+						active: '$active',
 					},
 					totalCost: {
 						$sum: '$totalCost',
@@ -1986,6 +2002,7 @@ const reportTotalClientBuyAll = async (req, res = response) => {
 					userId: '$_id.userId',
 					clientId: '$_id.clientId',
 					totalProfits: 1,
+					active: '$_id.active',
 				},
 			},
 			{
