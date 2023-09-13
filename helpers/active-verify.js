@@ -1,13 +1,15 @@
-const { Order, Client } = require('../models');
+const { Order, Client, Config } = require('../models');
 
 const activeClient = async () => {
-	// Verificar si el correo existe
+	const config = await Config.findById('650094ef155817eb4ab49020');
 	const lastOrders = await Order.aggregate([
 		{
 			$match: {
 				state: true,
 				deliveryDate: {
-					$gte: new Date(new Date().setDate(new Date().getDate() - 20)),
+					$gte: new Date(
+						new Date().setDate(new Date().getDate() - config.inactiveDays)
+					),
 				},
 			},
 		},

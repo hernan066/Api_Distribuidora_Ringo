@@ -101,6 +101,7 @@ app.use('/api/points', require('./routes/points'));
 app.use('/api/recommendation', require('./routes/recommendation'));
 
 app.use('/api/orderActive', require('./routes/ordersActive'));
+app.use('/api/config', require('./routes/config'));
 
 // -----------error----------------
 app.use(errorHandler);

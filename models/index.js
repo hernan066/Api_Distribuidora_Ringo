@@ -23,6 +23,7 @@ const ClientAddress = require('./clientAddress');
 const Points = require('./points');
 const Recommendation = require('./recommendation');
 const OrderActive = require('./orderActive');
+const Config = require('./config');
 
 module.exports = {
 	Category,
@@ -50,4 +51,5 @@ module.exports = {
 	Points,
 	Recommendation,
 	OrderActive,
+	Config,
 };
