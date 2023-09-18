@@ -528,6 +528,26 @@ const getOrdersCashier = async (req, res = response) => {
 	}
 };
 
+const putOrderSetInactiveAll = async (req, res = response) => {
+	try {
+		await Order.updateMany(
+			{ state: true, active: true },
+			{ $set: { active: false } }
+		);
+
+		res.status(200).json({
+			ok: true,
+			status: 200,
+		});
+	} catch (error) {
+		res.status(500).json({
+			ok: false,
+			status: 500,
+			msg: error.message,
+		});
+	}
+};
+
 module.exports = {
 	postOrder,
 	getOrders,
@@ -542,4 +562,5 @@ module.exports = {
 	getOrdersPaginate,
 	getClientOrderDebt,
 	getOrdersCashier,
+	putOrderSetInactiveAll,
 };

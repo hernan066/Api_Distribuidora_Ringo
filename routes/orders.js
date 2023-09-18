@@ -13,6 +13,7 @@ const {
 	getOrdersPaginate,
 	getClientOrderDebt,
 	getOrdersCashier,
+	putOrderSetInactiveAll,
 } = require('../controllers/orders');
 const {
 	postOrderValidator,
@@ -22,6 +23,7 @@ const {
 	getOrderUserValidator,
 	getOrderClientValidator,
 	postOrderLocalValidator,
+	putOrderSetInactiveAllValidator,
 } = require('../validations/order-validator');
 
 const router = Router();
@@ -42,6 +44,12 @@ router.get('/clientDebt/:id', getOrderClientValidator, getClientOrderDebt);
 
 router.post('/', postOrderValidator, postOrder);
 router.post('/local', postOrderLocalValidator, postOrder);
+
+router.put(
+	'/setAllOrdersToInactive',
+	putOrderSetInactiveAllValidator,
+	putOrderSetInactiveAll
+);
 
 router.put('/:id', putOrderValidator, putOrder);
 

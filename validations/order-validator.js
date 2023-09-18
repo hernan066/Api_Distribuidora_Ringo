@@ -90,6 +90,7 @@ const deleteOrderValidator = [
 	check('id').custom(existOrderById),
 	validateFields,
 ];
+const putOrderSetInactiveAllValidator = [validarJWT, isAdminRole];
 
 module.exports = {
 	getOrderValidator,
@@ -99,4 +100,5 @@ module.exports = {
 	getOrderUserValidator,
 	getOrderClientValidator,
 	postOrderLocalValidator,
+	putOrderSetInactiveAllValidator,
 };
