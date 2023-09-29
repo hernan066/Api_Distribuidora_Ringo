@@ -15,6 +15,7 @@ const allowedOrigins = [
 	'http://192.168.100.4:3015',
 	'http://192.168.100.5:3015',
 	'http://localhost:5173',
+	'https://our-market-dashsboard-full.netlify.app',
 ];
 
 module.exports = allowedOrigins;
