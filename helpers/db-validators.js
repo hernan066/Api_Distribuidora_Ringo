@@ -40,7 +40,7 @@ const emailExist = async (email = '') => {
 	// Verificar si el correo existe
 	const state = true;
 	const existEmail = await User.findOne({ email, state });
-	if (existEmail) {
+	if (existEmail && existEmail.email) {
 		throw new Error(`El email ${email}, ya está registrado`);
 	}
 };

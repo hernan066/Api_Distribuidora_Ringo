@@ -24,7 +24,7 @@ const postUserValidations = [
 	check('password', 'El password debe de ser más de 6 letras').isLength({
 		min: 6,
 	}),
-	check('email', 'El email no es válido').isEmail(),
+	/* check('email', 'El email no es válido').isEmail(), */
 	check('email').custom(emailExist),
 	check('phone', 'El teléfono es obligatorio').not().isEmpty(),
 	check('phone', 'Solo números').isNumeric(),

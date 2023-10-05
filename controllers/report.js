@@ -6,93 +6,187 @@ const { Client } = require('../models');
 const { ObjectId } = require('mongodb');
 
 // ordenes, total, por mes, por dia
+
+// totales ordenados por mes(cliente opcional)
 const reportTotalOrdersByMonth = async (req, res = response) => {
 	try {
-		const report = await Order.aggregate([
-			{
-				$match: {
-					state: true,
-					deliveryDate: {
-						$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
-					},
-				},
-			},
-			{
-				$unwind: {
-					path: '$orderItems',
-				},
-			},
-			{
-				$project: {
-					deliveryDate: 1,
-					orderItems: 1,
-					CostTotal: {
-						$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
-					},
-					totalSell: {
-						$sum: '$orderItems.totalPrice',
-					},
-					totalProfits: {
-						$subtract: ['$totalSell', '$CostTotal'],
-					},
-				},
-			},
-			{
-				$project: {
-					deliveryDate: 1,
-					orderItems: 1,
-					CostTotal: 1,
-					totalSell: 1,
-					totalProfits: {
-						$subtract: ['$totalSell', '$CostTotal'],
-					},
-				},
-			},
-			{
-				$group: {
-					_id: {
-						month: {
-							$month: '$deliveryDate',
-						},
-						year: {
-							$year: '$deliveryDate',
-						},
-					},
-					totalSell: {
-						$sum: '$totalSell',
-					},
-					totalCost: {
-						$sum: '$CostTotal',
-					},
-					totalProfits: {
-						$sum: '$totalProfits',
-					},
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					totalCost: 1,
-					totalSell: 1,
-					totalProfits: 1,
-					month: '$_id.month',
-					year: '$_id.year',
-				},
-			},
-			{
-				$sort: {
-					month: 1,
-				},
-			},
-		]);
+		const { client = '' } = req.query;
 
-		res.status(200).json({
-			ok: true,
-			status: 200,
-			data: {
-				report,
-			},
-		});
+		if (!client) {
+			const report = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						deliveryDate: {
+							$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
+						totalSell: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalProfits: {
+							$subtract: ['$totalSell', '$CostTotal'],
+						},
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: 1,
+						totalSell: 1,
+						totalProfits: {
+							$subtract: ['$totalSell', '$CostTotal'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							month: {
+								$month: '$deliveryDate',
+							},
+							year: {
+								$year: '$deliveryDate',
+							},
+						},
+						totalSell: {
+							$sum: '$totalSell',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+						totalProfits: {
+							$sum: '$totalProfits',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						totalCost: 1,
+						totalSell: 1,
+						totalProfits: 1,
+						month: '$_id.month',
+						year: '$_id.year',
+					},
+				},
+				{
+					$sort: {
+						month: 1,
+					},
+				},
+			]);
+
+			res.status(200).json({
+				ok: true,
+				status: 200,
+				data: {
+					report,
+				},
+			});
+		}
+		if (client) {
+			const report = await Order.aggregate([
+				{
+					$match: {
+						state: true,
+						client: new ObjectId(client),
+						deliveryDate: {
+							$gt: new Date('Tue, 21 Mar 2023 03:00:00 GMT'),
+						},
+					},
+				},
+				{
+					$unwind: {
+						path: '$orderItems',
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: {
+							$multiply: ['$orderItems.totalQuantity', '$orderItems.unitCost'],
+						},
+						totalSell: {
+							$sum: '$orderItems.totalPrice',
+						},
+						totalProfits: {
+							$subtract: ['$totalSell', '$CostTotal'],
+						},
+					},
+				},
+				{
+					$project: {
+						deliveryDate: 1,
+						orderItems: 1,
+						CostTotal: 1,
+						totalSell: 1,
+						totalProfits: {
+							$subtract: ['$totalSell', '$CostTotal'],
+						},
+					},
+				},
+				{
+					$group: {
+						_id: {
+							month: {
+								$month: '$deliveryDate',
+							},
+							year: {
+								$year: '$deliveryDate',
+							},
+						},
+						totalSell: {
+							$sum: '$totalSell',
+						},
+						totalCost: {
+							$sum: '$CostTotal',
+						},
+						totalProfits: {
+							$sum: '$totalProfits',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						totalCost: 1,
+						totalSell: 1,
+						totalProfits: 1,
+						month: '$_id.month',
+						year: '$_id.year',
+					},
+				},
+				{
+					$sort: {
+						month: 1,
+					},
+				},
+			]);
+
+			res.status(200).json({
+				ok: true,
+				status: 200,
+				data: {
+					report,
+				},
+			});
+		}
 	} catch (error) {
 		res.status(500).json({
 			ok: false,
