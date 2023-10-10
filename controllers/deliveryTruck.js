@@ -1,5 +1,6 @@
 const { response } = require('express');
-const { DeliveryTruck } = require('../models');
+const { DeliveryTruck, User } = require('../models');
+const bcryptjs = require('bcryptjs');
 
 const getDeliveryTrucks = async (req, res = response) => {
 	try {
@@ -81,37 +82,100 @@ const getUserDeliveryTruck = async (req, res = response) => {
 
 const postDeliveryTruck = async (req, res = response) => {
 	try {
-		const { state, ...body } = req.body;
+		const {
+			name,
+			lastName,
+			password,
+			email,
+			phone,
+			dni,
+			truckId,
+			patent,
+			coldChamber,
+			maximumLoad,
+		} = req.body;
 
-		const deliveryTruckDB = await DeliveryTruck.findOne({
-			patent: body.patent,
-		});
-
-		if (deliveryTruckDB) {
+		const existPhone = await User.findOne({ phone });
+		if (existPhone && existPhone[0]) {
 			return res.status(400).json({
-				msg: `La patente ${deliveryTruckDB.patent}, ya existe`,
+				ok: false,
+				status: 400,
+				msg: `El teléfono ${phone} ya esta registrado`,
+			});
+		}
+		const existEmail = await User.findOne({ email });
+		if (existEmail && existEmail[0]) {
+			return res.status(400).json({
+				ok: false,
+				status: 400,
+				msg: `El email ${email} ya esta registrado`,
+			});
+		}
+		const existDni = await User.findOne({ dni });
+		if (existDni && existDni[0]) {
+			return res.status(400).json({
+				ok: false,
+				status: 400,
+				msg: `El DNI/CUIL ${dni} ya esta registrado`,
+			});
+		}
+		const existPatent = await DeliveryTruck.findOne({ patent });
+		if (existPatent && existPatent[0]) {
+			return res.status(400).json({
+				ok: false,
+				status: 400,
+				msg: `La patente ${patent} ya esta registrada`,
 			});
 		}
 
-		// Generar la data a guardar
-		const data = {
-			...body,
-		};
+		// 1- primero creo el usuario
+		const salt = bcryptjs.genSaltSync();
+		const newPassword = bcryptjs.hashSync(password, salt);
 
-		const deliveryTruck = new DeliveryTruck(data);
+		const user = new User({
+			role: '63a30cc3f73f4b70d25a8678',
+			name,
+			lastName,
+			password: newPassword,
+			phone,
+			email,
+			verified: true,
+		});
+
+		// Guardar en BD
+		await user.save();
+
+		// 2- segundo creo el cliente
+		const delivery = new DeliveryTruck({
+			user: user._id,
+			truckId,
+			patent,
+			coldChamber,
+			maximumLoad,
+		});
 
 		// Guardar DB
-		await deliveryTruck.save();
+		await delivery.save();
 
-		res.status(200).json({
+		return res.status(200).json({
 			ok: true,
 			status: 200,
 			data: {
-				deliveryTruck,
+				deliveryTruck: {
+					user: user._id,
+					name,
+					lastName,
+					phone,
+					email,
+					truckId,
+					patent,
+					coldChamber,
+					maximumLoad,
+				},
 			},
 		});
 	} catch (error) {
-		res.status(500).json({
+		return res.status(500).json({
 			ok: false,
 			status: 500,
 			msg: error.message,

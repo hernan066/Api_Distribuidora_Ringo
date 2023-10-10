@@ -5,12 +5,10 @@ const DeliveryTruckSchema = Schema({
 	distributor: {
 		type: Schema.Types.ObjectId,
 		ref: 'Distributor',
-		required: true,
 	},
 	defaultZone: {
 		type: Schema.Types.ObjectId,
 		ref: 'DeliveryZone',
-		required: true,
 	},
 	truckId: { type: String },
 	patent: { type: String },

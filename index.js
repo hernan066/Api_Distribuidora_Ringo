@@ -103,6 +103,8 @@ app.use('/api/recommendation', require('./routes/recommendation'));
 app.use('/api/orderActive', require('./routes/ordersActive'));
 app.use('/api/config', require('./routes/config'));
 
+app.use('/api/expenses', require('./routes/expenses'));
+
 // -----------error----------------
 app.use(errorHandler);
 

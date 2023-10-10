@@ -24,6 +24,7 @@ const Points = require('./points');
 const Recommendation = require('./recommendation');
 const OrderActive = require('./orderActive');
 const Config = require('./config');
+const Expenses = require('./expenses');
 
 module.exports = {
 	Category,
@@ -52,4 +53,5 @@ module.exports = {
 	Recommendation,
 	OrderActive,
 	Config,
+	Expenses,
 };
