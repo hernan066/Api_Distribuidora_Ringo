@@ -15,7 +15,9 @@ const allowedOrigins = [
 	'http://192.168.100.4:3015',
 	'http://192.168.100.5:3015',
 	'http://localhost:5173',
+	'http://localhost:5174',
 	'https://our-market-dashsboard-full.netlify.app',
+	'https://our-market-tpv.netlify.app',
 ];
 
 module.exports = allowedOrigins;
